@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "b7520f022d256672d421",
+  "position": {
+    "x": 64,
+    "y": 664,
+    "z": 1000,
+    "height": 400,
+    "width": 696,
+    "tabOrder": 4000
+  },
+  "visualGroup": {
+    "displayName": "HeatMap",
+    "groupMode": "ScaleMode"
+  }
+}

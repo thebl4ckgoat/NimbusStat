@@ -1,0 +1,212 @@
+table SessionDates
+	lineageTag: 537c613e-2ddd-4d44-8a87-5a8db870ce8f
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: yyyy-mm-dd
+		lineageTag: 73cc9790-c992-4cf0-bce3-9b553f0c019f
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isCustom":true}
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 628e3441-7bf8-4730-803f-51ffc15a8786
+		summarizeBy: none
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column QuarterOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: 38df717e-cfb3-4b30-b729-94bde096a19c
+		summarizeBy: none
+		sourceColumn: QuarterOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: c191fcb0-9e17-44ca-82e2-3dbff6b04527
+		summarizeBy: none
+		sourceColumn: MonthOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfMonth
+		dataType: int64
+		formatString: 0
+		lineageTag: 726c3b29-263b-4a53-8404-6cdc72d47a3b
+		summarizeBy: none
+		sourceColumn: DayOfMonth
+
+		annotation SummarizationSetBy = Automatic
+
+	column DateInt
+		dataType: int64
+		formatString: 0
+		lineageTag: 97f41598-cda4-49c8-bc62-9490e4d07f89
+		summarizeBy: none
+		sourceColumn: DateInt
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthName
+		dataType: string
+		lineageTag: 2298bd5b-3d3f-4618-a7c0-e31a5a7f690d
+		summarizeBy: none
+		sourceColumn: MonthName
+		sortByColumn: MonthOfYear
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthInCalendar
+		dataType: string
+		lineageTag: b1676b91-c285-4f6b-93e6-fc731cabad90
+		summarizeBy: none
+		sourceColumn: MonthInCalendar
+		sortByColumn: YYYY-MM
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column QuarterInCalendar
+		dataType: string
+		lineageTag: 2abd6e17-92a5-4438-a3c2-bc623fa42d36
+		summarizeBy: none
+		sourceColumn: QuarterInCalendar
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayInWeek
+		dataType: int64
+		formatString: 0
+		lineageTag: 1b873a64-e466-4402-8c11-81806f1b97ca
+		summarizeBy: none
+		sourceColumn: DayInWeek
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfWeekName
+		dataType: string
+		lineageTag: 413a1ffa-b742-4c02-9d2f-caf0ca30eac8
+		summarizeBy: none
+		sourceColumn: DayOfWeekName
+		sortByColumn: DayInWeek
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column WeekEnding
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: e7c92b30-2fba-4f49-b122-ba5356d8693e
+		summarizeBy: none
+		sourceColumn: WeekEnding
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column QuarterName
+		dataType: string
+		lineageTag: 167fa416-f41d-4490-9258-89cfa3b36ea6
+		summarizeBy: none
+		sourceColumn: QuarterName
+		sortByColumn: QuarterOfYear
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYY-MM
+		dataType: dateTime
+		formatString: mmm-yy
+		lineageTag: cd1869d9-2582-45a3-b0ab-786e916a9e4f
+		summarizeBy: none
+		sourceColumn: YYYY-MM
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isCustom":true}
+
+	column DateSandbox
+		dataType: dateTime
+		formatString: dd-mmm-yy
+		lineageTag: 7d3cd2cd-d2b7-4863-ac83-a5cf3d359083
+		summarizeBy: none
+		sourceColumn: DateSandbox
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isCustom":true}
+
+	hierarchy 'Date Hierarchy'
+		lineageTag: f7e12484-ae9a-4593-b136-dd3f2731b4f7
+
+		level Year
+			lineageTag: 005a7a70-4713-4ba2-b223-bddd64196d89
+			column: Year
+
+		level QuarterName
+			lineageTag: b4c3c65b-2d67-403a-a0e2-870da165f27f
+			column: QuarterName
+
+		level YYYY-MM
+			lineageTag: 00f81ac9-9184-42a8-84c8-699d14d18753
+			column: YYYY-MM
+
+		level DayOfMonth
+			lineageTag: 20413068-38a9-47b9-8692-80f759ce1e5f
+			column: DayOfMonth
+
+	partition SessionDates-75d544cb-e47e-476a-9ca0-ba25a9b4bd30 = m
+		mode: import
+		queryGroup: DateDimensions
+		source = ```
+				let
+				
+				Culture = if #"Calendar Language" = "German" then "de-DE" else 
+				        if #"Calendar Language" = "French" then "fr-FR" else
+				        if #"Calendar Language" = "Italian" then "it-it" else
+				        if #"Calendar Language" = "Dutch" then "nl" else "en-GB",
+				
+				// load dates for the entire period of Luware's data retention policy from today and a bit after today
+				StartDate = DateTime.Date(Date.StartOfMonth(Date.AddMonths(DateTime.LocalNow(),-27))),
+				EndDate = DateTime.Date(Date.EndOfMonth(Date.AddMonths(DateTime.LocalNow(),1))),
+				
+				// user function to create date table
+				Datetable =    CreateDateTable(StartDate,EndDate, Culture),
+				    #"Duplication de la colonne" = Table.DuplicateColumn(Datetable, "Date", "Date - Copier"),
+				    #"Colonnes renommées" = Table.RenameColumns(#"Duplication de la colonne",{{"Date - Copier", "DateSandbox"}})
+				
+				
+				
+				in
+				    #"Colonnes renommées"
+				```
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

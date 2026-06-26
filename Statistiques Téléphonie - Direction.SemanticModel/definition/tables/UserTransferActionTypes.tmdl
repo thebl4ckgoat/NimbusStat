@@ -1,0 +1,36 @@
+table UserTransferActionTypes
+	lineageTag: 1544f776-4991-4c32-b033-e09612aa774c
+
+	column Id
+		dataType: int64
+		isKey
+		formatString: 0
+		lineageTag: dadec369-ea3e-422e-8657-43934e4f0238
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column UserTransferActionTypeName
+		dataType: string
+		lineageTag: 5c3b6f4b-ace4-4e4f-8305-93b18b929122
+		isDefaultLabel
+		summarizeBy: none
+		sourceColumn: UserTransferActionTypeName
+
+		annotation SummarizationSetBy = Automatic
+
+	partition UserTransferActionTypes = m
+		mode: import
+		queryGroup: Dimensions
+		source =
+				let
+				    Source = GlobalSource,
+				    UserTransferActionTypes_table = Source{[Name="UserTransferActionTypes",Signature="table"]}[Data],
+				    StopFolding = Table.StopFolding(UserTransferActionTypes_table),
+				    #"Renamed Columns" = Table.RenameColumns(StopFolding,{{"Name", "UserTransferActionTypeName"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_ResultType = Table
+

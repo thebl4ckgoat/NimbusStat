@@ -1,0 +1,38 @@
+table OriginType
+	lineageTag: b3231490-0a80-40e4-90d3-863b5380e1f4
+
+	column OriginType
+		dataType: string
+		lineageTag: bcf5fc11-4e9a-4022-bc48-a279a83e350b
+		summarizeBy: none
+		sourceColumn: OriginType
+
+		annotation SummarizationSetBy = Automatic
+
+	column Description
+		dataType: string
+		lineageTag: 5881361c-74b7-42e7-8e7a-268437539e1f
+		summarizeBy: none
+		sourceColumn: Description
+
+		annotation SummarizationSetBy = Automatic
+
+	partition OriginType-cfa4a998-ef62-475f-ba34-af375cb72b4f = m
+		mode: import
+		queryGroup: Dimensions
+		source =
+				let
+				    Source = #table(
+				        {"OriginType","Description"},
+				        {
+				            {"PSTN","Call from PSTN"},
+				            {"INTL","Call from O365 User"},
+				            {"UNKN","Unknown"},
+				            {"INTERACT","Future usage"}
+				        }
+				    )
+				in
+				    Source
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,46 @@
+table TransferSourceOU
+	lineageTag: 03acf1ec-fb9a-48ba-a5bf-ab971883c310
+
+	column Id
+		dataType: string
+		lineageTag: 3116bd1c-8abe-4f45-8738-155905552eb7
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		lineageTag: 15540edd-abdb-4288-a9c0-71c84045dc2c
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column OriginalParentId
+		dataType: string
+		lineageTag: f62c6236-7aea-4fb9-b6c3-6fce2e0e2312
+		summarizeBy: none
+		sourceColumn: OriginalParentId
+
+		annotation SummarizationSetBy = Automatic
+
+	column ParentId
+		dataType: string
+		lineageTag: 2b955575-e13f-49d5-9558-8679138bb9f2
+		summarizeBy: none
+		sourceColumn: ParentId
+
+		annotation SummarizationSetBy = Automatic
+
+	partition TransferSourceOU = m
+		mode: import
+		queryGroup: Dimensions
+		source =
+				let
+				    Source = OrganizationUnits
+				in
+				    Source
+
+	annotation PBI_ResultType = Table
+

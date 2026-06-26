@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "3d33d5993a9e2c8f1325",
+  "position": {
+    "x": 1600,
+    "y": 168,
+    "z": 1000,
+    "height": 144,
+    "width": 296,
+    "tabOrder": 3000
+  },
+  "visualGroup": {
+    "displayName": "Agent Handled",
+    "groupMode": "ScaleMode",
+    "objects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

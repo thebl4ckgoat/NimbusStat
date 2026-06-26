@@ -1,0 +1,395 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "a221cce797d9e81281c0",
+  "position": {
+    "x": 60.176297747306563,
+    "y": 798,
+    "z": 2000,
+    "height": 259.51028403525959,
+    "width": 1831.6160626836436,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "UserSessions"
+                    }
+                  },
+                  "Property": "Local Time"
+                }
+              },
+              "queryRef": "UserSessions.Local Time",
+              "nativeQueryRef": "Date Time",
+              "displayName": "Date Time"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Users"
+                    }
+                  },
+                  "Property": "User Name"
+                }
+              },
+              "queryRef": "Users.User Name",
+              "nativeQueryRef": "User Name"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Callers"
+                    }
+                  },
+                  "Property": "Caller"
+                }
+              },
+              "queryRef": "Callers.Caller",
+              "nativeQueryRef": "Caller"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "PrimaryCodesUserSessions"
+                    }
+                  },
+                  "Property": "PrimaryCode"
+                }
+              },
+              "queryRef": "PrimaryCodesUserSessions.PrimaryCode",
+              "nativeQueryRef": "Primary Code",
+              "displayName": "Primary Code"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SecondaryCodes"
+                    }
+                  },
+                  "Property": "SecondaryCode"
+                }
+              },
+              "queryRef": "SecondaryCodes.SecondaryCode",
+              "nativeQueryRef": "Secondary Code",
+              "displayName": "Secondary Code"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "UserSessionTagsStrings"
+                    }
+                  },
+                  "Property": "TagStringsUserSessions"
+                }
+              },
+              "queryRef": "UserSessionTagsStrings.TagStringsUserSessions",
+              "nativeQueryRef": "Tags in User Session",
+              "displayName": "Tags in User Session"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "UserSessions"
+                  }
+                },
+                "Property": "Local Time"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "307.7019344171599D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Callers.Caller"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "242.39537869346123D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "SecondaryCodes.SecondaryCode"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "681.5227645043442D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "UserSessionTagsStrings.TagStringsUserSessions"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "204.6087626626615D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Users.User Name"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "199.56903277721443D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "PrimaryCodesUserSessions.PrimaryCode"
+          }
+        }
+      ],
+      "total": [
+        {
+          "properties": {
+            "label": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Total'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'User Sessions with tags or codes'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "45ddee270a36170e196d",
+        "ordinal": 0,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "UserSessions"
+              }
+            },
+            "Property": "Local Time"
+          }
+        },
+        "type": "Categorical",
+        "isHiddenInViewMode": true
+      },
+      {
+        "name": "Filter3e752ff14acd499c5197",
+        "ordinal": 1,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Callers"
+              }
+            },
+            "Property": "Caller"
+          }
+        },
+        "type": "Categorical",
+        "isHiddenInViewMode": true
+      },
+      {
+        "name": "a240bd28a107e660054d",
+        "ordinal": 2,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "PrimaryCodesUserSessions"
+              }
+            },
+            "Property": "PrimaryCode"
+          }
+        },
+        "type": "Categorical",
+        "isHiddenInViewMode": true
+      },
+      {
+        "name": "Filter6db0dfde86e58f0e99c4",
+        "ordinal": 3,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "SecondaryCodes"
+              }
+            },
+            "Property": "SecondaryCode"
+          }
+        },
+        "type": "Categorical",
+        "isHiddenInViewMode": true
+      },
+      {
+        "name": "5c56ada2d22521e95b78",
+        "ordinal": 4,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "UserSessionTagsStrings"
+              }
+            },
+            "Property": "TagStringsUserSessions"
+          }
+        },
+        "type": "Categorical",
+        "isHiddenInViewMode": true
+      },
+      {
+        "name": "c6f462a1703917990b97",
+        "ordinal": 5,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Users"
+              }
+            },
+            "Property": "User Name"
+          }
+        },
+        "type": "Categorical",
+        "isHiddenInViewMode": true
+      },
+      {
+        "name": "2f854b3e4abb16d1d906",
+        "ordinal": 6,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "UserSessions"
+              }
+            },
+            "Property": "Tag-CodesCheckUS"
+          }
+        },
+        "type": "Advanced",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "u",
+              "Entity": "UserSessions",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Not": {
+                  "Expression": {
+                    "Comparison": {
+                      "ComparisonKind": 0,
+                      "Left": {
+                        "Measure": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Source": "u"
+                            }
+                          },
+                          "Property": "Tag-CodesCheckUS"
+                        }
+                      },
+                      "Right": {
+                        "Literal": {
+                          "Value": "null"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User",
+        "isHiddenInViewMode": true,
+        "isLockedInViewMode": true
+      }
+    ],
+    "filterSortOrder": "Custom"
+  }
+}

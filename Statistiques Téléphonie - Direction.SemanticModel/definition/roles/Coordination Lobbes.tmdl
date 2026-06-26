@@ -1,0 +1,9 @@
+role 'Coordination Lobbes'
+	modelPermission: read
+
+	tablePermission Services = [Groupe Téléphonie] = "Coordination Lobbes"
+
+	tablePermission Users = [Groupe] = "Coordination Lobbes"
+
+	annotation PBI_Id = 51d59c36940b486e9ba5498ded1fa97c
+

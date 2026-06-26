@@ -1,0 +1,9 @@
+role 'Coordination Lalouvière'
+	modelPermission: read
+
+	tablePermission Services = [Groupe Téléphonie] = "Coordination Lalouvière"
+
+	tablePermission Users = [Groupe] = "Coordination Lalouvière"
+
+	annotation PBI_Id = 735fd70710ab4e8f927ddf6eb138a84d
+

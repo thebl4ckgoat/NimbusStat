@@ -1,0 +1,43 @@
+/// Bridge table used to connect the ServiceSessions table to the Tags table.
+/// One ServiceSessionId may be related to 0 or more TagIds.
+/// One TagId can be associated to 1 or more ServiceSessionIds.
+/// 
+/// Note: since Tags are added by users the tags associated with service sessions will only show tags assigned with the first user session. For the full list of tags (for all user sessions) refer to the TagsUserSessions query which is related to User Sessions via the UserSessionTags.
+table ServiceSessionTags
+	lineageTag: 7e89122b-3216-4d90-baba-bf95f02f0407
+
+	column ServiceSessionId
+		dataType: string
+		lineageTag: 79f1fdac-1574-44ba-92a3-33547b86747f
+		summarizeBy: none
+		sourceColumn: ServiceSessionId
+
+		annotation SummarizationSetBy = Automatic
+
+	column TagId
+		dataType: string
+		lineageTag: 8d078848-0580-4a90-b6ff-cec20894b5bf
+		summarizeBy: none
+		sourceColumn: TagId
+
+		annotation SummarizationSetBy = Automatic
+
+	partition ServiceSessionTags = m
+		mode: import
+		queryGroup: Facts\ServiceSessions
+		source = ```
+				let
+				    Source = GlobalSource,
+				    ServiceSessionTags_table = Source{[Name="ServiceSessionTags",Signature="table"]}[Data],
+				    
+				    //prevent the table from trying to fold with the subsequent actions (they need to happen in the PBI client) 
+				        StopQueryFolding = Table.StopFolding(ServiceSessionTags_table),
+				    #"InnerJoin with ServiceSessions" = Table.NestedJoin(StopQueryFolding, {"ServiceSessionId"}, ServiceSessions, {"Id"}, "ServiceSessions", JoinKind.Inner)  //is works
+				in
+				  #"InnerJoin with ServiceSessions"
+				```
+
+	annotation PBI_ResultType = Exception
+
+	annotation PBI_NavigationStepName = Navigation
+

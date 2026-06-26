@@ -1,0 +1,191 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "6f55b04fa5585d830080",
+  "position": {
+    "x": 13.608247422680412,
+    "y": 49.484536082474229,
+    "z": 0,
+    "height": 71.1340206185567,
+    "width": 1216.7010309278351,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "UserInfo"
+                    }
+                  },
+                  "Property": "Email"
+                }
+              },
+              "queryRef": "UserInfo.Email",
+              "displayName": "OData User"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "UserInfo"
+                    }
+                  },
+                  "Property": "DBUserName"
+                }
+              },
+              "queryRef": "UserInfo.Name",
+              "displayName": "OData UserName"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "UserInfo"
+                    }
+                  },
+                  "Property": "DaxUserPrincipalName"
+                }
+              },
+              "queryRef": "UserInfo.DaxUserPrincipalName",
+              "displayName": "Power BI User"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "UserInfo"
+                    }
+                  },
+                  "Property": "Timestamp"
+                }
+              },
+              "queryRef": "UserInfo.Timestamp",
+              "displayName": "Refresh Timestamp UTC"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "UserInfo"
+                    }
+                  },
+                  "Property": "Local Time"
+                }
+              },
+              "queryRef": "UserInfo.Local Time",
+              "nativeQueryRef": "Refresh Local Time",
+              "displayName": "Refresh Local Time"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "277.6232648117326D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "UserInfo.Email"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "267.1951340658958D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "UserInfo.Name"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "228.39326142523944D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "UserInfo.Timestamp"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "171.9087211823105D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "UserInfo.DaxUserPrincipalName"
+          }
+        }
+      ],
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "grid": [
+        {
+          "properties": {
+            "outlineColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 8,
+                      "Percent": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {}
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

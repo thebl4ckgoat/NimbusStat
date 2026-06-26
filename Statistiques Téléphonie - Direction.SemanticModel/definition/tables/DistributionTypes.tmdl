@@ -1,0 +1,33 @@
+table DistributionTypes
+	lineageTag: 9c835f80-0732-4e3c-a541-b7d8a013171f
+
+	column Id
+		dataType: int64
+		formatString: 0
+		lineageTag: 55727435-7057-4578-856a-1a75b41912a2
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		lineageTag: 6af1fb06-5654-441d-94b0-c6cac8961b8d
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DistributionTypes-6893ae59-654f-4ad3-93a5-d0044ed30a4f = m
+		mode: import
+		queryGroup: Dimensions
+		source =
+				let
+				    Source = GlobalSource,
+				    Distributiontypes_table = Source{[Name="DistributionTypes",Signature="table"]}[Data],
+				    StopFolding = Table.StopFolding(Distributiontypes_table)
+				in
+				    StopFolding
+
+	annotation PBI_ResultType = Exception
+

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "c91bd24f7861f9030561",
+  "position": {
+    "x": 1134,
+    "y": 7,
+    "z": 3000,
+    "height": 304,
+    "width": 348,
+    "tabOrder": 12000
+  },
+  "visualGroup": {
+    "displayName": "Pie Total Time Ratio",
+    "groupMode": "ScaleMode"
+  }
+}

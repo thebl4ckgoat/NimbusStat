@@ -1,0 +1,41 @@
+table TransferSessionOutcomes
+	lineageTag: 3add4f01-8e5d-4cd3-ba4d-d5dbbad94924
+
+	column Id
+		dataType: int64
+		formatString: 0
+		lineageTag: 4d2a089b-6614-4a97-87d3-cbe704bba3a1
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		lineageTag: 84456d7b-9494-43d8-9a91-9288c08fbefa
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column MeansSuccessful
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: fafac2e9-5ae3-4f9e-8dc9-7515c80b9f49
+		summarizeBy: none
+		sourceColumn: MeansSuccessful
+
+		annotation SummarizationSetBy = Automatic
+
+	partition TransferSessionOutcomes-dff5fb08-8904-4fbc-8c14-b5f28efe30e9 = m
+		mode: import
+		queryGroup: Dimensions
+		source =
+				let
+				    Source = GlobalSource,
+				    TransferSessionOutcomes_table = Source{[Name="TransferSessionOutcomes",Signature="table"]}[Data]
+				in
+				    TransferSessionOutcomes_table
+
+	annotation PBI_ResultType = Table
+

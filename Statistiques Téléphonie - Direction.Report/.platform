@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Statistiques Téléphonie - Direction"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "2303f303-378e-4b7a-a673-dca82407bb29"
+  }
+}

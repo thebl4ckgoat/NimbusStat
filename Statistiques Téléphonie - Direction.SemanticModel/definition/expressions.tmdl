@@ -1,0 +1,343 @@
+expression CreateTimeTable = ```
+		let CreateTimeTable = () as table =>  
+		    let
+		        SecList = {0..86399},
+		        SecTable = Table.FromList(SecList, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		        SecType = Table.TransformColumnTypes(SecTable,{{"Column1", Int64.Type}}),
+		        SecName = Table.RenameColumns(SecType,{{"Column1", "Second"}}),
+		        TimeDurCol = Table.AddColumn(SecName,"TimeDuration", each #duration(0,0,0,[Second]), type duration),
+		        TimeCol = Table.AddColumn(TimeDurCol, "TimeOfDay", each #time(Duration.Hours([TimeDuration]),Duration.Minutes([TimeDuration]),Duration.Seconds([TimeDuration])), type time),
+		        HourCol = Table.AddColumn(TimeCol, "Hours", each Time.Hour([TimeOfDay]), Int64.Type),
+		        MinuteCol = Table.AddColumn(HourCol, "Minutes", each Time.Minute([TimeOfDay]), Int64.Type),
+		        SecondCol = Table.AddColumn(MinuteCol, "Seconds", each Time.Second([TimeOfDay]), Int64.Type),
+		        Fixed15Min = Table.AddColumn(SecondCol,"Fixed15Min",each 
+		            if Number.IntegerDivide([Minutes],15) = 0 then Number.ToText([Hours]) & ":00:00"
+		            else if Number.IntegerDivide([Minutes],15) = 1 then Number.ToText([Hours]) & ":15:00"
+		            else if Number.IntegerDivide([Minutes],15) = 2 then Number.ToText([Hours]) & ":30:00"
+		            else Number.ToText([Hours]) & ":45:00"),
+		        RemoveTimeDurationCol = Table.RemoveColumns(Fixed15Min,{"TimeDuration"})  
+		    in
+		        RemoveTimeDurationCol
+		in
+		  CreateTimeTable
+		```
+	lineageTag: ea3f5629-272e-4df7-b80a-15ba7496aed3
+	queryGroup: Functions
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Function
+
+expression CreateDateTable = ```
+		let CreateDateTable = (StartDate as date, EndDate as date, optional Culture as nullable text) as table =>
+		  let
+		
+		      //get duration using parameters
+		    DayCount = Duration.Days(EndDate - StartDate)+1, //calculate calendar duration
+		    
+		    //get list of dates
+		    Source = List.Dates(StartDate, DayCount,#duration(1,0,0,0)),
+		    
+		    //convert above list to a table for the start of your calendar table
+		    TableFromList = Table.FromList(Source, Splitter.SplitByNothing())
+		   
+		    , ChangedType = Table.TransformColumnTypes(TableFromList,{{"Column1", type date}}),
+		    RenamedColumns = Table.RenameColumns(ChangedType,{{"Column1", "Date"}}),
+		    InsertYear = Table.AddColumn(RenamedColumns, "Year", each Date.Year([Date]), Int64.Type),// type number
+		    InsertQuarter = Table.AddColumn(InsertYear, "QuarterOfYear", each Date.QuarterOfYear([Date]), Int64.Type), //type number
+		    InsertMonth = Table.AddColumn(InsertQuarter, "MonthOfYear", each Date.Month([Date]), Int64.Type),
+		    InsertDay = Table.AddColumn(InsertMonth, "DayOfMonth", each Date.Day([Date]), Int64.Type),
+		    InsertDayInt = Table.AddColumn(InsertDay, "DateInt", each [Year] * 10000 + [MonthOfYear] * 100 + [DayOfMonth], Int64.Type),
+		    InsertMonthName = Table.AddColumn(InsertDayInt, "MonthName", each Date.ToText([Date], "MMMM", Culture), type text),
+		    InsertCalendarMonth = Table.AddColumn(InsertMonthName, "MonthInCalendar", each (try(Text.Range([MonthName],0,3)) otherwise [MonthName]) & " " & Number.ToText([Year])),
+		    InsertCalendarQtr = Table.AddColumn(InsertCalendarMonth, "QuarterInCalendar", each "Q" & Number.ToText([QuarterOfYear]) & " " & Number.ToText([Year])),
+		    InsertDayWeek = Table.AddColumn(InsertCalendarQtr, "DayInWeek", each Date.DayOfWeek([Date], Day.Monday), Int64.Type),
+		    InsertDayName = Table.AddColumn(InsertDayWeek, "DayOfWeekName", each Date.ToText([Date], "dddd", Culture), type text),
+		    InsertWeekEnding = Table.AddColumn(InsertDayName, "WeekEnding", each Date.EndOfWeek([Date]), type date), 
+		   #"Changed Type" = Table.TransformColumnTypes(InsertWeekEnding,{{"MonthOfYear", Int64.Type}}),
+		   #"Inserted QuarterName" = Table.AddColumn(#"Changed Type", "QuarterName", each Text.Combine({"Qtr ", Text.From([QuarterOfYear], "en-CH")}), type text),
+		    #"Inserted YYYY-MM" = Table.AddColumn(#"Inserted QuarterName", "YYYY-MM", each Date.ToText([Date], "yyyy-MM"))
+		in
+		    #"Inserted YYYY-MM"
+		
+		  
+		in
+		  CreateDateTable
+		```
+	lineageTag: dc61a9ff-1cc5-491b-920e-9f0029c59fc8
+	queryGroup: Functions
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Function
+
+expression 'Connection URL' = "https://api.dewe-02.luware.cloud/v1/odata" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 59bb66f5-8b11-4f69-805c-c410c6cc9330
+	queryGroup: Parameters
+
+	annotation PBI_ResultType = Text
+
+expression 'Calendar Language' = "French" meta [IsParameterQuery=true, List={"German", "French", "Italian", "English", "Dutch"}, DefaultValue="English", Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 5edfc071-63df-4eb5-af29-4c94966e4d17
+	queryGroup: Parameters
+
+	annotation PBI_ResultType = Text
+
+expression Timezone = "(UTC+01:00) Brussels, Copenhagen, Madrid, Paris" meta [IsParameterQuery=true, ExpressionIdentifier=TimeZoneParameterList, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 020f7af9-7883-4e1e-ac27-5e3ca5ed6797
+	queryGroup: Parameters
+
+	annotation PBI_ResultType = Text
+
+expression WaitBetweenType =
+		let
+		    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("hY0xDoAgDEXvwszQUnoAvYIjYVIcHYyJ1zc2qRCCMP6f9/JCMGysmdN1A0zHBryktTwQqsPJEW0wCPpzC+yZ2kQBiyZmsGk6bSJX4NDUppO/aMpBUB3+M0mbjltgz9QmCVg0KYNN02uTuAKH5tuc9iudCv2NGB8=", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [BetweenTypeId = _t, BetweenType5Sec = _t, BetweenType10Sec = _t, BetweenType20Sec = _t]),
+		    #"Changed Type" = Table.TransformColumnTypes(Source,{{"BetweenTypeId", Int64.Type}, {"BetweenType5Sec", type text}, {"BetweenType10Sec", type text}, {"BetweenType20Sec", type text}})
+		in
+		    #"Changed Type"
+	lineageTag: 7255382f-7d97-4523-a3b0-2d00b6a19fb4
+	queryGroup: Dimensions
+
+	annotation PBI_ResultType = Table
+
+expression UserSessionHandledTexts =
+		let
+		    Source = GlobalSource,
+		    UserSessionOutcomeHandledTexts_table = Source{[Name="UserSessionOutcomeHandledTexts",Signature="table"]}[Data],
+		    StopFolding = Table.StopFolding(UserSessionOutcomeHandledTexts_table)
+		in
+		    StopFolding
+	lineageTag: 6536d267-a9ab-46d2-8533-2c256df84dcf
+	queryGroup: Dimensions
+
+	annotation PBI_ResultType = Table
+
+/// When TRUE, loads Unified Session data at the cost of query performance.
+/// When FALSE, Unified Sessions data becomes unavailable.
+expression 'Generate Unified Session' = true meta [IsParameterQuery=true, List={true, false}, DefaultValue=false, Type="Logical", IsParameterQueryRequired=true]
+	lineageTag: 23f4a972-933b-4d16-af66-23a00a0bd31f
+	queryGroup: Parameters
+
+	annotation PBI_ResultType = Logical
+
+/// When TRUE, loads User State data at the cost of query performance.
+/// When FALSE, speeds up report performance but UserStates data becomes unavailable.
+expression 'Load User States' = true meta [IsParameterQuery=true, List={true, false}, DefaultValue=false, Type="Logical", IsParameterQueryRequired=true]
+	lineageTag: ffab6eab-a23d-4fa1-a95b-a54f104f5d28
+	queryGroup: Parameters
+
+	annotation PBI_ResultType = Logical
+
+expression EmptyUserStatesTable = ```
+		// load the table but with empty data by selecting a date in the past way beyond the data retention policy
+		
+		let
+		        Source = GlobalSource,       
+		        UserStates_table0 = Source{[Name="UserStates",Signature="table"]}[Data],
+		
+		        //filter for a date where there is no data
+		    #"Filtered Rows" = Table.SelectRows(UserStates_table0, each [Start] < #datetimezone(1999, 1, 1, 0, 0, 0, 1, 0))
+		
+		
+		in
+		    #"Filtered Rows"
+		```
+	lineageTag: a0fbd9e6-7d16-4291-b792-6c5f7a7f8392
+	queryGroup: Facts\UserStates
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression EmptyServiceSessionsTable = ```
+		let
+		    Source = GlobalSource,
+		    ServiceSessions_table0 = Source{[Name="ServiceSessions",Signature="table"]}[Data],
+		    ServiceSessions_tableMonth = Table.SelectRows(ServiceSessions_table0, each (  [StartedAt] >= #datetimezone(2000, 1, 1, 0, 0, 0, 0, 00) and [StartedAt] < #datetimezone(2000, 1, 1, 0, 0, 0, 0, 0)  
+		    )),
+		    BufferMyTable = Table.Buffer(ServiceSessions_tableMonth)
+		in
+		    ServiceSessions_tableMonth
+		```
+	lineageTag: 768a43cd-3968-43e6-a2f6-231013837322
+	queryGroup: Facts\ServiceSessions
+
+	annotation PBI_ResultType = Table
+
+expression NullDate = ```
+		let
+		    Source = #datetimezone(1, 1, 1, 0, 0, 0, 0, 0) 
+		in
+		    Source
+		```
+	lineageTag: 7a971c28-f667-4896-9b7a-c32e8987ec98
+	queryGroup: Functions
+
+	annotation PBI_ResultType = DateTimeZone
+
+expression TimeZones =
+		// let
+		//     Source = Json.Document(File.Contents("TZ.json")),
+		//     #"Converted to Table" = Table.FromList(Source, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+		//     #"Expanded Column1" = Table.ExpandRecordColumn(#"Converted to Table", "Column1", {"Id", "DisplayName", "StandardName", "DaylightName", "Hours", "Minutes", "SupportsDaylightSavingTime"}, {"Id", "DisplayName", "StandardName", "DaylightName", "Hours", "Minutes", "SupportsDaylightSavingTime"}),
+		//     #"Changed Type" = Table.TransformColumnTypes(#"Expanded Column1",{{"Id", type text}, {"DisplayName", type text}, {"StandardName", type text}, {"DaylightName", type text}, {"Hours", Int64.Type}, {"Minutes", Int64.Type}, {"SupportsDaylightSavingTime", type logical}})
+		// in
+		//     #"Changed Type"
+		
+		let
+		    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("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", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Id = _t, DisplayName = _t, StandardName = _t, DaylightName = _t, Hours = _t, Minutes = _t, SupportsDaylightSavingTime = _t]),
+		    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Id", type text}, {"DisplayName", type text}, {"StandardName", type text}, {"DaylightName", type text}, {"Hours", Int64.Type}, {"Minutes", Int64.Type}, {"SupportsDaylightSavingTime", type logical}})
+		in
+		    #"Changed Type"
+	lineageTag: 4fa8503f-41cf-4d78-8716-ceab91bcc614
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression TimeZoneParameterList = ```
+		let
+		  Source = TimeZones, 
+		  Id1    = Source[DisplayName]
+		in
+		  Id1
+		```
+	lineageTag: f89ab968-7223-46ae-94b3-3fc546d00cfa
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = List
+
+expression ToLocalDateTimeZone = ```
+		let ToLocalDateTimeZone = (UTCDateTimeZone as datetimezone) as datetimezone =>
+		  let
+		
+		  UTC_Date = Date.From(UTCDateTimeZone), // get date format from input parameter to use in logic below
+		
+		 // set the variables that indicate when summer time starts and ends
+		  StartSummerTimeEU  = Date.StartOfWeek(#date(Date.Year(UTC_Date), 3, 31), Day.Sunday), //start of the EU summer time, every last sunday in March
+		  EndWinterTimeEU  = Date.StartOfWeek(#date(Date.Year(UTC_Date), 10, 31), Day.Sunday), // end of the EU summer time, every last Sunday in October
+		
+		  StartSummerTimeUS  = Date.StartOfWeek(#date(Date.Year(UTC_Date), 3, 14), Day.Sunday), //start of the US summer time (general), every year on second Sunday in March
+		  EndWinterTimeUS  = Date.StartOfWeek(#date(Date.Year(UTC_Date), 11, 7), Day.Sunday), // US summer time (general) ends on the first Sunday in November
+		
+		 
+		//start logic
+		
+		 _offset = if Timezone = "(UTC) Coordinated Universal Time" then Record.FromList({0, 0}, {"Hours", "Minutes"}) // if the selecetd time zone is UTC then offset is 0
+		
+		   
+		   else
+		   
+		      // get the values for the timezone conversion based on the selected timezone (CurrentTimeZone)
+		      let _row = Table.First(CurrentTimeZone), // timezone selected in the parameters and stored in the CurrentTimeZone query
+		          _stdOffsetHours = Record.Field(_row, "Hours"),
+		          _std = Record.FromList({Record.Field(_row, "Hours"), Record.Field(_row, "Minutes")}, {"Hours", "Minutes"}), // extract the hours, time and minutes for the selected time zone to use for applying the time zone conversion
+		          _add1Hour = Record.FromList({Record.Field(_row, "Hours") + 1, Record.Field(_row, "Minutes")}, {"Hours", "Minutes"}), // add one hour to the offset used for the conversion to the selected local timezone
+		          _off =  if Record.Field(_row, "SupportsDaylightSavingTime") = false then _std // if the selected time zone doesn't support summer time, then go straight to using the standard time for that time zone 
+		          
+		
+		                  else 
+		                        if Record.Field(_row, "Hours") > -3 
+		                        then 
+		                     
+		                     //European summer time // logic: set the hour the summer time should switch and add the local time offeset to see when the switch time is reached in local time
+		                        if    (UTCDateTimeZone >= #datetimezone(Date.Year(StartSummerTimeEU), Date.Month(StartSummerTimeEU), Date.Day(StartSummerTimeEU), 1 +Number.Abs(_stdOffsetHours), 0, 0, 0, 0) and UTCDateTimeZone <= #datetimezone(Date.Year(EndWinterTimeEU), Date.Month(EndWinterTimeEU), Date.Day(EndWinterTimeEU), 2, 0, 0, 0, 0)) //summer time EU
+		                        then  _add1Hour 
+		                        else //winter time
+		                              _std
+		
+		                      else
+		                        //USA summer time (-5) // logic: set the hour the summer time should switch and add the local time offeset to see when the switch time is reached in local time
+		                     if (UTCDateTimeZone >= #datetimezone(Date.Year(StartSummerTimeUS), Date.Month(StartSummerTimeUS), Date.Day(StartSummerTimeUS), 2 + Number.Abs(_stdOffsetHours), 0, 0, 0, 0) and UTCDateTimeZone <= #datetimezone(Date.Year(EndWinterTimeUS), Date.Month(EndWinterTimeUS), Date.Day(EndWinterTimeUS), 1 + Number.Abs(_stdOffsetHours), 0, 0, 0, 0)) //summer time US
+		                        then  _add1Hour 
+		                        else //winter time
+		                              _std    
+		      in  _off,
+		    _localtime = DateTimeZone.SwitchZone(UTCDateTimeZone, Record.Field(_offset, "Hours"), Record.Field(_offset, "Minutes"))
+		  in
+		    _localtime
+		in 
+		  ToLocalDateTimeZone
+		```
+	lineageTag: 1e71b8d5-66b3-486d-8c41-d4123c23dbef
+	queryGroup: Functions
+
+	annotation PBI_ResultType = Function
+
+	annotation PBI_NavigationStepName = Navigation
+
+expression CurrentTimeZone =
+		let
+		    Source = Table.SelectRows(TimeZones, each [DisplayName] = Timezone),
+		    Buffer = Table.Buffer(Source)
+		in
+		    Buffer
+	lineageTag: 34e04ec5-3901-48bb-8d9d-0ee3fd2fdb76
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression TimeOfDay =
+		let
+		    Source = CreateTimeTable()
+		in
+		    Source
+	lineageTag: ef4646a4-00eb-4996-9cd8-68a32e353637
+	queryGroup: Dimensions
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+/// Enter the start date for the reporting period.
+/// Format: YYYY-MM-DD
+/// 
+/// ---> timestamp will default to 00:00:00 UTC
+expression RangeStart = #datetime(2025, 9, 29, 0, 0, 0) meta [IsParameterQuery=true, Type="DateTime", IsParameterQueryRequired=true]
+	lineageTag: 6ddcb3e6-bd37-4e40-a57f-27501f86d20d
+	queryGroup: Parameters
+
+	annotation PBI_ResultType = DateTime
+
+/// Enter end date for the reporting period.
+/// Format: YYYY-MM-DD
+/// 
+/// ---> timestamp will default to 00:00:00 UTC
+expression RangeEnd = #datetime(2025, 11, 18, 0, 0, 0) meta [IsParameterQuery=true, Type="DateTime", IsParameterQueryRequired=true]
+	lineageTag: d3a45493-6e04-4f10-ba5a-08c396b5ce60
+	queryGroup: Parameters
+
+	annotation PBI_ResultType = DateTime
+
+expression EmptyUnifiedSessionsTable = ```
+		let
+		    Source = GlobalSource,
+		    UnifiedSessions_table = Source{[Name="UnifiedSessions",Signature="table"]}[Data],
+		
+		// to get empty table with same structure as UnifiedSessions filter for date in 1999
+		
+		    #"Filtered Rows" = Table.SelectRows(UnifiedSessions_table, each [StartedAt] < #datetimezone(1999, 1, 1, 0, 0, 0, 1, 0))   
+		  
+		in
+		    #"Filtered Rows"
+		```
+	lineageTag: d467194c-701c-4519-a7e8-2a89c0c552ae
+	queryGroup: Facts\UnifiedSessions
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
+expression GlobalSource =
+		let
+		    Source = OData.Feed(#"Connection URL", null, [Implementation="2.0", ODataVersion=4, OmitValues=ODataOmitValues.Nulls, Timeout=#duration(0,4,0,0)])
+		in
+		    Source
+	lineageTag: 23ac9178-b0a7-4fb6-b2c8-04346534624a
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "020e5e587ba47316001a",
+  "position": {
+    "x": 587.96785304247987,
+    "y": 159.44890929965558,
+    "z": 2000,
+    "height": 435.99311136624573,
+    "width": 776.06773823191736,
+    "tabOrder": 12000
+  },
+  "visualGroup": {
+    "displayName": "NAR Pie",
+    "groupMode": "ScaleMode"
+  }
+}

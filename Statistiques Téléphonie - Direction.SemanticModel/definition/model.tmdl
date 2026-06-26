@@ -1,0 +1,117 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: fr-BE
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+queryGroup Parameters
+
+	annotation PBI_QueryGroupOrder = 0
+
+queryGroup Facts
+
+	annotation PBI_QueryGroupOrder = 1
+
+queryGroup Dimensions
+
+	annotation PBI_QueryGroupOrder = 2
+
+queryGroup Facts\ServiceSessions
+
+	annotation PBI_QueryGroupOrder = 0
+
+queryGroup Facts\UserSessions
+
+	annotation PBI_QueryGroupOrder = 1
+
+queryGroup Facts\UserStates
+
+	annotation PBI_QueryGroupOrder = 2
+
+queryGroup Functions
+
+	annotation PBI_QueryGroupOrder = 3
+
+queryGroup Facts\Transfers
+
+	annotation PBI_QueryGroupOrder = 3
+
+queryGroup Facts\UnifiedSessions
+
+	annotation PBI_QueryGroupOrder = 4
+
+queryGroup DateDimensions
+
+	annotation PBI_QueryGroupOrder = 4
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_QueryOrder = ["ServiceSessions","Callers","CallersUnifiedSessions","UserSessions","UserInfo","CreateTimeTable","CreateDateTable","DistributionAlgorithm","DistributionPriorityTypes","DistributionTypes","LastTransferType","NotAvailableReasons","OpeningHoursTypes","OrganizationUnits","OriginType","PrimaryCodes","PrimaryCodesUserSessions","ResponsibilityProfiles","Connection URL","RangeStart","RangeEnd","TransferSessions","Generate Unified Session","Load User States","Timezone","Calendar Language","SecondaryCodes","UserStates","EmptyUserStatesTable","Services","ServiceSessionModalityType","ServiceSessionOutcomes","OutcomeGroups","SessionDates","TransferDate","Tags","TagsUserSessions","TaskDirections","TaskTypes","TaskTypeGroups","TimeOfDay","TransferDestinationOU","TransferDestinationService","TransferSessionDestinationTypes","TransferSessionOutcomes","TransferSessionTypes","TransferSourceOU","TransferSourceService","UnifiedSessionOutcome","Users","UserOrganizationUnits","UserSessionActionGroups","UserSessionDates","UserSessionDistributionPriority","UserSessionHandledTexts","UserSessionModalityType","UserSessionOutcomes","UserStateTypes","UserTransferActionTypes","WaitBetweenType","EmptyServiceSessionsTable","ServiceSessionTags","NullDate","TimeZones","TimeZoneParameterList","ToLocalDateTimeZone","CurrentTimeZone","GlobalSource","ServiceSessionTagsStrings","UnifiedSessions","EmptyUnifiedSessionsTable","UserSessionTags","UserSessionTagsStrings"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table ServiceSessions
+ref table Users
+ref table Services
+ref table UserSessionOutcomes
+ref table UserSessions
+ref table ServiceSessionOutcomes
+ref table SessionDates
+ref table UserSessionDates
+ref table UserInfo
+ref table OriginType
+ref table DistributionAlgorithm
+ref table PrimaryCodes
+ref table SecondaryCodes
+ref table Tags
+ref table ServiceSessionTags
+ref table OrganizationUnits
+ref table UserOrganizationUnits
+ref table UserStates
+ref table UserStateTypes
+ref table ResponsibilityProfiles
+ref table Callers
+ref table TaskDirections
+ref table TaskTypes
+ref table TaskTypeGroups
+ref table DistributionPriorityTypes
+ref table DistributionTypes
+ref table UserSessionDistributionPriority
+ref table NotAvailableReasons
+ref table UserSessionModalityType
+ref table ServiceSessionModalityType
+ref table TransferSessionDestinationTypes
+ref table TransferSessionOutcomes
+ref table TransferSessionTypes
+ref table TransferSessions
+ref table TransferDestinationService
+ref table TransferDate
+ref table TransferDestinationOU
+ref table UserTransferActionTypes
+ref table UserSessionActionGroups
+ref table LastTransferType
+ref table TransferSourceService
+ref table TransferSourceOU
+ref table OpeningHoursTypes
+ref table ServiceSessionTagsStrings
+ref table UnifiedSessions
+ref table CallersUnifiedSessions
+ref table OutcomeGroups
+ref table UnifiedSessionOutcome
+ref table UserSessionTags
+ref table UserSessionTagsStrings
+ref table TagsUserSessions
+ref table PrimaryCodesUserSessions
+ref table MappingAgents
+
+ref role Direction
+ref role 'Coordination Charleroi'
+ref role 'Coordination Lalouvière'
+ref role 'Coordination Lobbes'
+ref role 'Equipe Téléphonie'
+ref role GRH
+
+ref cultureInfo en-US
+

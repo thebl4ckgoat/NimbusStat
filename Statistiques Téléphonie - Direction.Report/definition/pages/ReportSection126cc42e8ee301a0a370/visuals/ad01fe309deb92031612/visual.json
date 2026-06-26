@@ -1,0 +1,271 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "ad01fe309deb92031612",
+  "position": {
+    "x": 58.793103448275858,
+    "y": 632.02586206896547,
+    "z": 0,
+    "height": 436.93965517241378,
+    "width": 1326.8534482758621,
+    "tabOrder": 4000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "TransferSessions"
+                    }
+                  },
+                  "Property": "Date"
+                }
+              },
+              "queryRef": "TransferSessions.Date",
+              "nativeQueryRef": "Date"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "TransferSessions"
+                    }
+                  },
+                  "Property": "Time"
+                }
+              },
+              "queryRef": "TransferSessions.Time",
+              "nativeQueryRef": "Time"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Callers"
+                    }
+                  },
+                  "Property": "Caller"
+                }
+              },
+              "queryRef": "Callers.Caller",
+              "nativeQueryRef": "Caller1"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "TransferSessionTypes"
+                    }
+                  },
+                  "Property": "Name"
+                }
+              },
+              "queryRef": "TransferSessionTypes.Name",
+              "nativeQueryRef": "Transfer Type",
+              "displayName": "Transfer Type"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "TransferSessions"
+                    }
+                  },
+                  "Property": "Destination"
+                }
+              },
+              "queryRef": "TransferSessions.Destination1",
+              "nativeQueryRef": "Destination1"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "TransferSessions"
+                    }
+                  },
+                  "Property": "DestinationUPN"
+                }
+              },
+              "queryRef": "TransferSessions.DestinationUPN",
+              "nativeQueryRef": "Destination UPN or PSTN Number",
+              "displayName": "Destination UPN or PSTN Number"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "TransferSourceService"
+                    }
+                  },
+                  "Property": "Name"
+                }
+              },
+              "queryRef": "TransferSourceService.Name",
+              "nativeQueryRef": "From Service",
+              "displayName": "From Service"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "TransferDestinationService"
+                    }
+                  },
+                  "Property": "Name"
+                }
+              },
+              "queryRef": "TransferDestinationService.Name",
+              "nativeQueryRef": "To Service",
+              "displayName": "To Service"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "TransferSourceOU"
+                    }
+                  },
+                  "Property": "Name"
+                }
+              },
+              "queryRef": "TransferSourceOU.Name",
+              "nativeQueryRef": "From Organization Unit",
+              "displayName": "From Organization Unit"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "TransferDestinationOU"
+                    }
+                  },
+                  "Property": "Name"
+                }
+              },
+              "queryRef": "TransferDestinationOU.Name",
+              "nativeQueryRef": "To Organization Unit",
+              "displayName": "To Organization Unit"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "TransferSessionOutcomes"
+                    }
+                  },
+                  "Property": "Name"
+                }
+              },
+              "queryRef": "TransferSessionOutcomes.Name",
+              "nativeQueryRef": "Outcome",
+              "displayName": "Outcome"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "TransferSessions"
+                    }
+                  },
+                  "Property": "ΣDurationTime(TR)_HHMMSS"
+                }
+              },
+              "queryRef": "TransferSessions.ΣDurationTime(TR)_HHMMSS",
+              "nativeQueryRef": "ΣDurationTime(TR)_HHMMSS"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "TransferSessions"
+                    }
+                  },
+                  "Property": "Id"
+                }
+              },
+              "queryRef": "TransferSessions.Id",
+              "nativeQueryRef": "Id"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "4D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "TransferSessions.Id"
+          }
+        }
+      ],
+      "values": [
+        {
+          "properties": {
+            "wordWrap": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {}
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Transfer Overview'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

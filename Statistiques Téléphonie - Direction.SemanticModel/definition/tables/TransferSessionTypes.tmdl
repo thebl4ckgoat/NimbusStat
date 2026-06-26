@@ -1,0 +1,41 @@
+table TransferSessionTypes
+	lineageTag: d9bba561-376e-43c9-855e-58cd84e7c778
+
+	column Id
+		dataType: int64
+		formatString: 0
+		lineageTag: e019e9c9-da84-410b-b5b2-5edec4864cf1
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		lineageTag: 1838c5ba-e9a0-47ac-8165-375b4946944e
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column DestinationTypeId
+		dataType: int64
+		formatString: 0
+		lineageTag: 8993c770-dce9-4efd-a06b-2111373dd6e1
+		summarizeBy: none
+		sourceColumn: DestinationTypeId
+
+		annotation SummarizationSetBy = Automatic
+
+	partition TransferSessionTypes-cf69f372-8a5e-410d-b59f-22cb1950addb = m
+		mode: import
+		queryGroup: Dimensions
+		source =
+				let
+				    Source = GlobalSource,
+				    TransferSessionTypes_table = Source{[Name="TransferSessionTypes",Signature="table"]}[Data]
+				in
+				    TransferSessionTypes_table
+
+	annotation PBI_ResultType = Exception
+

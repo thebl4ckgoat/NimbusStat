@@ -1,0 +1,721 @@
+/// Provides insights into the end-2-end concept of a conversation as opposed to single sessions.
+/// 
+/// A Unified Session can include one or more ServiceSessions and/or UserSessions for which the common denominator is the UnifiedConversationId.
+/// 
+table UnifiedSessions
+	lineageTag: 6c4e1fb8-377d-47ec-b574-944f0d59a470
+
+	refreshPolicy
+		policyType: basic
+		rollingWindowGranularity: year
+		rollingWindowPeriods: 1
+		incrementalGranularity: day
+		incrementalPeriods: 1
+		sourceExpression = ```
+			//1. first evaluate whether the User Startes table should be loaded with data or not
+			
+			let
+			
+			UnififiedSessions = 
+			
+			if #"Generate Unified Session" = true then 
+			
+			let
+			    Source = GlobalSource, 
+			    UnifiedSessions_table = Source{[Name="UnifiedSessions",Signature="table"]}[Data]
+			    ,#"Filtered Rows" = Table.SelectRows(UnifiedSessions_table, each ([StartedAt] >= DateTime.AddZone(RangeStart,0) and [StartedAt] < DateTime.AddZone(RangeEnd,0))) // date range from parameters with incremental refresh naming convention   
+			
+			 in #"Filtered Rows"
+			
+			 else 
+			 EmptyUnifiedSessionsTable
+			
+			 //2. then add the required data transformations
+			
+			//add transformations
+			    
+			    ,#"Inserted Local Time" = Table.AddColumn(UnififiedSessions, "StartedAtLocalTime", each ToLocalDateTimeZone([StartedAt]), type datetimezone)
+			    , #"Inserted Date" = Table.AddColumn(#"Inserted Local Time", "Date", each DateTime.Date([StartedAtLocalTime]), type date)
+			in
+			    #"Inserted Date"
+			```
+
+	/// Sum of ACWTime (Unified Sessions)
+	measure ΣTotalAcwTime(US) = SUM('UnifiedSessions'[AcwTime])
+		formatString: 0.00
+		lineageTag: 45d3192a-cf9e-44e2-ab8e-bbad98b52748
+
+	/// ΣTotalAcwTime(US) formatted as HHMMSS
+	measure ΣTotalAcwTime(US)_HHMMSS =
+			
+			IF (NOT ISBLANK ([ΣTotalAcwTime(US)]), //show blank instead of empty string
+			    IF(INT(([ΣTotalAcwTime(US)]))>=86400,FORMAT (QUOTIENT(INT(([ΣTotalAcwTime(US)])),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ΣTotalAcwTime(US)]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ΣTotalAcwTime(US)]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ΣTotalAcwTime(US)]), 60), "00") //SECONDS
+			)
+		lineageTag: 00ebfe02-fc57-4d97-be55-b0c03be40619
+
+	/// Sum of ConnectedTime (Unified Sessions)
+	measure ΣTotalConnectedTime(US) = SUM('UnifiedSessions'[ConnectedTime])
+		formatString: 0.00
+		lineageTag: be9b2589-82ab-42b9-855f-ee87bbc735c3
+
+	/// ΣTotalConnectedTime(US) formatted as hh:mm:ss
+	measure ΣTotalConnectedTime(US)_HHMMSS =
+			
+			IF (NOT ISBLANK ([ΣTotalConnectedTime(US)]), //show blank instead of empty string
+			    IF(INT([ΣTotalConnectedTime(US)])>=86400, FORMAT (QUOTIENT(INT([ΣTotalConnectedTime(US)]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ΣTotalConnectedTime(US)]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ΣTotalConnectedTime(US)]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ΣTotalConnectedTime(US)]), 60), "00") //SECONDS
+			)
+		lineageTag: 2e0f895c-47b7-4486-84a7-f75c903eba45
+
+	/// Sum of HoldTime
+	measure ΣTotalHoldTime(US) = SUM('UnifiedSessions'[HoldTime])
+		formatString: 0.00
+		lineageTag: 8516c27c-62dd-4bdf-9102-e5f241505dce
+
+	/// ΣTotalHoldTime(US) formatted as hh:mm:ss
+	measure ΣTotalHoldTime(US)_HHMMSS =
+			
+			IF (NOT ISBLANK ([ΣTotalHoldTime(US)]), //show blank instead of empty string
+			    IF(INT([ΣTotalHoldTime(US)])>=86400, FORMAT (QUOTIENT(INT([ΣTotalHoldTime(US)]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ΣTotalHoldTime(US)]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ΣTotalHoldTime(US)]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ΣTotalHoldTime(US)]), 60), "00") //SECONDS
+			)
+		lineageTag: 4e27c26b-5cd4-41cf-b453-9eb7daa30550
+
+	/// Sum of IvrTime
+	measure ΣTotalIvrTime(US) = SUM('UnifiedSessions'[IvrTime])
+		formatString: 0.00
+		lineageTag: a9119d9e-1eaa-4b83-99a7-bf27593d1915
+
+	/// ΣTotalIvrTime(US) formatted as hh:mm:ss
+	measure ΣTotalIvrTime(US)_HHMMSS =
+			
+			IF (NOT ISBLANK ([ΣTotalIvrTime(US)]), //show blank instead of empty string
+			    IF(INT([ΣTotalIvrTime(US)])>=86400, FORMAT (QUOTIENT(INT([ΣTotalIvrTime(US)]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ΣTotalIvrTime(US)]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ΣTotalIvrTime(US)]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ΣTotalIvrTime(US)]), 60), "00") //SECONDS
+			)
+		lineageTag: 87437450-d7db-4ed5-a817-184c5e5ff654
+
+	/// Sum of QueueTime
+	measure ΣTotalQueueTime(US) = SUM('UnifiedSessions'[QueueTime])
+		formatString: 0.00
+		lineageTag: f6a0524e-8c87-434f-b65a-cefc4be3143c
+
+	/// ΣTotalQueueTime(US) formatted as hh:mm:ss
+	measure ΣTotalQueueTime(US)_HHMMSS =
+			
+			IF (NOT ISBLANK ([ΣTotalQueueTime(US)]), //show blank instead of empty string
+			    IF(INT([ΣTotalQueueTime(US)])>=86400, FORMAT (QUOTIENT(INT([ΣTotalQueueTime(US)]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ΣTotalQueueTime(US)]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ΣTotalQueueTime(US)]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ΣTotalQueueTime(US)]), 60), "00") //SECONDS
+			)
+		lineageTag: 6d66f39a-3bab-4b6a-9d06-1e46c789b9b6
+
+	/// Name of the FIRST service session
+	measure IncomingServiceName = CALCULATE( MIN(Services[Name]), USERELATIONSHIP(UnifiedSessions[IncomingServiceId],Services[Id]))
+		lineageTag: f215345d-6a0f-41a3-bd13-8bda4ad03bdc
+
+	/// Name of the Service Session where the call was FIRST queued
+	measure FirstQueuedServiceName = CALCULATE( MIN(Services[Name]), USERELATIONSHIP(UnifiedSessions[FirstQueuedServiceId],Services[Id]))
+		lineageTag: 37195853-9e28-4b3c-b0e0-0eaa2a3e4ea9
+
+	/// Name of the Service where the call was LAST queued
+	measure LastQueuedServiceName = CALCULATE( MIN(Services[Name]), USERELATIONSHIP(UnifiedSessions[LastQueuedServiceId],Services[Id]))
+		lineageTag: af41f164-ef42-456e-a7da-c76d7afb2cab
+
+	/// Initial customer's UPN, telephone or O365 id (depending on origin type).
+	measure Customer(US) = CALCULATE(MIN(Callers[Caller]), USERELATIONSHIP(UnifiedSessions[InitialCallerId], Callers[CallerId]))
+		lineageTag: 742b2638-7a08-4e18-9e64-b2661db35809
+
+	/// Primary key.
+	/// If there was only one session per unified session, then UnifiedConversationId is equal to Service Session Id
+	/// 
+	column UnifiedConversationId
+		dataType: string
+		lineageTag: ae468bfc-0176-47eb-9072-07d44c50553c
+		summarizeBy: none
+		sourceColumn: UnifiedConversationId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// OutcomeId defined by the outcome of the last session
+	column OutcomeId
+		dataType: int64
+		formatString: 0
+		lineageTag: c181f4e7-38f6-4adb-9927-b5f3df7dfcd4
+		summarizeBy: none
+		sourceColumn: OutcomeId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Sum of all IvrTime of related Service Sessions in seconds
+	column IvrTime
+		dataType: double
+		formatString: 0.00
+		lineageTag: 79b5f018-5a63-409e-9370-4dda80410154
+		summarizeBy: sum
+		sourceColumn: IvrTime
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Sum of all QueueTime of related ServiceSessions in seconds
+	column QueueTime
+		dataType: double
+		formatString: 0.00
+		lineageTag: 58aeed73-0e45-467d-b42e-c679210a8925
+		summarizeBy: sum
+		sourceColumn: QueueTime
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Sum of all ConnectedTime of related ServiceSessions in seconds
+	column ConnectedTime
+		dataType: double
+		formatString: 0.00
+		lineageTag: 1f288731-1fec-43e5-b822-76fb0c4f6fb5
+		summarizeBy: sum
+		sourceColumn: ConnectedTime
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Sum of all HoldTime of related ServiceSessions in seconds
+	column HoldTime
+		dataType: double
+		lineageTag: 9f979f4a-00e8-4d47-b00a-f0f71e10f9c1
+		summarizeBy: sum
+		sourceColumn: HoldTime
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Sum of all AcwTime from the related User Sessions included in the unified session.
+	column AcwTime
+		dataType: double
+		formatString: 0.00
+		lineageTag: c3489242-67f2-4936-83f3-c0e24d3cb120
+		summarizeBy: sum
+		sourceColumn: AcwTime
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Set to true if “IsUnderSLA” for the first OR last queued Service Sessions is set to true
+	/// 
+	/// (IsUnderSLA is true for a Service Session if the time spent in queue for that Service Session is below the SLA time set for the service).
+	column IsUnderSLA
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 601cbd8b-01a2-4e1f-ba33-d1d7abb3ea0b
+		summarizeBy: none
+		sourceColumn: IsUnderSLA
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Date based on StartedAtLocal (local time converted to the selected timezone)
+	column Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: a58ed8b5-0de9-49a6-a905-5ec7510f2419
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Unique Tenant identifier
+	column TenantId
+		dataType: string
+		lineageTag: f81f8644-1e3e-4400-a6cd-32fc1dcc9580
+		summarizeBy: none
+		sourceColumn: TenantId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// CallerId of the FIRST service session
+	column InitialCallerId
+		dataType: string
+		lineageTag: 37c8e80b-e854-4ce0-a123-438b5aa418a1
+		summarizeBy: none
+		sourceColumn: InitialCallerId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// StartedAt timestamp value of the FIRST service session (UTC)
+	column StartedAt
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 4a3969db-0bb1-40a6-88f2-150b41ac81f6
+		summarizeBy: none
+		sourceColumn: StartedAt
+
+		annotation SummarizationSetBy = Automatic
+
+	/// TaskTypeId value of the FIRST service session
+	column TaskTypeId
+		dataType: int64
+		formatString: 0
+		lineageTag: 70483500-60e1-46c0-bc7d-5d67aad84027
+		summarizeBy: count
+		sourceColumn: TaskTypeId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Modality value of the FIRST service session
+	column InitialModality
+		dataType: int64
+		formatString: 0
+		lineageTag: 8fd91130-73de-4908-9db2-2c48569b381c
+		summarizeBy: sum
+		sourceColumn: InitialModality
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Service Id of the FIRST service session
+	column IncomingServiceId
+		dataType: string
+		lineageTag: 5330ca5d-950d-44f8-837f-2d6cdba38224
+		summarizeBy: none
+		sourceColumn: IncomingServiceId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// OrganizationUnitId of the FIRST service session
+	column IncomingOrganizationUnitId
+		dataType: string
+		lineageTag: d7280629-7bb4-4a8e-a910-f3f851af6876
+		summarizeBy: none
+		sourceColumn: IncomingOrganizationUnitId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// ServiceOrganizationUnitId of the FIRST service session
+	column IncomingServiceOrganizationUnitId
+		dataType: string
+		lineageTag: a2392889-fa3c-4aeb-9e90-1f217ac118ea
+		summarizeBy: none
+		sourceColumn: IncomingServiceOrganizationUnitId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// IsHandled flag associated with the last service session
+	column IsLastHandled
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: bf2de454-83df-43d6-a0c7-bea346745f91
+		summarizeBy: none
+		sourceColumn: IsLastHandled
+
+		annotation SummarizationSetBy = Automatic
+
+	/// PrimaryCodeId of the first connected Service
+	column FirstPrimaryCodeId
+		dataType: string
+		lineageTag: 703fb516-ed7e-46e4-856f-129dba46beb1
+		summarizeBy: none
+		sourceColumn: FirstPrimaryCodeId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// SecondaryCodeId of the first connected Service
+	column FirstSecondaryCodeId
+		dataType: string
+		lineageTag: d6dac429-ca35-40c9-b0dd-abe141935215
+		summarizeBy: none
+		sourceColumn: FirstSecondaryCodeId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// ID of the user who accepted on FirstQueuedService (if applicable otherwise null)
+	column FirstAcceptedUserId
+		dataType: string
+		lineageTag: 2c83c649-0ef2-4ff9-89b0-34eed7122057
+		summarizeBy: none
+		sourceColumn: FirstAcceptedUserId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// DistributionPolicyLevelId of the Service Session where the Conversation was FIRST queued
+	column FirstQueuedDistributionPolicyLevel
+		dataType: int64
+		formatString: 0
+		lineageTag: 4d3980d4-9c9d-465a-806b-a4b23b99ed2b
+		summarizeBy: sum
+		sourceColumn: FirstQueuedDistributionPolicyLevel
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Distribution Algorithm id of the Service Session where the Conversation was FIRST Queued
+	column FirstQueuedDistributionAlgorithm
+		dataType: int64
+		formatString: 0
+		lineageTag: cb287e31-985c-4286-b1c6-f7d22cd8a1e1
+		summarizeBy: sum
+		sourceColumn: FirstQueuedDistributionAlgorithm
+
+		annotation SummarizationSetBy = Automatic
+
+	/// ServiceId of the Service where the call was FIRST queued
+	column FirstQueuedServiceId
+		dataType: string
+		lineageTag: 6f0045a9-8753-4614-819f-302af35cb132
+		summarizeBy: none
+		sourceColumn: FirstQueuedServiceId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// OrganizationUnitId of the Service Session where the call was FIRST queued
+	column FirstQueuedOrganizationUnitId
+		dataType: string
+		lineageTag: fb8fa579-01e1-458d-955e-50ca9431a8f5
+		summarizeBy: none
+		sourceColumn: FirstQueuedOrganizationUnitId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// OrganizationUnitId of the Service Session where the call was FIRST queued
+	column FirstQueuedServiceOrganizationUnitId
+		dataType: string
+		lineageTag: 15fbd82d-aeef-47f0-a82a-db6eacdb5d69
+		summarizeBy: none
+		sourceColumn: FirstQueuedServiceOrganizationUnitId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// DistributionPolicyLevelId of the Service Session where the Conversation was LAST queued
+	column LastQueuedDistributionPolicyLevel
+		dataType: int64
+		formatString: 0
+		lineageTag: 70753810-7c77-4b3a-a6aa-51ade7160e5e
+		summarizeBy: sum
+		sourceColumn: LastQueuedDistributionPolicyLevel
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Distribution Algorithm id of the Service Session where the Conversation was LAST Queued
+	column LastQueuedDistributionAlgorithm
+		dataType: int64
+		formatString: 0
+		lineageTag: b765c8a9-6c5a-488e-8cdd-db07bdf7c3d2
+		summarizeBy: sum
+		sourceColumn: LastQueuedDistributionAlgorithm
+
+		annotation SummarizationSetBy = Automatic
+
+	/// ServiceId of the Service Session where the call was LAST queued
+	column LastQueuedServiceId
+		dataType: string
+		lineageTag: a3d4fcf1-a073-4897-92e8-62395766d603
+		summarizeBy: none
+		sourceColumn: LastQueuedServiceId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// OrganizationUnitId of the Service Session where the call was LAST queued
+	column LastQueuedOrganizationUnitId
+		dataType: string
+		lineageTag: 9beba74b-4c28-4684-9081-98ec12e748fd
+		summarizeBy: none
+		sourceColumn: LastQueuedOrganizationUnitId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// ServiceOrganizationUnitId of the Service Session where the call was LAST queued
+	column LastQueuedServiceOrganizationUnitId
+		dataType: string
+		lineageTag: 04716806-bf3a-4168-8050-1bd262d796a6
+		summarizeBy: none
+		sourceColumn: LastQueuedServiceOrganizationUnitId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// PrimaryCodeId of the last connected Service
+	column LastPrimaryCodeId
+		dataType: string
+		lineageTag: aca27390-14f1-4830-879a-d532274e2b56
+		summarizeBy: none
+		sourceColumn: LastPrimaryCodeId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// SecondaryCodeId of the last connected Service
+	column LastSecondaryCodeId
+		dataType: string
+		lineageTag: c2e380ca-3caf-4270-954c-8788cc164c60
+		summarizeBy: none
+		sourceColumn: LastSecondaryCodeId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// D of the user who accepted on the LastQueuedService (if applicable otherwise null)
+	column LastAcceptedUserId
+		dataType: string
+		lineageTag: 69e78e1b-071e-4696-9e32-9ecc8157ec86
+		summarizeBy: none
+		sourceColumn: LastAcceptedUserId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Sum of all AcwExtendedTime of related User Sessions included in the unified session.
+	column AcwExtendedTime
+		dataType: double
+		formatString: 0.00
+		lineageTag: 167efc57-25e5-4a73-a270-1c74156ac1c2
+		summarizeBy: sum
+		sourceColumn: AcwExtendedTime
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Sum of DialoutTime related to the User Sessions included in the unified session. The dial out time is the time spent dialing out to the destination. This attribute is populated only in case of outbound calls.
+	column DialoutTime
+		dataType: double
+		formatString: 0.00
+		lineageTag: 1078c741-aab2-4559-a376-6784b2b455c2
+		summarizeBy: sum
+		sourceColumn: DialoutTime
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Sum of all HoldCounts occurred in the unified session
+	column HoldCount
+		dataType: int64
+		formatString: 0
+		lineageTag: cc8c76fe-1413-4264-adf1-2838d29971f8
+		summarizeBy: sum
+		sourceColumn: HoldCount
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Count of RONA (UserSession = Declined or Missed)
+	column RONACount
+		dataType: int64
+		formatString: 0
+		lineageTag: e87a366a-baec-423f-8ea1-68e1d3c81b60
+		summarizeBy: sum
+		sourceColumn: RONACount
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Count of all OutboundAttempts for all service sessions included in the unified session.
+	column OutboundAttempts
+		dataType: int64
+		formatString: 0
+		lineageTag: 51679281-5b41-4c8d-ac55-4ba5b3f9f7ad
+		summarizeBy: sum
+		sourceColumn: OutboundAttempts
+
+		annotation SummarizationSetBy = Automatic
+
+	/// True/False flag indicating whether the unified session contains any instance of Handling of "Failed": ServiceSession/UserSession/TransferSession.
+	column ContainsFailedSession
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 514982f1-55c4-44f2-96d7-f514f3bd8443
+		summarizeBy: none
+		sourceColumn: ContainsFailedSession
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Service ID of Service where Outcome=11 (Workflow Converstation Recorded)
+	column VoiceMailRecordedOnServiceId
+		dataType: string
+		lineageTag: 48b1781f-93c2-4fc3-b8e0-f61f4246fedb
+		summarizeBy: none
+		sourceColumn: VoiceMailRecordedOnServiceId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Count of successful Service Session transfers with Outcome: - Workflow Internal Transfer Successful 12, - Workflow External Transfer Successful 14
+	column WorkflowTransferCount
+		dataType: int64
+		formatString: 0
+		lineageTag: c2372959-d843-4f66-ac75-010fc9f10f30
+		summarizeBy: sum
+		sourceColumn: WorkflowTransferCount
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Count of transfers to a service occurred in relation to the unified session
+	column ServiceTransferCount
+		dataType: int64
+		formatString: 0
+		lineageTag: 3da016dc-3e81-48c9-b3a3-80c9eaffb308
+		summarizeBy: sum
+		sourceColumn: ServiceTransferCount
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Count of successful transfers where initiated by the users. Count of Service Session with Outcome (User Internal Transfer Successful 6, User External Transfer Successful 7)
+	column UserTransferCount
+		dataType: int64
+		formatString: 0
+		lineageTag: 7287f0ee-a8d0-4dba-84a3-8ae3975b0d01
+		summarizeBy: sum
+		sourceColumn: UserTransferCount
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Lowest DistributionPriority id for the first OR last queued Service Session (whichever is lowest).
+	column TopDistributionPriority
+		dataType: int64
+		formatString: 0
+		lineageTag: 7349eef4-194e-4930-ab51-d11d86040e3f
+		summarizeBy: sum
+		sourceColumn: TopDistributionPriority
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Set to true, if any related service session is handled.
+	/// 
+	/// Accepted by user, service transfer, marked as handled in WF (email), ...)
+	column IsAnyHandled
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: adaf0fc7-5c13-40fb-910b-9066055a4b36
+		summarizeBy: none
+		sourceColumn: IsAnyHandled
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Destination UPN of the last successful transfer session if applicable (otherwise it is null).
+	column LastTransferDestination
+		dataType: string
+		lineageTag: d73490b1-5695-4ed1-9ed8-4b49bb7de0dd
+		summarizeBy: none
+		sourceColumn: LastTransferDestination
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Transfer type ID of the last transfer session if successful (otherwise it is null).
+	column LastTransferType
+		dataType: int64
+		formatString: 0
+		lineageTag: 5821c6bf-a5fe-4633-a8b5-d222ea32773c
+		summarizeBy: sum
+		sourceColumn: LastTransferType
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Set to true if last service session was successfully transferred to external destination (Workflow External Transfer Successful 14, User External Transfer Successful 7)
+	column IsLastTransferExternal
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 07ece3a8-8358-45e3-b8b5-61e68c7a9653
+		summarizeBy: none
+		sourceColumn: IsLastTransferExternal
+
+		annotation SummarizationSetBy = Automatic
+
+	/// StartedAt timestamp value of the FIRST service session converted from UTC to time zone selected in parameters
+	column StartedAtLocalTime
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 29f3e223-6ce2-4565-a70e-c804527f3eb4
+		summarizeBy: none
+		sourceColumn: StartedAtLocalTime
+
+		annotation SummarizationSetBy = Automatic
+
+	column InitialCallerIVRTime
+		dataType: double
+		lineageTag: dad4548f-a139-44bc-bc6e-baef79752bba
+		summarizeBy: sum
+		sourceColumn: InitialCallerIVRTime
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column InitialCallerQueueTime
+		dataType: double
+		lineageTag: 78a42a6c-0dbd-4ba9-bd4f-6e052a8e03e4
+		summarizeBy: sum
+		sourceColumn: InitialCallerQueueTime
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column InitialCallerConnectedTime
+		dataType: double
+		lineageTag: 421f3e28-f951-42ec-9bee-484b6039a100
+		summarizeBy: sum
+		sourceColumn: InitialCallerConnectedTime
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column InitialCallerHoldTime
+		dataType: double
+		lineageTag: f4f32f7f-33b4-4e61-8d85-bd3834f88710
+		summarizeBy: sum
+		sourceColumn: InitialCallerHoldTime
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column InitialCallerHoldCount
+		dataType: int64
+		formatString: 0
+		lineageTag: 93e28dbc-ff17-4f0a-a8fc-eef8026ade62
+		summarizeBy: sum
+		sourceColumn: InitialCallerHoldCount
+
+		annotation SummarizationSetBy = Automatic
+
+	column TransferOnUserExit
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 5f0c8c37-eb0c-4426-9cc2-5cf7d7a73df3
+		summarizeBy: none
+		sourceColumn: TransferOnUserExit
+
+		annotation SummarizationSetBy = Automatic
+
+	partition UnifiedSessions = m
+		mode: import
+		queryGroup: Facts\UnifiedSessions
+		source = ```
+				//1. first evaluate whether the User Startes table should be loaded with data or not
+				
+				let
+				
+				UnififiedSessions = 
+				
+				if #"Generate Unified Session" = true then 
+				
+				let
+				    Source = GlobalSource, 
+				    UnifiedSessions_table = Source{[Name="UnifiedSessions",Signature="table"]}[Data]
+				    ,#"Filtered Rows" = Table.SelectRows(UnifiedSessions_table, each ([StartedAt] >= DateTime.AddZone(RangeStart,0) and [StartedAt] < DateTime.AddZone(RangeEnd,0))) // date range from parameters with incremental refresh naming convention   
+				
+				 in #"Filtered Rows"
+				
+				 else 
+				 EmptyUnifiedSessionsTable
+				
+				 //2. then add the required data transformations
+				
+				//add transformations
+				    
+				    ,#"Inserted Local Time" = Table.AddColumn(UnififiedSessions, "StartedAtLocalTime", each ToLocalDateTimeZone([StartedAt]), type datetimezone)
+				    , #"Inserted Date" = Table.AddColumn(#"Inserted Local Time", "Date", each DateTime.Date([StartedAtLocalTime]), type date)
+				in
+				    #"Inserted Date"
+				```
+
+	annotation PBI_ResultType = Exception
+
+	annotation PBI_NavigationStepName = Navigation
+

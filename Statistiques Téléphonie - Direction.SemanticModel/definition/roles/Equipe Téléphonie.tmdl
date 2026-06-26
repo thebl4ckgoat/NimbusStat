@@ -1,0 +1,9 @@
+role 'Equipe Téléphonie'
+	modelPermission: read
+
+	tablePermission Services = [Groupe Téléphonie] = "Equipe Téléphonie"
+
+	tablePermission Users = [Groupe] = "Equipe Téléphonie"
+
+	annotation PBI_Id = aa95b870dae84ea5ab294ba41496d168
+

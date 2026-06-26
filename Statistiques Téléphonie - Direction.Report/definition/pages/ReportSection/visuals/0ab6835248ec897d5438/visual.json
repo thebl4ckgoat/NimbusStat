@@ -1,0 +1,38 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "0ab6835248ec897d5438",
+  "position": {
+    "x": 0,
+    "y": 0,
+    "z": 0,
+    "height": 305.195177956372,
+    "width": 348,
+    "tabOrder": 25000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Sessions by Outcome Group",
+                    "textStyle": {
+                      "fontSize": "14pt",
+                      "color": "#242323"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "parentGroupName": "0b28e43b17d47378e4be"
+}

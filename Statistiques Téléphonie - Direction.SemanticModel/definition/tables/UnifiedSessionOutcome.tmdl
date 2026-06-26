@@ -1,0 +1,54 @@
+table UnifiedSessionOutcome
+	lineageTag: 250fd4c6-46a0-4b4d-9fdb-b75861cfb37d
+
+	column Id
+		dataType: int64
+		formatString: 0
+		lineageTag: 463c17a3-c48b-47f3-9c74-bcd4e2d38d5e
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Outcome(US)
+		dataType: string
+		lineageTag: f6b68382-052a-4d3f-b9d7-4be1567c066d
+		summarizeBy: none
+		sourceColumn: Outcome(US)
+
+		annotation SummarizationSetBy = Automatic
+
+	column MeansHandled
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: fb01bba3-43b4-49ba-85e2-fca2d04101d8
+		summarizeBy: none
+		sourceColumn: MeansHandled
+
+		annotation SummarizationSetBy = Automatic
+
+	column GroupId
+		dataType: int64
+		formatString: 0
+		lineageTag: 91b9eb67-131b-4ced-acdc-3c717221f8fd
+		summarizeBy: none
+		sourceColumn: GroupId
+
+		annotation SummarizationSetBy = Automatic
+
+	partition UnifiedSessionOutcome = m
+		mode: import
+		queryGroup: Dimensions
+		source =
+				let
+				    Source = GlobalSource,
+				    ServiceSessionOutcomes_table = Source{[Name="ServiceSessionOutcomes",Signature="table"]}[Data],
+				    StopFolding = Table.StopFolding(ServiceSessionOutcomes_table),
+				    #"Renamed Columns" = Table.RenameColumns(StopFolding,{{"Name", "Outcome(US)"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

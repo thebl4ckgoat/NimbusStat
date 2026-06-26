@@ -1,0 +1,39 @@
+table DistributionPriorityTypes
+	lineageTag: ece3d182-b9e2-4018-a3c4-5af8265dc87c
+
+	column Id
+		dataType: int64
+		formatString: 0
+		lineageTag: ef38b4c0-de91-43ea-a1ec-4a5377fac0d9
+		summarizeBy: none
+		sourceColumn: Id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		lineageTag: 539e67fa-8a83-401c-9980-8e8ffc4282c5
+		summarizeBy: none
+		sourceColumn: Name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DistributionPriorityTypes-a4fe664e-73a4-46ae-a8f9-7a8c6b693c67 = m
+		mode: import
+		queryGroup: Dimensions
+		source =
+				let
+				    Source = GlobalSource,
+				    DistributionPriorityTypes_table = Source{[Name="DistributionPriorityTypes",Signature="table"]}[Data],
+				    StopFolding = Table.StopFolding(DistributionPriorityTypes_table)
+				in
+				    StopFolding
+
+	changedProperty = IsHidden
+
+	annotation PBI_ResultType = Table
+

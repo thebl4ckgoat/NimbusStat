@@ -1,0 +1,32 @@
+table TransferSessionDestinationTypes
+	lineageTag: 10cb351a-4b2b-46eb-9980-5c804f542617
+
+	column Id
+		dataType: int64
+		formatString: 0
+		lineageTag: 033d0681-66bc-4e06-aaba-84139aa16150
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		lineageTag: 7066a29c-2cc6-4d8f-a7ce-6b32010e725f
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition TransferSessionDestinationTypes-4b6a9076-3e4c-4fcd-a265-3f61a81f018a = m
+		mode: import
+		queryGroup: Dimensions
+		source =
+				let
+				    Source = GlobalSource,
+				    TransferSessionDestinationTypes_table = Source{[Name="TransferSessionDestinationTypes",Signature="table"]}[Data]
+				in
+				    TransferSessionDestinationTypes_table
+
+	annotation PBI_ResultType = Table
+

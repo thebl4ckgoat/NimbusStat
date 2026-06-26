@@ -1,0 +1,51 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "923c1e8307531124db0d",
+  "position": {
+    "x": 1.3832696351789509,
+    "y": 0,
+    "z": 0,
+    "height": 302.66050768015003,
+    "width": 608.3738432153026,
+    "tabOrder": 16000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": " ",
+                    "textStyle": {
+                      "fontSize": "14pt",
+                      "color": "#242323"
+                    }
+                  },
+                  {
+                    "value": "User Session Ø",
+                    "textStyle": {
+                      "fontSize": "18.6667px"
+                    }
+                  },
+                  {
+                    "value": "Time Ratio",
+                    "textStyle": {
+                      "fontSize": "14pt",
+                      "color": "#242323"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "parentGroupName": "25f3fd64c01028304620"
+}

@@ -1,0 +1,69 @@
+/// Bridge table used to connect the UserSessions table to the Tags table.
+/// 
+/// One UserSessionId may be related to 0 or more Tag Ids.
+/// One TagId can be associated to 1 or more UserSessionId.
+table UserSessionTags
+	lineageTag: 9aa69dd3-187b-4a8e-add7-70457c98bb3a
+
+	column UserSessionId
+		dataType: string
+		lineageTag: ae1f15d0-0b10-4f2c-a6c5-d906b4eef053
+		summarizeBy: none
+		sourceColumn: UserSessionId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column TagIdUserSession
+		dataType: string
+		lineageTag: eb6e6f95-6cfd-445f-8a7a-a82bfb320a8d
+		summarizeBy: none
+		sourceColumn: TagIdUserSession
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column TenantId
+		dataType: string
+		lineageTag: 4b9ef30c-0b96-462c-950a-c403286fa286
+		summarizeBy: none
+		sourceColumn: TenantId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column CreatedAt
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 76da4f84-a48f-42b1-9e5e-9f655ae387ed
+		summarizeBy: none
+		sourceColumn: CreatedAt
+
+		annotation SummarizationSetBy = Automatic
+
+	partition UserSessionTags = m
+		mode: import
+		queryGroup: Facts\UserSessions
+		source = ```
+				let
+				    Source = GlobalSource,
+				    UserSessionTags_table = Source{[Name="UserSessionTags",Signature="table"]}[Data],
+				    
+				    //prevent the table from trying to fold with the subsequent actions (they need to happen in the PBI client) 
+				    StopQueryFolding = Table.StopFolding(UserSessionTags_table),
+				
+				    #"Renamed Columns" = Table.RenameColumns(StopQueryFolding,{{"TagId", "TagIdUserSession"}}),
+				    #"Inner Join with UserSessions" = Table.NestedJoin(#"Renamed Columns", {"UserSessionId"}, UserSessions, {"Id"}, "UserSessions", JoinKind.Inner)
+				in
+				    #"Inner Join with UserSessions"
+				```
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Exception
+

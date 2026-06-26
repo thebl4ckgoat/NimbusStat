@@ -1,0 +1,79 @@
+table PrimaryCodes
+	lineageTag: b47a9726-bb55-4845-b1fd-f7ab00e99721
+
+	column Id
+		dataType: string
+		lineageTag: 744a055e-f689-498b-bcbb-382942c1e394
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column PrimaryCode
+		dataType: string
+		lineageTag: 045bccfe-373e-49a4-a3ef-9ae17805c674
+		summarizeBy: none
+		sourceColumn: PrimaryCode
+
+		annotation SummarizationSetBy = Automatic
+
+	column Description
+		dataType: string
+		lineageTag: e459d6a8-b9b8-47e4-8c6f-4e3d9366383d
+		summarizeBy: none
+		sourceColumn: Description
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsDeleted
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: fb01bb90-9c19-4d78-b6ef-8911154a2455
+		summarizeBy: none
+		sourceColumn: IsDeleted
+
+		annotation SummarizationSetBy = Automatic
+
+	column TenantId
+		dataType: string
+		lineageTag: f9b1abff-bbc2-40ac-82d4-faf14871d2b8
+		summarizeBy: none
+		sourceColumn: TenantId
+
+		annotation SummarizationSetBy = Automatic
+
+	column CreatedAt
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 55116846-9c33-4395-8afc-932b5da16923
+		summarizeBy: none
+		sourceColumn: CreatedAt
+
+		annotation SummarizationSetBy = Automatic
+
+	column UpdatedAt
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: cc0dd662-86cc-4eea-9a37-a13c94fc100c
+		summarizeBy: none
+		sourceColumn: UpdatedAt
+
+		annotation SummarizationSetBy = Automatic
+
+	partition PrimaryCodes-ec61e07c-949d-4f1f-8c84-f4a82bde5c6e = m
+		mode: import
+		queryGroup: Dimensions
+		source = ```
+				let
+				    Source = GlobalSource,
+				    PrimaryCodes_table = Source{[Name="PrimaryCodes",Signature="table"]}[Data],
+				    StopFolding = Table.StopFolding(PrimaryCodes_table),	
+				    #"Renamed Columns" = Table.RenameColumns(StopFolding, {{"Name", "PrimaryCode"}})
+				in
+				    #"Renamed Columns"
+				```
+
+	annotation PBI_ResultType = Exception
+
+	annotation PBI_NavigationStepName = Navigation
+

@@ -1,0 +1,1518 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 650.2285714285714,
+            "y": 1030.3857142857141
+          },
+          "nodeIndex": "DistributionAlgorithm",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 17
+        },
+        {
+          "location": {
+            "x": 1396.9265172491896,
+            "y": 844.75435272876416
+          },
+          "nodeIndex": "OriginType",
+          "nodeLineageTag": "b3231490-0a80-40e4-90d3-863b5380e1f4",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 18
+        },
+        {
+          "location": {
+            "x": 1425.1506914865854,
+            "y": 429.28698507888907
+          },
+          "nodeIndex": "PrimaryCodes",
+          "nodeLineageTag": "b47a9726-bb55-4845-b1fd-f7ab00e99721",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 37
+        },
+        {
+          "location": {
+            "x": 1421.3246920390918,
+            "y": 600.6494308000913
+          },
+          "nodeIndex": "SecondaryCodes",
+          "nodeLineageTag": "a71ff5c4-1ae0-4826-bcdc-f5f28932066d",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 19
+        },
+        {
+          "location": {
+            "x": 895.7313223115,
+            "y": 359.42797954015504
+          },
+          "nodeIndex": "Services",
+          "nodeLineageTag": "025c0608-d65d-40d4-be40-707cb6eb12bc",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 20
+        },
+        {
+          "location": {
+            "x": 1486.2800091171375,
+            "y": 5
+          },
+          "nodeIndex": "ServiceSessionOutcomes",
+          "nodeLineageTag": "afa9fbc1-a998-40ec-8cca-8b972b7abc9e",
+          "size": {
+            "height": 224,
+            "width": 286.08825893972062
+          },
+          "zIndex": 21
+        },
+        {
+          "location": {
+            "x": 878.22298810415737,
+            "y": 601.86557377747158
+          },
+          "nodeIndex": "ServiceSessions",
+          "nodeLineageTag": "c68f83d6-9fa8-4371-be9c-aec45e8c3549",
+          "size": {
+            "height": 374.53148425787106,
+            "width": 234
+          },
+          "zIndex": 36
+        },
+        {
+          "location": {
+            "x": 1194.6444300747612,
+            "y": 8.4725505959813781
+          },
+          "nodeIndex": "SessionDates",
+          "nodeLineageTag": "537c613e-2ddd-4d44-8a87-5a8db870ce8f",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 25
+        },
+        {
+          "location": {
+            "x": 3513.911541831706,
+            "y": 1255.2358564011638
+          },
+          "nodeIndex": "Tags",
+          "nodeLineageTag": "d7bd0340-ac2a-40d1-82ce-3da04c4107ea",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 45
+        },
+        {
+          "location": {
+            "x": 3072.160298896827,
+            "y": 214.60273801581377
+          },
+          "nodeIndex": "UserInfo",
+          "nodeLineageTag": "a40bc4d3-796c-429b-982a-ead63d233849",
+          "size": {
+            "height": 337.97846132364623,
+            "width": 234
+          },
+          "zIndex": 22
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 377.16767669564888
+          },
+          "nodeIndex": "Users",
+          "nodeLineageTag": "710f5b47-1161-4ffc-8a9d-3614582a3ff1",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 23
+        },
+        {
+          "location": {
+            "x": 602.464426113138,
+            "y": 5
+          },
+          "nodeIndex": "UserSessionDates",
+          "nodeLineageTag": "c47ba5a4-1da9-4b8b-bb98-89fd2a2c6154",
+          "size": {
+            "height": 214.28571428571428,
+            "width": 234
+          },
+          "zIndex": 27
+        },
+        {
+          "location": {
+            "x": 626.98927959760078,
+            "y": 430.95366493146014
+          },
+          "nodeIndex": "UserSessionOutcomes",
+          "nodeLineageTag": "9c942563-7991-4e46-99c4-d84411fb1db8",
+          "size": {
+            "height": 204.90097172210244,
+            "width": 234
+          },
+          "zIndex": 42
+        },
+        {
+          "location": {
+            "x": 428.6497291058937,
+            "y": 668.153292087549
+          },
+          "nodeIndex": "UserSessions",
+          "nodeLineageTag": "0b555dee-3d69-4be1-a5bc-0e97aec8d621",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 43
+        },
+        {
+          "location": {
+            "x": 876.11598215028982,
+            "y": 5
+          },
+          "nodeIndex": "OrganizationUnits",
+          "nodeLineageTag": "29c7eb6b-e51b-4157-8298-4df180d6857a",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 24
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 6.736275297990689
+          },
+          "nodeIndex": "UserOrganizationUnits",
+          "nodeLineageTag": "4329514b-5dae-43fb-af15-4ba33b5ea066",
+          "size": {
+            "height": 298.85714285714283,
+            "width": 234
+          },
+          "zIndex": 14
+        },
+        {
+          "location": {
+            "x": 266.06498660592712,
+            "y": 24.149520557117796
+          },
+          "nodeIndex": "ResponsibilityProfiles",
+          "nodeLineageTag": "9d749b60-fae7-43e0-9f4d-762595a59320",
+          "size": {
+            "height": 211.42857142857144,
+            "width": 234
+          },
+          "zIndex": 15
+        },
+        {
+          "location": {
+            "x": 2.9886993594215028,
+            "y": 694.91219196763063
+          },
+          "nodeIndex": "UserStates",
+          "nodeLineageTag": "d511b82d-7966-405c-8659-3082dad19dd9",
+          "size": {
+            "height": 298,
+            "width": 234
+          },
+          "zIndex": 26
+        },
+        {
+          "location": {
+            "x": 250.22028843442979,
+            "y": 1281.1623440231565
+          },
+          "nodeIndex": "UserStateTypes",
+          "nodeLineageTag": "968a42b0-5b8c-4e66-87ec-fe4b8ea84ae1",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 16
+        },
+        {
+          "location": {
+            "x": 1840.967138055729,
+            "y": 291.0023943792537
+          },
+          "nodeIndex": "Callers",
+          "nodeLineageTag": "6ed0787b-2274-4b31-bada-b1389debfc28",
+          "size": {
+            "height": 267.1205728257072,
+            "width": 347.130055885435
+          },
+          "zIndex": 13
+        },
+        {
+          "location": {
+            "x": 2149.1875085684542,
+            "y": 5
+          },
+          "nodeIndex": "TaskDirections",
+          "nodeLineageTag": "93981303-fe8d-48b4-9217-ce20a5822226",
+          "size": {
+            "height": 153.49409710094307,
+            "width": 234
+          },
+          "zIndex": 29
+        },
+        {
+          "location": {
+            "x": 3000.7995843017329,
+            "y": 5.7106981460967319
+          },
+          "nodeIndex": "TaskTypeGroups",
+          "nodeLineageTag": "6947b5ff-b86e-4e61-8534-94c510efc875",
+          "size": {
+            "height": 161.46100244498774,
+            "width": 234
+          },
+          "zIndex": 30
+        },
+        {
+          "location": {
+            "x": 2551.3435589488977,
+            "y": 9.6779366373257
+          },
+          "nodeIndex": "TaskTypes",
+          "nodeLineageTag": "ab16bf6e-7607-45f9-9ca5-968b564c9506",
+          "size": {
+            "height": 223.90071603213408,
+            "width": 234
+          },
+          "zIndex": 32
+        },
+        {
+          "location": {
+            "x": 2502.5204449322637,
+            "y": 352.25406049889887
+          },
+          "nodeIndex": "DistributionPriorityTypes",
+          "nodeLineageTag": "ece3d182-b9e2-4018-a3c4-5af8265dc87c",
+          "size": {
+            "height": 144.71395389451624,
+            "width": 299.32862382116627
+          },
+          "zIndex": 31
+        },
+        {
+          "location": {
+            "x": 343.74820521482781,
+            "y": 1035.0386415964849
+          },
+          "nodeIndex": "DistributionTypes",
+          "nodeLineageTag": "9c835f80-0732-4e3c-a541-b7d8a013171f",
+          "size": {
+            "height": 158.27424030736984,
+            "width": 221.19623541158569
+          },
+          "zIndex": 11
+        },
+        {
+          "location": {
+            "x": 2506.4887454698692,
+            "y": 553.77879766598994
+          },
+          "nodeIndex": "UserSessionDistributionPriority",
+          "nodeLineageTag": "a5022e09-3c67-48aa-8341-314ea0ef728f",
+          "size": {
+            "height": 166.2411456514144,
+            "width": 296.141861683549
+          },
+          "zIndex": 12
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 1220.5343100231253
+          },
+          "nodeIndex": "NotAvailableReasons",
+          "nodeLineageTag": "83a00a36-336e-43b8-b001-97ccadfba38f",
+          "size": {
+            "height": 185.65957038071974,
+            "width": 234
+          },
+          "zIndex": 33
+        },
+        {
+          "location": {
+            "x": 505.92002155665296,
+            "y": 1207.7979449639431
+          },
+          "nodeIndex": "UserSessionModalityType",
+          "nodeLineageTag": "31df47c0-2ae4-4bda-9b6f-0b87fbe0c92a",
+          "size": {
+            "height": 124,
+            "width": 234
+          },
+          "zIndex": 9
+        },
+        {
+          "location": {
+            "x": 848.902311100309,
+            "y": 1202.9213964446349
+          },
+          "nodeIndex": "ServiceSessionModalityType",
+          "nodeLineageTag": "c812b5db-3dd3-485c-ba81-90d4bdfcd141",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 10
+        },
+        {
+          "location": {
+            "x": 3071.5000000000005,
+            "y": 832.30434782608688
+          },
+          "nodeIndex": "TransferSessionDestinationTypes",
+          "nodeLineageTag": "10cb351a-4b2b-46eb-9980-5c804f542617",
+          "size": {
+            "height": 141.04347826086956,
+            "width": 305.73913043478296
+          },
+          "zIndex": 35
+        },
+        {
+          "location": {
+            "x": 2880.1708049192471,
+            "y": 1257.8131158247227
+          },
+          "nodeIndex": "TransferSessionOutcomes",
+          "nodeLineageTag": "3add4f01-8e5d-4cd3-ba4d-d5dbbad94924",
+          "size": {
+            "height": 165.04347826086956,
+            "width": 279.65217391304304
+          },
+          "zIndex": 40
+        },
+        {
+          "location": {
+            "x": 2110.6860563732084,
+            "y": 643.46974504468562
+          },
+          "nodeIndex": "TransferSessions",
+          "nodeLineageTag": "b2d6feaa-96d4-4ee7-8b8b-1eed039ea2a4",
+          "size": {
+            "height": 565.21739130434776,
+            "width": 234
+          },
+          "zIndex": 34
+        },
+        {
+          "location": {
+            "x": 2730.1252831937281,
+            "y": 935.15360681890945
+          },
+          "nodeIndex": "TransferSessionTypes",
+          "nodeLineageTag": "d9bba561-376e-43c9-855e-58cd84e7c778",
+          "size": {
+            "height": 124,
+            "width": 234
+          },
+          "zIndex": 38
+        },
+        {
+          "location": {
+            "x": 2720.1247245090249,
+            "y": 739.81116006357126
+          },
+          "nodeIndex": "TransferDestinationService",
+          "nodeLineageTag": "b6e5b741-932b-4944-b5ae-d30f276e5ca5",
+          "size": {
+            "height": 176,
+            "width": 268.53898050974522
+          },
+          "zIndex": 7
+        },
+        {
+          "location": {
+            "x": 3195.5583825957278,
+            "y": 1109.2414385480381
+          },
+          "nodeIndex": "TransferDate",
+          "nodeLineageTag": "3eb5f87c-63e1-4fa6-86fd-7d2222ada681",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 41
+        },
+        {
+          "location": {
+            "x": 3069.5279912533965,
+            "y": 641.95652173913038
+          },
+          "nodeIndex": "TransferDestinationOU",
+          "nodeLineageTag": "8b2b2bb2-aec3-431f-82c6-ed66d52ce340",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 8
+        },
+        {
+          "location": {
+            "x": 2736.8708936094658,
+            "y": 1101.2238155270468
+          },
+          "nodeIndex": "UserTransferActionTypes",
+          "nodeLineageTag": "1544f776-4991-4c32-b033-e09612aa774c",
+          "size": {
+            "height": 128,
+            "width": 289.560809535702
+          },
+          "zIndex": 6
+        },
+        {
+          "location": {
+            "x": 609.08764724502737,
+            "y": 242.86971582472438
+          },
+          "nodeIndex": "UserSessionActionGroups",
+          "nodeLineageTag": "6902acb5-a9dc-4066-a4a9-cd4ee935fc7e",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 39
+        },
+        {
+          "location": {
+            "x": 1257.7898738222252,
+            "y": 1241.7231535588585
+          },
+          "nodeIndex": "LastTransferType",
+          "nodeLineageTag": "3cfd9983-0399-42dc-87c7-851b8fcdfdbe",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 5
+        },
+        {
+          "location": {
+            "x": 3412.8307724016086,
+            "y": 5
+          },
+          "nodeIndex": "TransferSourceService",
+          "nodeLineageTag": "402a083b-dda0-4d37-ac49-6c58c80f6c8d",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 3743.1624628188,
+            "y": 9.5304087136647535
+          },
+          "nodeIndex": "TransferSourceOU",
+          "nodeLineageTag": "03acf1ec-fb9a-48ba-a5bf-ab971883c310",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 3608.7201160030445,
+            "y": 620.41161697695441
+          },
+          "nodeIndex": "OpeningHoursTypes",
+          "nodeLineageTag": "36f43c0a-b735-4b60-a1cd-15468edeae4d",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 4
+        },
+        {
+          "location": {
+            "x": 3509.0032751471026,
+            "y": 858.897041145418
+          },
+          "nodeIndex": "ServiceSessionTagsStrings",
+          "nodeLineageTag": "a20ca59c-4d33-4a22-9a72-b4bdcfe31070",
+          "size": {
+            "height": 310.81376489953436,
+            "width": 379.84712503121773
+          },
+          "zIndex": 44
+        },
+        {
+          "location": {
+            "x": 3867.6631129607013,
+            "y": 1256.9133107752207
+          },
+          "nodeIndex": "ServiceSessionTags",
+          "nodeLineageTag": "7e89122b-3216-4d90-baba-bf95f02f0407",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 4151.6631129607013,
+            "y": 661.92829704279609
+          },
+          "nodeIndex": "UnifiedSessions",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 4435.6631129607013,
+            "y": 601.92829704279609
+          },
+          "nodeIndex": "CallersUnifiedSessions",
+          "nodeLineageTag": "2ff005bb-186f-48f0-809a-0c71b7de9fc4",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 5013.6631129607013,
+            "y": 615.92829704279609
+          },
+          "nodeIndex": "UnifiedSessionOutcome",
+          "nodeLineageTag": "250fd4c6-46a0-4b4d-9fdb-b75861cfb37d",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 4729.6631129607013,
+            "y": 639.92829704279609
+          },
+          "nodeIndex": "OutcomeGroups",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 5311.11210667888,
+            "y": 264.4387189837023
+          },
+          "nodeIndex": "UserSessionTags",
+          "nodeLineageTag": "9aa69dd3-187b-4a8e-add7-70457c98bb3a",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 5690.0599346094905,
+            "y": 228.4387189837023
+          },
+          "nodeIndex": "UserSessionTagsStrings",
+          "nodeLineageTag": "2b38b7b5-e2c6-46b7-b9cc-70f27cedfc48",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 5297.6631129607013,
+            "y": 0
+          },
+          "nodeIndex": "TagsUserSessions",
+          "nodeLineageTag": "e1a52fb8-75fe-4874-bdc8-12e27de5796f",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 5974.0599346094905,
+            "y": 0
+          },
+          "nodeIndex": "PrimaryCodesUserSessions",
+          "nodeLineageTag": "512bb91e-113a-449e-a3c9-7558323b8494",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 6258.0599346094905,
+            "y": 0
+          },
+          "nodeIndex": "MappingAgents",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 40.866528472231572,
+      "pinKeyFieldsToTop": true,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    },
+    {
+      "ordinal": 1,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 343.52735932255007,
+            "y": 451.2435923622233
+          },
+          "nodeIndex": "ServiceSessions",
+          "nodeLineageTag": "c68f83d6-9fa8-4371-be9c-aec45e8c3549",
+          "size": {
+            "height": 598.27861266236414,
+            "width": 234
+          },
+          "zIndex": 10
+        },
+        {
+          "location": {
+            "x": 743.91858675274489,
+            "y": 458.25068404185288
+          },
+          "nodeIndex": "TransferSessions",
+          "nodeLineageTag": "b2d6feaa-96d4-4ee7-8b8b-1eed039ea2a4",
+          "size": {
+            "height": 581.66666666666674,
+            "width": 234
+          },
+          "zIndex": 14
+        },
+        {
+          "location": {
+            "x": 30.77500964981094,
+            "y": 402.68256669915428
+          },
+          "nodeIndex": "Services",
+          "nodeLineageTag": "025c0608-d65d-40d4-be40-707cb6eb12bc",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 1196.4977520039372,
+            "y": 998.95044688469079
+          },
+          "nodeIndex": "TransferSessionOutcomes",
+          "nodeLineageTag": "3add4f01-8e5d-4cd3-ba4d-d5dbbad94924",
+          "size": {
+            "height": 152,
+            "width": 293
+          },
+          "zIndex": 4
+        },
+        {
+          "location": {
+            "x": 759.124449288142,
+            "y": 0
+          },
+          "nodeIndex": "TransferDate",
+          "nodeLineageTag": "3eb5f87c-63e1-4fa6-86fd-7d2222ada681",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 5
+        },
+        {
+          "location": {
+            "x": 1673.8548740754654,
+            "y": 474.4684419295437
+          },
+          "nodeIndex": "TransferDestinationOU",
+          "nodeLineageTag": "8b2b2bb2-aec3-431f-82c6-ed66d52ce340",
+          "size": {
+            "height": 176,
+            "width": 314.59556313993176
+          },
+          "zIndex": 6
+        },
+        {
+          "location": {
+            "x": 1258.0629017136969,
+            "y": 475.64606405043151
+          },
+          "nodeIndex": "TransferDestinationService",
+          "nodeLineageTag": "b6e5b741-932b-4944-b5ae-d30f276e5ca5",
+          "size": {
+            "height": 227.81143344709903,
+            "width": 318.43344709897633
+          },
+          "zIndex": 7
+        },
+        {
+          "location": {
+            "x": 1458.5847324083645,
+            "y": 754.17736614209548
+          },
+          "nodeIndex": "TransferSessionTypes",
+          "nodeLineageTag": "d9bba561-376e-43c9-855e-58cd84e7c778",
+          "size": {
+            "height": 146.69645453082,
+            "width": 234
+          },
+          "zIndex": 8
+        },
+        {
+          "location": {
+            "x": 1763.304779118437,
+            "y": 792.74301154483635
+          },
+          "nodeIndex": "TransferSessionDestinationTypes",
+          "nodeLineageTag": "10cb351a-4b2b-46eb-9980-5c804f542617",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 9
+        },
+        {
+          "location": {
+            "x": 33.06285541075431,
+            "y": 0
+          },
+          "nodeIndex": "OrganizationUnits",
+          "nodeLineageTag": "29c7eb6b-e51b-4157-8298-4df180d6857a",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 796.63651329465017
+          },
+          "nodeIndex": "Callers",
+          "nodeLineageTag": "6ed0787b-2274-4b31-bada-b1389debfc28",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 13
+        },
+        {
+          "location": {
+            "x": 802.30341351982088,
+            "y": 1119.817054537777
+          },
+          "nodeIndex": "UserTransferActionTypes",
+          "nodeLineageTag": "1544f776-4991-4c32-b033-e09612aa774c",
+          "size": {
+            "height": 143,
+            "width": 319.00000000000023
+          },
+          "zIndex": 15
+        },
+        {
+          "location": {
+            "x": 518.30009273739677,
+            "y": 1109.9651456902573
+          },
+          "nodeIndex": "LastTransferType",
+          "nodeLineageTag": "3cfd9983-0399-42dc-87c7-851b8fcdfdbe",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 1068.1703640500559,
+            "y": 0
+          },
+          "nodeIndex": "TransferSourceService",
+          "nodeLineageTag": "402a083b-dda0-4d37-ac49-6c58c80f6c8d",
+          "size": {
+            "height": 317.52275312855528,
+            "width": 234
+          },
+          "zIndex": 11
+        },
+        {
+          "location": {
+            "x": 1478.3193970420934,
+            "y": 0
+          },
+          "nodeIndex": "TransferSourceOU",
+          "nodeLineageTag": "03acf1ec-fb9a-48ba-a5bf-ab971883c310",
+          "size": {
+            "height": 224.33333333333337,
+            "width": 234
+          },
+          "zIndex": 12
+        }
+      ],
+      "name": "Transfers",
+      "zoomValue": 75.421244585246555,
+      "pinKeyFieldsToTop": true,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    },
+    {
+      "ordinal": 2,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 541,
+            "y": 102
+          },
+          "nodeIndex": "OpeningHoursTypes",
+          "nodeLineageTag": "36f43c0a-b735-4b60-a1cd-15468edeae4d",
+          "size": {
+            "height": 232,
+            "width": 234
+          },
+          "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 72,
+            "y": 69
+          },
+          "nodeIndex": "ServiceSessions",
+          "nodeLineageTag": "c68f83d6-9fa8-4371-be9c-aec45e8c3549",
+          "size": {
+            "height": 426,
+            "width": 234
+          },
+          "zIndex": 1
+        }
+      ],
+      "name": "OpeningHours",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": true,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    },
+    {
+      "ordinal": 3,
+      "scrollPosition": {
+        "x": 456.88890245225696,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 0,
+            "y": 310
+          },
+          "nodeIndex": "UserStates",
+          "nodeLineageTag": "d511b82d-7966-405c-8659-3082dad19dd9",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 5
+        },
+        {
+          "location": {
+            "x": 282.77777777777783,
+            "y": 265.55555555555549
+          },
+          "nodeIndex": "UserSessions",
+          "nodeLineageTag": "0b555dee-3d69-4be1-a5bc-0e97aec8d621",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 569.77777777777771,
+            "y": 261.11111111111109
+          },
+          "nodeIndex": "ServiceSessions",
+          "nodeLineageTag": "c68f83d6-9fa8-4371-be9c-aec45e8c3549",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 1073.2222222222222,
+            "y": 0
+          },
+          "nodeIndex": "TransferSessions",
+          "nodeLineageTag": "b2d6feaa-96d4-4ee7-8b8b-1eed039ea2a4",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 4,
+          "expandedHeight": 300
+        },
+        {
+          "location": {
+            "x": 949.111111111111,
+            "y": 269
+          },
+          "nodeIndex": "ServiceSessionTagsStrings",
+          "nodeLineageTag": "a20ca59c-4d33-4a22-9a72-b4bdcfe31070",
+          "size": {
+            "height": 276,
+            "width": 379
+          },
+          "zIndex": 7
+        },
+        {
+          "location": {
+            "x": 23.333333333333314,
+            "y": 0
+          },
+          "nodeIndex": "UnifiedSessions",
+          "nodeLineageTag": "6c4e1fb8-377d-47ec-b574-944f0d59a470",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 0,
+          "expandedHeight": 300
+        },
+        {
+          "location": {
+            "x": 278,
+            "y": 669.44444444444446
+          },
+          "nodeIndex": "UserSessionTagsStrings",
+          "nodeLineageTag": "2b38b7b5-e2c6-46b7-b9cc-70f27cedfc48",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 0,
+          "expandedHeight": 224
+        }
+      ],
+      "name": "Inc Refresh Facts",
+      "zoomValue": 90,
+      "pinKeyFieldsToTop": true,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    },
+    {
+      "ordinal": 4,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 300.08312365185469,
+            "y": 200.09893035768505
+          },
+          "nodeIndex": "UserStates",
+          "nodeLineageTag": "d511b82d-7966-405c-8659-3082dad19dd9",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 5
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 378.21537438948559
+          },
+          "nodeIndex": "UserStateTypes",
+          "nodeLineageTag": "968a42b0-5b8c-4e66-87ec-fe4b8ea84ae1",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 709.12861121810556,
+            "y": 488.83576463765542
+          },
+          "nodeIndex": "Users",
+          "nodeLineageTag": "710f5b47-1161-4ffc-8a9d-3614582a3ff1",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 176.48163295271652,
+            "y": 663.32234966464671
+          },
+          "nodeIndex": "ResponsibilityProfiles",
+          "nodeLineageTag": "9d749b60-fae7-43e0-9f4d-762595a59320",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 0
+          },
+          "nodeIndex": "NotAvailableReasons",
+          "nodeLineageTag": "83a00a36-336e-43b8-b001-97ccadfba38f",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 4
+        },
+        {
+          "location": {
+            "x": 805.30495501399264,
+            "y": 35.280311321945078
+          },
+          "nodeIndex": "UserSessionDates",
+          "nodeLineageTag": "c47ba5a4-1da9-4b8b-bb98-89fd2a2c6154",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 6
+        },
+        {
+          "location": {
+            "x": 1122,
+            "y": 504
+          },
+          "nodeIndex": "UserOrganizationUnits",
+          "nodeLineageTag": "4329514b-5dae-43fb-af15-4ba33b5ea066",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "UserStates",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": true,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    },
+    {
+      "ordinal": 5,
+      "scrollPosition": {
+        "x": 0,
+        "y": 36.121285720903529
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 930.031071275929,
+            "y": 117.95294684718758
+          },
+          "nodeIndex": "UnifiedSessions",
+          "nodeLineageTag": "6c4e1fb8-377d-47ec-b574-944f0d59a470",
+          "size": {
+            "height": 1000,
+            "width": 357.93360995850617
+          },
+          "zIndex": 8
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 183.22449488529753
+          },
+          "nodeIndex": "ServiceSessions",
+          "nodeLineageTag": "c68f83d6-9fa8-4371-be9c-aec45e8c3549",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 7
+        },
+        {
+          "location": {
+            "x": 3.36191733734492,
+            "y": 868.03185103342946
+          },
+          "nodeIndex": "UserSessions",
+          "nodeLineageTag": "0b555dee-3d69-4be1-a5bc-0e97aec8d621",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 308.68279923686418,
+            "y": 0
+          },
+          "nodeIndex": "Services",
+          "nodeLineageTag": "025c0608-d65d-40d4-be40-707cb6eb12bc",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 289.64186423343295,
+            "y": 874.48157485492584
+          },
+          "nodeIndex": "ServiceSessionOutcomes",
+          "nodeLineageTag": "afa9fbc1-a998-40ec-8cca-8b972b7abc9e",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 4
+        },
+        {
+          "location": {
+            "x": 622.59304279810806,
+            "y": 1019.6347991253255
+          },
+          "nodeIndex": "Callers",
+          "nodeLineageTag": "6ed0787b-2274-4b31-bada-b1389debfc28",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 5
+        },
+        {
+          "location": {
+            "x": 584.490396807404,
+            "y": 1.1494252873563227
+          },
+          "nodeIndex": "SessionDates",
+          "nodeLineageTag": "537c613e-2ddd-4d44-8a87-5a8db870ce8f",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 6
+        },
+        {
+          "location": {
+            "x": 1378.1149425287356,
+            "y": 510.74712643678163
+          },
+          "nodeIndex": "UnifiedSessionOutcome",
+          "nodeLineageTag": "250fd4c6-46a0-4b4d-9fdb-b75861cfb37d",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 1420.6436781609195,
+            "y": 765.91954022988511
+          },
+          "nodeIndex": "OutcomeGroups",
+          "nodeLineageTag": "6a0f8f78-d61e-4e6e-b558-1a18660347f6",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "UnifiedSessions",
+      "zoomValue": 69.211268372798813,
+      "pinKeyFieldsToTop": true,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    },
+    {
+      "ordinal": 6,
+      "scrollPosition": {
+        "x": 0,
+        "y": 115.44715137016483
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 1007.3830500146939,
+            "y": 118.01488922040016
+          },
+          "nodeIndex": "Tags",
+          "nodeLineageTag": "d7bd0340-ac2a-40d1-82ce-3da04c4107ea",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 669.2015611931854,
+            "y": 82.859587180246081
+          },
+          "nodeIndex": "ServiceSessionTags",
+          "nodeLineageTag": "7e89122b-3216-4d90-baba-bf95f02f0407",
+          "size": {
+            "height": 169,
+            "width": 234
+          },
+          "zIndex": 6
+        },
+        {
+          "location": {
+            "x": 340,
+            "y": 0
+          },
+          "nodeIndex": "ServiceSessions",
+          "nodeLineageTag": "c68f83d6-9fa8-4371-be9c-aec45e8c3549",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 0
+          },
+          "nodeIndex": "ServiceSessionTagsStrings",
+          "nodeLineageTag": "a20ca59c-4d33-4a22-9a72-b4bdcfe31070",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 666,
+            "y": 445
+          },
+          "nodeIndex": "UserSessionTags",
+          "nodeLineageTag": "9aa69dd3-187b-4a8e-add7-70457c98bb3a",
+          "size": {
+            "height": 203,
+            "width": 234
+          },
+          "zIndex": 4
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 386
+          },
+          "nodeIndex": "UserSessionTagsStrings",
+          "nodeLineageTag": "2b38b7b5-e2c6-46b7-b9cc-70f27cedfc48",
+          "size": {
+            "height": 292,
+            "width": 234
+          },
+          "zIndex": 7
+        },
+        {
+          "location": {
+            "x": 337,
+            "y": 396
+          },
+          "nodeIndex": "UserSessions",
+          "nodeLineageTag": "0b555dee-3d69-4be1-a5bc-0e97aec8d621",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 5
+        },
+        {
+          "location": {
+            "x": 1000,
+            "y": 341
+          },
+          "nodeIndex": "TagsUserSessions",
+          "nodeLineageTag": "e1a52fb8-75fe-4874-bdc8-12e27de5796f",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 8
+        }
+      ],
+      "name": "Tags",
+      "zoomValue": 82,
+      "pinKeyFieldsToTop": true,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    },
+    {
+      "ordinal": 7,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 0,
+            "y": 0
+          },
+          "nodeIndex": "PrimaryCodes",
+          "nodeLineageTag": "b47a9726-bb55-4845-b1fd-f7ab00e99721",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 1009,
+            "y": 59.14041281975426
+          },
+          "nodeIndex": "SecondaryCodes",
+          "nodeLineageTag": "a71ff5c4-1ae0-4826-bcdc-f5f28932066d",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 6
+        },
+        {
+          "location": {
+            "x": 600.20156119318517,
+            "y": 0
+          },
+          "nodeIndex": "ServiceSessions",
+          "nodeLineageTag": "c68f83d6-9fa8-4371-be9c-aec45e8c3549",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 626,
+            "y": 402
+          },
+          "nodeIndex": "UserSessions",
+          "nodeLineageTag": "0b555dee-3d69-4be1-a5bc-0e97aec8d621",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 5
+        },
+        {
+          "location": {
+            "x": 242,
+            "y": 191
+          },
+          "nodeIndex": "UnifiedSessions",
+          "nodeLineageTag": "6c4e1fb8-377d-47ec-b574-944f0d59a470",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 3,
+          "expandedHeight": 300
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 499
+          },
+          "nodeIndex": "PrimaryCodesUserSessions",
+          "nodeLineageTag": "512bb91e-113a-449e-a3c9-7558323b8494",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 4
+        }
+      ],
+      "name": "Codes",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": true,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

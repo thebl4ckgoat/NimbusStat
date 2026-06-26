@@ -1,0 +1,134 @@
+table Services
+	lineageTag: 025c0608-d65d-40d4-be40-707cb6eb12bc
+
+	column Id
+		dataType: string
+		isHidden
+		lineageTag: a6586dad-f3b4-46a5-9c90-4189c0eb00aa
+		summarizeBy: none
+		sourceColumn: Id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		lineageTag: 174aa578-2e8f-4ad9-9dd5-2ca9cef294ff
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column TenantId
+		dataType: string
+		lineageTag: d4fc19be-46b3-479b-91c7-f4d492d43744
+		summarizeBy: none
+		sourceColumn: TenantId
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrganizationUnitId
+		dataType: string
+		lineageTag: c0b11193-36cc-4820-829b-6eebc895e94b
+		summarizeBy: none
+		sourceColumn: OrganizationUnitId
+
+		annotation SummarizationSetBy = Automatic
+
+	column ServiceOrganizationUnitId
+		dataType: string
+		lineageTag: 8a7ae5c0-b0e2-4b3a-83b1-c5455a7d722b
+		summarizeBy: none
+		sourceColumn: ServiceOrganizationUnitId
+
+		annotation SummarizationSetBy = Automatic
+
+	column ServiceName
+		dataType: string
+		lineageTag: 17449f48-5eee-4034-8deb-961449107476
+		summarizeBy: none
+		sourceColumn: ServiceName
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Name - Copier.3'
+		dataType: string
+		lineageTag: f881525e-5c6c-4378-b97e-79952e21a6b8
+		summarizeBy: none
+		sourceColumn: Name - Copier.3
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Name - Copier.4'
+		dataType: string
+		lineageTag: 505be88f-08c6-472d-94ef-355851da18a9
+		summarizeBy: none
+		sourceColumn: Name - Copier.4
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Name - Copier.5'
+		dataType: string
+		lineageTag: 385d39f0-0707-4b41-8d6b-ec3dfdf44da1
+		summarizeBy: none
+		sourceColumn: Name - Copier.5
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Groupe Téléphonie' =
+			
+			SWITCH (
+			    TRUE (),
+			    CONTAINSSTRING ( Services[Name], "Clients" ),      "Equipe Téléphonie",
+			    CONTAINSSTRING ( Services[Name], "Callback" ),     "Equipe Téléphonie",
+			    CONTAINSSTRING ( Services[Name], "Informatique" ), "Equipe Téléphonie",
+			    CONTAINSSTRING ( Services[Name], "Operationnel" ), "Equipe Téléphonie",
+			    CONTAINSSTRING ( Services[Name], "RH" ),           "GRH",
+			    CONTAINSSTRING ( Services[Name], "Charleroi" ),    "Coordination Charleroi",
+			    CONTAINSSTRING ( Services[Name], "Lalouviere" ),   "Coordination Lalouvière",
+			    CONTAINSSTRING ( Services[Name], "Lobbes" ),       "Coordination Lobbes",
+			    "Autre"
+			)
+		lineageTag: e1404879-90a3-413a-ac2f-12a389e4ca36
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Type file' =
+			
+			SWITCH ( TRUE (),
+			    CONTAINSSTRING ( Services[Name], "Clients" ),      "Client",
+			    CONTAINSSTRING ( Services[Name], "Callback" ),     "Client",
+			    CONTAINSSTRING ( Services[Name], "Personnel" ),    "Personnel",
+			    CONTAINSSTRING ( Services[Name], "Coordination" ), "Coordination",
+			    "Autre"
+			)
+		lineageTag: 920741ad-a1f5-4b5c-9ba0-3c6146c806f3
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Services-7a481de5-9fa2-478d-83ee-e67bbcb182f8 = m
+		mode: import
+		queryGroup: Dimensions
+		source =
+				let
+				    Source = GlobalSource,
+				    Services_table0 = Source{[Name="Services",Signature="table"]}[Data],
+				    Services_table = Table.StopFolding(Services_table0),
+				    #"Replaced Value" = Table.ReplaceValue(Services_table, null, "Name Not Provisioned!", Replacer.ReplaceValue,{"Name"}),
+				    #"Duplication de la colonne" = Table.DuplicateColumn(#"Replaced Value", "Name", "Name - Copier"),
+				    #"Lignes triées" = Table.Sort(#"Duplication de la colonne",{{"Name", Order.Ascending}}),
+				    #"Fractionner la colonne par délimiteur" = Table.SplitColumn(#"Lignes triées", "Name - Copier", Splitter.SplitTextByDelimiter(" ", QuoteStyle.Csv), {"Name - Copier.1", "Name - Copier.2", "Name - Copier.3", "Name - Copier.4", "Name - Copier.5"}),
+				    #"Type modifié" = Table.TransformColumnTypes(#"Fractionner la colonne par délimiteur",{{"Name - Copier.1", type text}, {"Name - Copier.2", type text}, {"Name - Copier.3", type text}, {"Name - Copier.4", type text}, {"Name - Copier.5", type text}}),
+				    #"Colonnes fusionnées" = Table.CombineColumns(#"Type modifié",{"Name - Copier.1", "Name - Copier.2"},Combiner.CombineTextByDelimiter(" ", QuoteStyle.None),"Fusionné"),
+				    #"Valeur remplacée" = Table.ReplaceValue(#"Colonnes fusionnées"," -","",Replacer.ReplaceText,{"Fusionné"}),
+				    #"Colonnes renommées" = Table.RenameColumns(#"Valeur remplacée",{{"Fusionné", "ServiceName"}})
+				in
+				    #"Colonnes renommées"
+
+	annotation PBI_ResultType = Exception
+
+	annotation PBI_NavigationStepName = Navigation
+

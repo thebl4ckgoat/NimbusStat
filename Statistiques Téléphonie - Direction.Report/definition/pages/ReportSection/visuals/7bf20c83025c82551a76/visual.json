@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "7bf20c83025c82551a76",
+  "position": {
+    "x": 1488,
+    "y": 163,
+    "z": 8000,
+    "height": 149,
+    "width": 192,
+    "tabOrder": 0
+  },
+  "visualGroup": {
+    "displayName": "ØIVR Time",
+    "groupMode": "ScaleMode"
+  }
+}

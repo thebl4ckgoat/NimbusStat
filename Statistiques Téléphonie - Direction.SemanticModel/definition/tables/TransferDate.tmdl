@@ -1,0 +1,153 @@
+table TransferDate
+	lineageTag: 3eb5f87c-63e1-4fa6-86fd-7d2222ada681
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: Long Date
+		lineageTag: e75b334b-60da-42c2-bb1b-6dcafe6f0e5f
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 62b3bac1-dea9-4443-a268-47d004564c3d
+		summarizeBy: none
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column QuarterOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: 07726b70-4ba0-4bcd-a4a3-f1659366a62e
+		summarizeBy: none
+		sourceColumn: QuarterOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: c2d6bc74-888a-4a73-aad7-7f143305e7a6
+		summarizeBy: none
+		sourceColumn: MonthOfYear
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfMonth
+		dataType: int64
+		formatString: 0
+		lineageTag: 51a7d8dd-3420-4352-8ce0-938d95d19ac1
+		summarizeBy: none
+		sourceColumn: DayOfMonth
+
+		annotation SummarizationSetBy = Automatic
+
+	column DateInt
+		dataType: int64
+		formatString: 0
+		lineageTag: 423c9368-46cb-4565-b8a9-7befc51b8f98
+		summarizeBy: none
+		sourceColumn: DateInt
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthName
+		dataType: string
+		lineageTag: cbff51e9-1497-49de-97a3-92ca0d5c0cca
+		summarizeBy: none
+		sourceColumn: MonthName
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthInCalendar
+		dataType: string
+		lineageTag: bd9e62ee-7d02-4663-b739-bd4dc82c4daa
+		summarizeBy: none
+		sourceColumn: MonthInCalendar
+
+		annotation SummarizationSetBy = Automatic
+
+	column QuarterInCalendar
+		dataType: string
+		lineageTag: e11fd945-c93a-44f7-a124-8f223522f3a7
+		summarizeBy: none
+		sourceColumn: QuarterInCalendar
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayInWeek
+		dataType: int64
+		formatString: 0
+		lineageTag: 9eaea463-534d-47bd-92c9-cf51999f188a
+		summarizeBy: none
+		sourceColumn: DayInWeek
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfWeekName
+		dataType: string
+		lineageTag: 73db6874-bd9e-4d55-bb03-039afb451c28
+		summarizeBy: none
+		sourceColumn: DayOfWeekName
+
+		annotation SummarizationSetBy = Automatic
+
+	column WeekEnding
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: ea804063-5d04-410b-8d8b-1220d00b6223
+		summarizeBy: none
+		sourceColumn: WeekEnding
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column QuarterName
+		dataType: string
+		lineageTag: 6dd7f43f-bfe2-4980-beb6-f7f98a741f58
+		summarizeBy: none
+		sourceColumn: QuarterName
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYY-MM
+		dataType: string
+		lineageTag: 64ef8989-8aa9-46a3-bbc3-1e370f00cbaa
+		summarizeBy: none
+		sourceColumn: YYYY-MM
+
+		annotation SummarizationSetBy = Automatic
+
+	column DateSandbox
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: aed6e239-3896-4ccb-9d91-81f6dac1d568
+		summarizeBy: none
+		sourceColumn: DateSandbox
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition TransferDate-1e7eb412-88c9-4807-ad99-0fe6c5fe6644 = m
+		mode: import
+		queryGroup: DateDimensions
+		source = ```
+				let
+				    Source = SessionDates
+				  
+				in
+				    Source
+				```
+
+	annotation PBI_ResultType = Table
+

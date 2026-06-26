@@ -1,0 +1,33 @@
+table UserSessionActionGroups
+	lineageTag: 6902acb5-a9dc-4066-a4a9-cd4ee935fc7e
+
+	column Id
+		dataType: int64
+		formatString: 0
+		lineageTag: 74065174-312b-49c0-9076-b037dd2fe621
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		lineageTag: 5061ade9-4117-4527-adec-7c7e746a1220
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition UserSessionActionGroups = m
+		mode: import
+		queryGroup: Dimensions
+		source =
+				let
+				    Source = GlobalSource,
+				    UserSessionOutcomeActionGroups_table = Source{[Name="UserSessionOutcomeActionGroups",Signature="table"]}[Data],
+				    StopFolding = Table.StopFolding(UserSessionOutcomeActionGroups_table)
+				in
+				    StopFolding
+
+	annotation PBI_ResultType = Exception
+

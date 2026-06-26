@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "dbe09b1bfe80eac0d865",
+  "position": {
+    "x": 0,
+    "y": 0,
+    "z": 7000,
+    "height": 1062,
+    "width": 58,
+    "tabOrder": 4000
+  },
+  "visualGroup": {
+    "displayName": "Side panel",
+    "groupMode": "ScaleMode"
+  }
+}

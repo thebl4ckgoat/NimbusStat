@@ -1,0 +1,506 @@
+table UserStates
+	lineageTag: d511b82d-7966-405c-8659-3082dad19dd9
+
+	refreshPolicy
+		policyType: basic
+		rollingWindowGranularity: year
+		rollingWindowPeriods: 1
+		incrementalGranularity: day
+		incrementalPeriods: 1
+		sourceExpression = ```
+			//1. first evaluate whether the User Startes table should be loaded with data or not
+			let
+			    UserStates = 
+			    
+			if #"Load User States" = true then
+			    
+			    let
+			        Source = GlobalSource,
+			        UserStates_table0 = Source{[Name="UserStates",Signature="table"]}[Data], 
+			        #"Filtered Rows" = Table.SelectRows(UserStates_table0, each ([Start] >= DateTime.AddZone(RangeStart,0) and [Start] < DateTime.AddZone(RangeEnd,0))) 
+			    in
+			    #"Filtered Rows"
+			     
+			else
+			    #"EmptyUserStatesTable"
+			
+			//2. then add the required data transformations
+			
+			//add End and Start converted into Local timezone so that they can be used for calculations using the time zone selected in the parameters by the user
+			    ,#"Inserted Local Start" = Table.AddColumn(UserStates, "StartLocal", each ToLocalDateTimeZone([Start]), type datetimezone),
+			    #"Inserted Local End" = Table.AddColumn(#"Inserted Local Start", "EndLocal", each ToLocalDateTimeZone([End]), type datetimezone),
+			    #"TableWithDuration" = Table.AddColumn(#"Inserted Local End", "PeriodLength", each [EndLocal]-[StartLocal]),
+			    #"Inserted Seconds" = Table.AddColumn(#"TableWithDuration", "Second", each Duration.Seconds([PeriodLength]), type number),
+			    #"Inserted Minutes" = Table.AddColumn(#"Inserted Seconds", "Minute", each Duration.Minutes([PeriodLength]), type number),
+			    #"Inserted Hours" = Table.AddColumn(#"Inserted Minutes", "Hour", each Duration.Hours([PeriodLength]), type number),
+			    #"Inserted Days" = Table.AddColumn(#"Inserted Hours", "Day", each Duration.Days([PeriodLength]), type number),
+			    #"Inserted Total Seconds" = Table.AddColumn(#"Inserted Days", "Total Seconds", each Duration.TotalSeconds([PeriodLength]), type number),
+			    #"Inserted Total Minutes" = Table.AddColumn(#"Inserted Total Seconds", "Total Minutes", each Duration.TotalMinutes([PeriodLength]), type number),
+			    #"Inserted Total Hours" = Table.AddColumn(#"Inserted Total Minutes", "Total Hours", each Duration.TotalHours([PeriodLength]), type number),
+			    #"Add Date" = Table.AddColumn(#"Inserted Total Hours", "Date", each DateTime.Date([StartLocal]), type date)
+			    ,#"Added Start-EndLocal" = Table.AddColumn(#"Add Date", "Start-EndLocal", each Text.Combine({ Text.From(DateTime.From(DateTimeZone.RemoveZone([StartLocal]))), Text.From(DateTime.From (DateTimeZone.RemoveZone([EndLocal])))}, " - "))
+			in
+			    #"Added Start-EndLocal"
+			```
+
+	measure ΣDurationSeconds = SUM(UserStates[Total Seconds])
+		lineageTag: cb9a670c-cdb9-4387-b023-42d969d46cdf
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ΣDuration_HHMMSS =
+			
+			IF (NOT ISBLANK ([ΣDurationSeconds]), //show blank instead of empty string
+			    IF(INT([ΣDurationSeconds])>=86400, FORMAT (QUOTIENT(INT([ΣDurationSeconds]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ΣDurationSeconds]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ΣDurationSeconds]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ΣDurationSeconds]), 60), "00") //SECONDS
+			)
+		lineageTag: bd36dfe2-0e81-4ca8-89fc-a4330221ddaf
+
+	measure ΣOfflineSeconds = CALCULATE([ΣDurationSeconds], FILTER(UserStateTypes,UserStateTypes[State Type] = "Offline"))
+		lineageTag: 7200625f-0d90-41a2-9cee-28d70ea0f6b5
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ΣOffline_HHMMSS =
+			
+			IF (NOT ISBLANK ([ΣOfflineSeconds]), //show blank instead of empty string
+			    IF(INT([ΣOfflineSeconds])>=86400, FORMAT (QUOTIENT(INT([ΣOfflineSeconds]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ΣOfflineSeconds]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ΣOfflineSeconds]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ΣOfflineSeconds]), 60), "00") //SECONDS
+			)
+		lineageTag: e1c90e71-fcce-4920-9fc0-d2256fc4a32f
+
+	measure ΣSelectableSeconds = CALCULATE([ΣDurationSeconds], FILTER(UserStateTypes,UserStateTypes[State Type] = "Selectable"))
+		lineageTag: a242ab60-eff6-4658-b67d-fde2882f5ade
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ΣSelectable_HHMMSS =
+			
+			IF (NOT ISBLANK ([ΣSelectableSeconds]), //show blank instead of empty string
+			    IF(INT([ΣSelectableSeconds])>=86400, FORMAT (QUOTIENT(INT([ΣSelectableSeconds]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ΣSelectableSeconds]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ΣSelectableSeconds]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ΣSelectableSeconds]), 60), "00") //SECONDS
+			)
+		lineageTag: e7f1fc92-a796-4fbc-9028-af3c7c94f188
+
+	measure %Offline = DIVIDE(UserStates[ΣOfflineSeconds] * 100, UserStates[ΣDurationSeconds])
+		lineageTag: 7cac2765-9cfa-4c7f-b852-9747b3693370
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ΣConnectedSeconds = CALCULATE([ΣDurationSeconds], FILTER(UserStateTypes,UserStateTypes[State Type] = "Connected"))
+		lineageTag: 9c3e4192-d91a-45ee-8513-0910906db3d3
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ØConnectedSeconds = INT(CALCULATE(AVERAGE(UserStates[Total Seconds]), UserStates[Total Seconds] > 0))
+		formatString: 0
+		lineageTag: 60c32e47-e323-4f6a-b30d-a5b7e29a1ada
+
+	measure ØConnected_HHMMSS =
+			
+			IF (NOT ISBLANK ([ØConnectedSeconds]), //show blank instead of empty string
+			    IF(INT([ØConnectedSeconds])>=86400, FORMAT (QUOTIENT(INT([ØConnectedSeconds]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ØConnectedSeconds]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ØConnectedSeconds]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ØConnectedSeconds]), 60), "00") //SECONDS
+			)
+		lineageTag: 8c973820-57e4-4ba2-b0aa-b9587e1e4325
+
+	measure %Selectable = DIVIDE(UserStates[ΣSelectableSeconds] * 100, UserStates[ΣDurationSeconds])
+		lineageTag: e5bde674-268b-45b8-9cc2-d7cc97debde0
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ΣOffDutySeconds = CALCULATE([ΣDurationSeconds], FILTER(UserStateTypes,UserStateTypes[State Type] = "Off Duty"))
+		lineageTag: befeb18a-bfc1-44a3-b9a9-e877682936a1
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ΣOffDuty_HHMMSS =
+			
+			IF (NOT ISBLANK ([ΣOffDutySeconds]), //show blank instead of empty string
+			    IF(INT([ΣOffDutySeconds])>=86400, FORMAT (QUOTIENT(INT([ΣOffDutySeconds]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ΣOffDutySeconds]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ΣOffDutySeconds]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ΣOffDutySeconds]), 60), "00") //SECONDS
+			)
+		lineageTag: 8d3f3159-a50b-4e39-8fcf-57aa0fd5f1ef
+
+	measure ΣACWSeconds = CALCULATE([ΣDurationSeconds], FILTER(UserStateTypes,UserStateTypes[State Type] = "After Call Work"))
+		lineageTag: bc70c1e7-4ed6-40ba-b2f1-126eca7f45f2
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ΣACW_HHMMSS =
+			
+			IF (NOT ISBLANK ([ΣACWSeconds]), //show blank instead of empty string
+			    IF(INT([ΣACWSeconds])>=86400, FORMAT (QUOTIENT(INT([ΣACWSeconds]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ΣACWSeconds]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ΣACWSeconds]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ΣACWSeconds]), 60), "00") //SECONDS
+			)
+		lineageTag: a122d492-adc1-4fe4-9a1a-cf4ca82fcda4
+
+	measure ΣConnected_HHMMSS =
+			
+			IF (NOT ISBLANK ([ΣConnectedSeconds]), //show blank instead of empty string
+			    IF(INT([ΣConnectedSeconds])>=86400, FORMAT (QUOTIENT(INT([ΣConnectedSeconds]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ΣConnectedSeconds]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ΣConnectedSeconds]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ΣConnectedSeconds]), 60), "00") //SECONDS
+			)
+		lineageTag: 253ddfcd-14bb-4213-b64e-dfa2e67f5874
+
+	measure ΣNotSelectableSeconds = CALCULATE([ΣDurationSeconds], FILTER(UserStateTypes,UserStateTypes[State Type] = "Not Selectable"))
+		lineageTag: 10f805fe-459b-40b4-af0a-7a32b25c95b7
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ΣNotSelectable_HHMMSS =
+			
+			IF (NOT ISBLANK ([ΣNotSelectableSeconds]), //show blank instead of empty string
+			    IF(INT([ΣNotSelectableSeconds])>=86400, FORMAT (QUOTIENT(INT([ΣNotSelectableSeconds]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ΣNotSelectableSeconds]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ΣNotSelectableSeconds]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ΣNotSelectableSeconds]), 60), "00") //SECONDS
+			)
+		lineageTag: c419645b-844c-40b8-b4bb-a0b6477a6d39
+
+	measure ΣRingingSeconds = CALCULATE([ΣDurationSeconds], FILTER(UserStateTypes,UserStateTypes[State Type] = "Ringing"))
+		lineageTag: f60e8c08-db94-4bd5-ba9f-f2be1ceb3035
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ΣRinging_HHMMSS =
+			
+			IF (NOT ISBLANK ([ΣRingingSeconds]), //show blank instead of empty string
+			    IF(INT([ΣRingingSeconds])>=86400, FORMAT (QUOTIENT(INT([ΣRingingSeconds]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ΣRingingSeconds]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ΣRingingSeconds]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ΣRingingSeconds]), 60), "00") //SECONDS
+			)
+		lineageTag: b59919f8-2315-4a66-808e-9aab666e9c93
+
+	measure ΣUnknownSeconds = CALCULATE([ΣDurationSeconds], FILTER(UserStateTypes,UserStateTypes[State Type] = "Unknown"))
+		lineageTag: ff95cefd-9cac-45d1-afc5-03d52a498fb3
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ΣUnknown_HHMMSS =
+			
+			IF (NOT ISBLANK ([ΣUnknownSeconds]), //show blank instead of empty string
+			    IF(INT([ΣUnknownSeconds])>=86400, FORMAT (QUOTIENT(INT([ΣUnknownSeconds]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ΣUnknownSeconds]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ΣUnknownSeconds]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ΣUnknownSeconds]), 60), "00") //SECONDS
+			)
+		lineageTag: 5870bb3c-386b-47c6-9ac8-dd38fbde0274
+
+	measure %Connected = DIVIDE(UserStates[ΣConnectedSeconds] * 100, UserStates[ΣDurationSeconds])
+		lineageTag: 23f151f0-8fca-477a-ba3d-7e7e9a06888b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure %ACW = DIVIDE(UserStates[ΣACWSeconds] * 100, UserStates[ΣDurationSeconds])
+		lineageTag: 04e9f377-be5e-4021-b7cf-b5543b422ab5
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure %NotSelectable = DIVIDE(UserStates[ΣNotSelectableSeconds] * 100, UserStates[ΣDurationSeconds])
+		lineageTag: 6dbae054-2d25-4076-bd49-2bf87fb2f4b9
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure %Ringing = DIVIDE(UserStates[ΣRingingSeconds] * 100, UserStates[ΣDurationSeconds])
+		lineageTag: 2dc93dfd-650f-4ebc-bad3-6ec5903fcbfe
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure %OffDuty = DIVIDE(UserStates[ΣOffDutySeconds] * 100, UserStates[ΣDurationSeconds])
+		lineageTag: 2496a128-4ede-4116-b0b9-158b6f1b2587
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure %Unknown = DIVIDE(UserStates[ΣUnknownSeconds] * 100, UserStates[ΣDurationSeconds])
+		lineageTag: 7b06cadd-dc17-4956-aeca-e36efabcb1d8
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ΣDurationInProfile =
+			
+			CALCULATE(
+				[ΣDurationSeconds],
+				NOT 'UserStates'[ResponsibilityProfileId]
+					IN { "00000000-0000-0000-0000-000000000000" }
+			)
+		lineageTag: 5f31f7fd-07ff-4775-a2a6-6df185fc368a
+
+		extendedProperty MeasureTemplate =
+				{
+				  "daxTemplateName": "FilteredMeasure",
+				  "version": 0
+				}
+
+		changedProperty = FormatString
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ΣDurationInProfile_HHMMSS =
+			
+			IF (NOT ISBLANK ([ΣDurationInProfile]), //show blank instead of empty string
+			    IF(INT([ΣDurationInProfile])>=86400, FORMAT (QUOTIENT(INT([ΣDurationInProfile]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ΣDurationInProfile]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ΣDurationInProfile]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ΣDurationInProfile]), 60), "00") //SECONDS
+			)
+		lineageTag: 9adb6f06-537f-4ecc-a990-e7d3da432485
+
+	column Id
+		dataType: string
+		lineageTag: 9d565854-a86a-44f0-844e-4ddd082a706a
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column TenantId
+		dataType: string
+		lineageTag: 6994da7e-ddf8-458b-aa9c-2029c56fd74e
+		summarizeBy: none
+		sourceColumn: TenantId
+
+		annotation SummarizationSetBy = Automatic
+
+	column UserO365Id
+		dataType: string
+		lineageTag: a8e14d9a-c8b3-4d2d-b474-2191bb4b3268
+		summarizeBy: none
+		sourceColumn: UserO365Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Start
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: ab8ed736-a8e0-40d6-8ac7-56a33fad8ba0
+		summarizeBy: none
+		sourceColumn: Start
+
+		annotation SummarizationSetBy = Automatic
+
+	column End
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 50bbb4d2-5913-466a-a971-1399c7d8ec12
+		summarizeBy: none
+		sourceColumn: End
+
+		annotation SummarizationSetBy = Automatic
+
+	column UserStateTypeId
+		dataType: int64
+		formatString: 0
+		lineageTag: ad0ba0c8-3834-4c2f-a48f-2ae9504e63c1
+		summarizeBy: none
+		sourceColumn: UserStateTypeId
+
+		annotation SummarizationSetBy = Automatic
+
+	column ResponsibilityProfileId
+		dataType: string
+		lineageTag: 9df4dae3-c135-457b-9800-bac4b7439cc3
+		summarizeBy: none
+		sourceColumn: ResponsibilityProfileId
+
+		annotation SummarizationSetBy = Automatic
+
+	column NotAvailableReasonId
+		dataType: string
+		lineageTag: 88cded7e-f176-4aaa-9f53-6354421ece1c
+		summarizeBy: none
+		sourceColumn: NotAvailableReasonId
+
+		annotation SummarizationSetBy = Automatic
+
+	column NotAvailableReasonComment
+		dataType: string
+		lineageTag: d804170c-22f4-40ba-ba41-2a53aa172a70
+		summarizeBy: none
+		sourceColumn: NotAvailableReasonComment
+
+		annotation SummarizationSetBy = Automatic
+
+	column PeriodLength
+		dataType: string
+		lineageTag: b05dd068-6354-49e3-9de2-8dbd47dcf7a1
+		summarizeBy: none
+		sourceColumn: PeriodLength
+
+		annotation SummarizationSetBy = Automatic
+
+	column Second
+		dataType: double
+		lineageTag: 44da9e37-9f6a-4e3c-b4d2-5a16c31c1b84
+		summarizeBy: sum
+		sourceColumn: Second
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Minute
+		dataType: double
+		lineageTag: e165977c-5813-4873-b8c9-2b08a2bd95d7
+		summarizeBy: sum
+		sourceColumn: Minute
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Hour
+		dataType: double
+		lineageTag: 681a08c9-6c6b-4766-af38-dc253643d56c
+		summarizeBy: sum
+		sourceColumn: Hour
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Day
+		dataType: double
+		lineageTag: cb4fc106-0497-4f2a-90f3-cbf0859a292f
+		summarizeBy: sum
+		sourceColumn: Day
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Total Seconds'
+		dataType: double
+		lineageTag: 3c16af97-575c-4020-a690-d6b133b9c1ac
+		summarizeBy: sum
+		sourceColumn: Total Seconds
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Total Minutes'
+		dataType: double
+		lineageTag: 742f4fa0-19b6-4436-b1cb-08e355bbcb5d
+		summarizeBy: sum
+		sourceColumn: Total Minutes
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Total Hours'
+		dataType: double
+		lineageTag: afc6be9a-735a-481d-a2ad-e30a53d81c5d
+		summarizeBy: sum
+		sourceColumn: Total Hours
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 5031342b-e4b0-49db-8c9b-1d6458b59d61
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column OrganizationUnitId
+		dataType: string
+		lineageTag: feed8dc7-720c-4fdd-944f-c9f29974d7a6
+		summarizeBy: none
+		sourceColumn: OrganizationUnitId
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartLocal
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: bac7ab44-7266-4870-b07a-0c60c8d5e137
+		summarizeBy: none
+		sourceColumn: StartLocal
+
+		annotation SummarizationSetBy = Automatic
+
+	column EndLocal
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 15ebdad7-00b2-4ab7-8628-c9b4ee173626
+		summarizeBy: none
+		sourceColumn: EndLocal
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Concatenates the Start and End times converted to the time zone selected in the parameters at refresh time.
+	/// For example: "24/09/2024 07:50:46 - 24/09/2024 14:42:56"
+	column Start-EndLocal
+		dataType: string
+		lineageTag: 2f6cbf4a-9f66-41e1-bbcd-0eebee198a74
+		summarizeBy: none
+		sourceColumn: Start-EndLocal
+
+		annotation SummarizationSetBy = Automatic
+
+	partition UserStates-a8e31be4-7795-4ba3-a7e5-74c77a0e5c85 = m
+		mode: import
+		queryGroup: Facts\UserStates
+		source = ```
+				//1. first evaluate whether the User Startes table should be loaded with data or not
+				let
+				    UserStates = 
+				    
+				if #"Load User States" = true then
+				    
+				    let
+				        Source = GlobalSource,
+				        UserStates_table0 = Source{[Name="UserStates",Signature="table"]}[Data], 
+				        #"Filtered Rows" = Table.SelectRows(UserStates_table0, each ([Start] >= DateTime.AddZone(RangeStart,0) and [Start] < DateTime.AddZone(RangeEnd,0))) 
+				    in
+				    #"Filtered Rows"
+				     
+				else
+				    #"EmptyUserStatesTable"
+				
+				//2. then add the required data transformations
+				
+				//add End and Start converted into Local timezone so that they can be used for calculations using the time zone selected in the parameters by the user
+				    ,#"Inserted Local Start" = Table.AddColumn(UserStates, "StartLocal", each ToLocalDateTimeZone([Start]), type datetimezone),
+				    #"Inserted Local End" = Table.AddColumn(#"Inserted Local Start", "EndLocal", each ToLocalDateTimeZone([End]), type datetimezone),
+				    #"TableWithDuration" = Table.AddColumn(#"Inserted Local End", "PeriodLength", each [EndLocal]-[StartLocal]),
+				    #"Inserted Seconds" = Table.AddColumn(#"TableWithDuration", "Second", each Duration.Seconds([PeriodLength]), type number),
+				    #"Inserted Minutes" = Table.AddColumn(#"Inserted Seconds", "Minute", each Duration.Minutes([PeriodLength]), type number),
+				    #"Inserted Hours" = Table.AddColumn(#"Inserted Minutes", "Hour", each Duration.Hours([PeriodLength]), type number),
+				    #"Inserted Days" = Table.AddColumn(#"Inserted Hours", "Day", each Duration.Days([PeriodLength]), type number),
+				    #"Inserted Total Seconds" = Table.AddColumn(#"Inserted Days", "Total Seconds", each Duration.TotalSeconds([PeriodLength]), type number),
+				    #"Inserted Total Minutes" = Table.AddColumn(#"Inserted Total Seconds", "Total Minutes", each Duration.TotalMinutes([PeriodLength]), type number),
+				    #"Inserted Total Hours" = Table.AddColumn(#"Inserted Total Minutes", "Total Hours", each Duration.TotalHours([PeriodLength]), type number),
+				    #"Add Date" = Table.AddColumn(#"Inserted Total Hours", "Date", each DateTime.Date([StartLocal]), type date)
+				    ,#"Added Start-EndLocal" = Table.AddColumn(#"Add Date", "Start-EndLocal", each Text.Combine({ Text.From(DateTime.From(DateTimeZone.RemoveZone([StartLocal]))), Text.From(DateTime.From (DateTimeZone.RemoveZone([EndLocal])))}, " - "))
+				in
+				    #"Added Start-EndLocal"
+				```
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

@@ -1,0 +1,105 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "ecc9c7a30307da9a08cd",
+  "position": {
+    "x": 0,
+    "y": 150.68814432989691,
+    "z": 10000,
+    "height": 83,
+    "width": 620,
+    "tabOrder": 10000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "UnifiedSessions"
+                        }
+                      },
+                      "Property": "StartedAt"
+                    }
+                  },
+                  "Function": 3
+                }
+              },
+              "queryRef": "UnifiedSessions.StartedAt",
+              "nativeQueryRef": "Earliest UnifiedSession",
+              "displayName": "Earliest UnifiedSession"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "UnifiedSessions"
+                        }
+                      },
+                      "Property": "StartedAt"
+                    }
+                  },
+                  "Function": 4
+                }
+              },
+              "queryRef": "UnifiedSessions.StartedAt1",
+              "nativeQueryRef": "Latest UnifiedSession",
+              "displayName": "Latest UnifiedSession"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "UnifiedSessions"
+                        }
+                      },
+                      "Property": "UnifiedConversationId"
+                    }
+                  },
+                  "Function": 5
+                }
+              },
+              "queryRef": "UnifiedSessions.UnifiedConversationId",
+              "nativeQueryRef": "Count of UnifiedConversationId"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Unified Sessions'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

@@ -1,0 +1,76 @@
+table Users
+	lineageTag: 710f5b47-1161-4ffc-8a9d-3614582a3ff1
+
+	measure ΣTotalUsers = COUNT(Users[Id])
+		formatString: 0
+		lineageTag: f1ba03be-40f3-4f00-8f9e-4437a7e718d2
+
+	column Id
+		dataType: string
+		isHidden
+		lineageTag: 962e40cb-d375-4359-8e25-974e6367e0c7
+		summarizeBy: none
+		sourceColumn: Id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'User Name'
+		dataType: string
+		lineageTag: 0705acf6-d129-44ca-abc7-ca88d66302ce
+		summarizeBy: none
+		sourceColumn: User Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column TenantId
+		dataType: string
+		lineageTag: efb71f1b-d1e0-48a1-a345-f0d8bb360719
+		summarizeBy: none
+		sourceColumn: TenantId
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrganizationUnitId
+		dataType: string
+		lineageTag: 7fc807c8-eb36-491e-a5e9-9cf2fa3aed2d
+		summarizeBy: none
+		sourceColumn: OrganizationUnitId
+
+		annotation SummarizationSetBy = Automatic
+
+	column Upn
+		dataType: string
+		lineageTag: a0c9bc78-eaac-4f48-9705-e4d72cd122bc
+		summarizeBy: none
+		sourceColumn: Upn
+
+		annotation SummarizationSetBy = Automatic
+
+	column Groupe =
+			
+			LOOKUPVALUE (
+			    MappingAgents[Groupe],
+			    MappingAgents[Agent], Users[User Name]
+			)
+		lineageTag: 5b187597-a4e7-4621-842a-8c04e411002d
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Users-dfc8f567-dc5f-45f2-9c1b-c3598faa45e6 = m
+		mode: import
+		queryGroup: Dimensions
+		source = ```
+				let
+				    Source = GlobalSource,
+				    Users_table = Source{[Name="Users",Signature="table"]}[Data],
+				    StopFolding = Table.StopFolding(Users_table),	
+				    #"Renamed Columns" = Table.RenameColumns(StopFolding,{{"Name", "User Name"}})
+				in
+				    #"Renamed Columns"
+				```
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "eaf0ca069bed9643dd68",
+  "position": {
+    "x": 64.7563946406821,
+    "y": 159.90864799025579,
+    "z": 1000,
+    "height": 437.43605359317905,
+    "width": 508.80024360535936,
+    "tabOrder": 9000
+  },
+  "visualGroup": {
+    "displayName": "User States Pie",
+    "groupMode": "ScaleMode"
+  }
+}

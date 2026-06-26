@@ -1,0 +1,36 @@
+table OutcomeGroups
+	lineageTag: 6a0f8f78-d61e-4e6e-b558-1a18660347f6
+
+	column Id
+		dataType: int64
+		formatString: 0
+		lineageTag: 97987c5f-998c-4107-8a26-f8b688c02c38
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column OutcomeGroup
+		dataType: string
+		lineageTag: e9ee7c9a-82f3-4003-96d7-127c706d44ab
+		summarizeBy: none
+		sourceColumn: OutcomeGroup
+
+		annotation SummarizationSetBy = Automatic
+
+	partition OutcomeGroups = m
+		mode: import
+		queryGroup: Dimensions
+		source =
+				let
+				    Source = GlobalSource,
+				    ServiceSessionOutcomeGroups_table = Source{[Name="ServiceSessionOutcomeGroups",Signature="table"]}[Data],
+				    StopFolding = Table.StopFolding(ServiceSessionOutcomeGroups_table),
+				    #"Renamed Columns" = Table.RenameColumns(StopFolding, {{"Name", "OutcomeGroup"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Exception
+

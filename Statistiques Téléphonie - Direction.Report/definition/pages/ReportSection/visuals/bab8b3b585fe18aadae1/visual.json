@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "bab8b3b585fe18aadae1",
+  "position": {
+    "x": 768.38945005611674,
+    "y": 663.66442199775531,
+    "z": 4000,
+    "height": 400.63411896745231,
+    "width": 1111.79012345679,
+    "tabOrder": 7000
+  },
+  "visualGroup": {
+    "displayName": "Chart Task by Volume and Hour",
+    "groupMode": "ScaleMode"
+  }
+}

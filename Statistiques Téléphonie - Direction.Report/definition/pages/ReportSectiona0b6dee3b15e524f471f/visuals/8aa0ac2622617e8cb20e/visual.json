@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "8aa0ac2622617e8cb20e",
+  "position": {
+    "x": 325.23919431312186,
+    "y": 6.7796610169490723,
+    "z": 8000,
+    "height": 144.04993909866019,
+    "width": 250,
+    "tabOrder": 5000
+  },
+  "visualGroup": {
+    "displayName": "ØConnected Time",
+    "groupMode": "ScaleMode"
+  }
+}

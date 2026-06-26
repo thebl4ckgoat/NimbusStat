@@ -1,0 +1,195 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "18426d878763a7882aa4",
+  "displayName": "Tags-Codes All Users",
+  "displayOption": "FitToPage",
+  "height": 1085,
+  "width": 1920,
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "Filter3a867c90865e57a3c5dc",
+        "displayName": "Modality",
+        "ordinal": 0,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ServiceSessionModalityType"
+              }
+            },
+            "Property": "Name"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "Filtera1aaf48953eb04cd5057",
+        "displayName": "TaskType",
+        "ordinal": 1,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "TaskTypes"
+              }
+            },
+            "Property": "Name"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User",
+        "objects": {
+          "general": [
+            {
+              "properties": {
+                "requireSingleSelect": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "true"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "Filter1775a37e27390b72c36d",
+        "ordinal": 2,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Tags"
+              }
+            },
+            "Property": "Tag"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "ff676d0163dab401f23b",
+        "ordinal": 3,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "PrimaryCodesUserSessions"
+              }
+            },
+            "Property": "PrimaryCode"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "f2c0a6f538c4c84b3af3",
+        "ordinal": 4,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "SecondaryCodes"
+              }
+            },
+            "Property": "SecondaryCode"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      }
+    ],
+    "filterSortOrder": "Custom"
+  },
+  "pageBinding": {
+    "name": "2e29b8089dc058076908",
+    "type": "Drillthrough",
+    "parameters": [
+      {
+        "name": "Param_Filtera1aaf48953eb04cd5057",
+        "boundFilter": "Filtera1aaf48953eb04cd5057",
+        "qnaSingleSelectRequired": true,
+        "fieldExpr": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "TaskTypes"
+              }
+            },
+            "Property": "Name"
+          }
+        }
+      }
+    ]
+  },
+  "objects": {
+    "background": [
+      {
+        "properties": {
+          "transparency": {
+            "expr": {
+              "Literal": {
+                "Value": "0D"
+              }
+            }
+          },
+          "color": {
+            "solid": {
+              "color": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'#e6e6e6'"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "visibility": "HiddenInViewMode",
+  "visualInteractions": [
+    {
+      "source": "35b23bd8b7de200ec008",
+      "target": "1a52f5cc06063a69688b",
+      "type": "DataFilter"
+    },
+    {
+      "source": "48c2fdf09ac11c3aa100",
+      "target": "1a52f5cc06063a69688b",
+      "type": "DataFilter"
+    },
+    {
+      "source": "48c2fdf09ac11c3aa100",
+      "target": "dfafce70d5dc07739edd",
+      "type": "DataFilter"
+    },
+    {
+      "source": "7ebf07ed8238c2550bbd",
+      "target": "48c2fdf09ac11c3aa100",
+      "type": "DataFilter"
+    },
+    {
+      "source": "7ebf07ed8238c2550bbd",
+      "target": "35b23bd8b7de200ec008",
+      "type": "DataFilter"
+    },
+    {
+      "source": "7ebf07ed8238c2550bbd",
+      "target": "dfafce70d5dc07739edd",
+      "type": "DataFilter"
+    },
+    {
+      "source": "7ebf07ed8238c2550bbd",
+      "target": "1a52f5cc06063a69688b",
+      "type": "DataFilter"
+    }
+  ]
+}

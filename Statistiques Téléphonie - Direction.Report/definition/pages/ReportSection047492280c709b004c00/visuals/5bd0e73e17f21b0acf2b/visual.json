@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "5bd0e73e17f21b0acf2b",
+  "position": {
+    "x": 1746.432,
+    "y": 12.288,
+    "z": 3000,
+    "height": 167.424,
+    "width": 156.672,
+    "tabOrder": 5000
+  },
+  "visualGroup": {
+    "displayName": "Reset Filter",
+    "groupMode": "ScaleMode"
+  }
+}

@@ -1,0 +1,137 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "188e8857101eee1e5dd1",
+  "position": {
+    "x": 0,
+    "y": 392.909793814433,
+    "z": 2000,
+    "height": 83,
+    "width": 620,
+    "tabOrder": 5000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "UserSessions"
+                        }
+                      },
+                      "Property": "UserSelectedAt"
+                    }
+                  },
+                  "Function": 3
+                }
+              },
+              "queryRef": "UserSessions.UserSelectedAt",
+              "nativeQueryRef": "Earliest UserSession",
+              "displayName": "Earliest UserSession"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "UserSessions"
+                        }
+                      },
+                      "Property": "UserSelectedAt"
+                    }
+                  },
+                  "Function": 4
+                }
+              },
+              "queryRef": "UserSessions.UserSelectedAt1",
+              "nativeQueryRef": "Latest UserSession",
+              "displayName": "Latest UserSession"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "UserSessions"
+                    }
+                  },
+                  "Property": "ΣTotalUserSessions"
+                }
+              },
+              "queryRef": "UserSessions.ΣTotalUserSessions",
+              "nativeQueryRef": "ΣTotalUserSessions"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "160.81574717967882D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "UserSessions.UserSelectedAt"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "167.8350465422197D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "UserSessions.UserSelectedAt1"
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {}
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'User Sessions'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

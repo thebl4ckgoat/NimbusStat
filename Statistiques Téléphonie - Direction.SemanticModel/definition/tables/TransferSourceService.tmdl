@@ -1,0 +1,88 @@
+table TransferSourceService
+	lineageTag: 402a083b-dda0-4d37-ac49-6c58c80f6c8d
+
+	column Id
+		dataType: string
+		lineageTag: 91e3246e-05c0-4ff9-95c2-fef1413120bf
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		lineageTag: 4bd09bea-76c2-4195-8bd6-d94b6d11b76a
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column TenantId
+		dataType: string
+		lineageTag: 67fd6af6-f0cb-4111-9ad0-881a0455c079
+		summarizeBy: none
+		sourceColumn: TenantId
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrganizationUnitId
+		dataType: string
+		lineageTag: fdb1235e-391b-460a-96bc-05414f57c7a4
+		summarizeBy: none
+		sourceColumn: OrganizationUnitId
+
+		annotation SummarizationSetBy = Automatic
+
+	column ServiceOrganizationUnitId
+		dataType: string
+		lineageTag: f712c554-8dc6-4cf8-b938-d0a847257f52
+		summarizeBy: none
+		sourceColumn: ServiceOrganizationUnitId
+
+		annotation SummarizationSetBy = Automatic
+
+	column ServiceName
+		dataType: string
+		lineageTag: 8c753857-85a7-49f7-a638-483885e1086c
+		summarizeBy: none
+		sourceColumn: ServiceName
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Name - Copier.3'
+		dataType: string
+		lineageTag: f3021e10-fb3e-43b6-8def-e6cabd9553db
+		summarizeBy: none
+		sourceColumn: Name - Copier.3
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Name - Copier.4'
+		dataType: string
+		lineageTag: 7483e626-aa8d-41b8-aeea-65aa8b9238be
+		summarizeBy: none
+		sourceColumn: Name - Copier.4
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Name - Copier.5'
+		dataType: string
+		lineageTag: 9677a5eb-c50b-4d20-8a6c-45aad1d4fc8b
+		summarizeBy: none
+		sourceColumn: Name - Copier.5
+
+		annotation SummarizationSetBy = Automatic
+
+	partition TransferSourceService = m
+		mode: import
+		queryGroup: Dimensions
+		source =
+				let
+				    Source = Services
+				in
+				    Source
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

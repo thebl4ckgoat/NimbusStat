@@ -1,0 +1,1367 @@
+table ServiceSessions
+	lineageTag: c68f83d6-9fa8-4371-be9c-aec45e8c3549
+
+	refreshPolicy
+		policyType: basic
+		rollingWindowGranularity: year
+		rollingWindowPeriods: 1
+		incrementalGranularity: day
+		incrementalPeriods: 1
+		sourceExpression = ```
+			let
+			    Source = GlobalSource, // source from odata preview
+			    
+			    ServiceSessions_table = Source{[Name="ServiceSessions",Signature="table"]}[Data],
+			    #"Filtered Rows" = Table.SelectRows(ServiceSessions_table, each ([StartedAt] >= DateTime.AddZone(RangeStart,0) and [StartedAt] < DateTime.AddZone(RangeEnd,0))), // date range from parameters with incremental refresh naming convention
+			
+			    #"Inserted Local Time" = Table.AddColumn(#"Filtered Rows", "Local Time", each ToLocalDateTimeZone([StartedAt]), type datetimezone),
+			    #"Inserted Date" = Table.AddColumn(#"Inserted Local Time", "Date", each DateTime.Date([Local Time]), type date),
+			    #"Inserted Time" = Table.AddColumn(#"Inserted Date", "Time", each DateTime.Time([Local Time]), type time),
+			    HourCol = Table.AddColumn(#"Inserted Time", "Hours", each Time.Hour([Time]), Int64.Type),
+			    MinuteCol = Table.AddColumn(HourCol, "Minutes", each Time.Minute([Time]), Int64.Type),
+			    Fixed15Min = Table.AddColumn(MinuteCol,"Fixed15Min",each 
+			            if Number.IntegerDivide([Minutes],15) = 0 then Number.ToText([Hours]) & ":00:00"
+			            else if Number.IntegerDivide([Minutes],15) = 1 then Number.ToText([Hours]) & ":15:00"
+			            else if Number.IntegerDivide([Minutes],15) = 2 then Number.ToText([Hours]) & ":30:00"
+			            else Number.ToText([Hours]) & ":45:00"),
+			    TotalQueueTimeNullto0 = Table.ReplaceValue(Fixed15Min,null,0,Replacer.ReplaceValue,{"TotalQueueTime"}),
+			    TotalIvrTimeNullto0 = Table.ReplaceValue(TotalQueueTimeNullto0,null,0,Replacer.ReplaceValue,{"TotalIvrTime"}),
+			    TotalConnectedTimeNullto0 = Table.ReplaceValue(TotalIvrTimeNullto0,null,0,Replacer.ReplaceValue,{"TotalConnectedTime"}),
+			    AcwTimeNullto0 = Table.ReplaceValue(TotalConnectedTimeNullto0,null,0,Replacer.ReplaceValue,{"AcwTime"}),
+			    HoldTimeNullto0 = Table.ReplaceValue(AcwTimeNullto0,null,0,Replacer.ReplaceValue,{"HoldTime"}),
+			    #"Changed Type" = Table.TransformColumnTypes(HoldTimeNullto0,{{"Fixed15Min", type time}})
+			in
+			    #"Changed Type"
+			```
+
+	/// Count of service sessions
+	measure ΣTotalSessions = COUNT(ServiceSessions[Id])
+		formatString: 0
+		lineageTag: 9b36d717-d6fc-4b2f-91d2-99ddbdf10a28
+
+	/// Sum of the TotalQueueTime (seconds)
+	measure ΣQueueTime = SUM(ServiceSessions[TotalQueueTime])
+		lineageTag: 5eff2c14-4faf-41a0-9a67-0b4b4b8a6f11
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Total queue time (ΣQueueTime) formatted as HH:MM:SS
+	measure ΣQueueTime_HHMMSS =
+			
+			IF (NOT ISBLANK ([ΣQueueTime]), //show blank instead of empty string
+			    IF(INT([ΣQueueTime])>=86400, FORMAT (QUOTIENT(INT([ΣQueueTime]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ΣQueueTime]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ΣQueueTime]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ΣQueueTime]), 60), "00") //SECONDS
+			)
+		lineageTag: ff0d7212-4e8a-41de-a26f-88b15fc87670
+
+	/// Sum of the total connected time (seconds) meant as the total time during which the customer was connected to the user.
+	measure ΣTotalConnectedTime = SUM(ServiceSessions[TotalConnectedTime])
+		lineageTag: fb3baf3e-8f38-4098-825b-f996f580c3f8
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Total connected time formatted as HH:MM:SS
+	measure ΣTotalConnectedTime_HHMMSS =
+			
+			IF (NOT ISBLANK ([ΣTotalConnectedTime]), //show blank instead of empty string
+			    IF(INT([ΣTotalConnectedTime])>=86400, FORMAT (QUOTIENT(INT([ΣTotalConnectedTime]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ΣTotalConnectedTime]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ΣTotalConnectedTime]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ΣTotalConnectedTime]), 60), "00") //SECONDS
+			)
+		lineageTag: 561f8550-f844-4c91-8d7d-c3876e610b85
+
+	/// Sum of Ivr time in seconds
+	measure ΣIvrTime = SUM(ServiceSessions[TotalIvrTime])
+		lineageTag: 4271dd96-070d-48f4-870d-4d3988a6224e
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Sum of IVR time formatted as HH:MM:SS
+	measure ΣIvrTime_HHMMSS =
+			
+			IF (NOT ISBLANK ([ΣIvrTime]), //show blank instead of empty string
+			    IF(INT([ΣIvrTime])>=86400, FORMAT (QUOTIENT(INT([ΣIvrTime]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ΣIvrTime]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ΣIvrTime]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ΣIvrTime]), 60), "00") //SECONDS
+			)
+		lineageTag: 8b77c296-7209-4817-926a-3194f823cfd9
+
+	/// Count of service sessions with an outcome that is flagged as MeansHandled = TRUE
+	measure ΣHandledSessions =
+			
+			CALCULATE (
+			    [ΣTotalSessions],
+			    FILTER (
+			        VALUES ( ServiceSessionOutcomes[MeansHandled] ),
+			         ServiceSessionOutcomes[MeansHandled] = TRUE()
+			    )
+			)
+		formatString: 0
+		lineageTag: c0316520-6634-4290-b147-be1470a1a7c3
+
+	/// Count of service sessions with an outcome group = "Handled by User" AND IsUnderSLA = TRUE
+	measure ΣHandledByUserSLA =
+			
+			CALCULATE (
+			    [ΣHandledByUser(OG)],
+			    FILTER ( VALUES ( ServiceSessions[IsUnderSla] ), ServiceSessions[IsUnderSla] = TRUE() )
+			)
+		formatString: 0
+		lineageTag: 0a31a001-64c3-438e-9e39-d6a47706edbd
+
+	/// Percentage of the service sessions handled by user(s) that were handled within the SLA time set for the service associated with the session.
+	/// 
+	/// %AcceptanceSLA = DIVIDE([ΣHandledByUserSLA],[ΣHandledByUser(OG)]) * 100
+	measure %AcceptanceSLA = DIVIDE([ΣHandledByUserSLA],[ΣHandledByUser(OG)]) * 100
+		formatString: 0.0
+		lineageTag: 813962c4-697a-40c9-9ab1-87726e63f84a
+
+	/// Count of service sessions with a MeansHandled flag = FALSE
+	measure ΣNotHandledSessions =
+			
+			CALCULATE (
+			    [ΣTotalSessions],
+			    FILTER (
+			        VALUES ( ServiceSessionOutcomes[MeansHandled] ),
+			         ServiceSessionOutcomes[MeansHandled] = FALSE()
+			    )
+			)
+		formatString: 0
+		lineageTag: 0e7a6000-fec2-45a2-88f1-637887e095a4
+
+	/// Percentage of service sessions that have an outcome equal to handled, out of all selected service sessions
+	measure '%Handled Rate' = IF(ISBLANK([ΣHandledSessions]) && [ΣTotalSessions]>0, 0, DIVIDE([ΣHandledSessions],[ΣTotalSessions])*100)
+		formatString: 0.0
+		lineageTag: 7862b369-0c2f-4c8d-ba01-3a17ed94137f
+
+	measure ØTotalConnectedTimeS = INT(CALCULATE(AVERAGE(ServiceSessions[TotalConnectedTime]), ServiceSessions[TotalConnectedTime]>0))
+		lineageTag: 5aac3125-776d-4af3-b4b6-32e85e9674a7
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ØIvrTimeS = INT(CALCULATE(AVERAGE(ServiceSessions[TotalIvrTime]), ServiceSessions[TotalIvrTime]>0))
+		lineageTag: 2961b084-9c7d-4abc-a663-733946d44d64
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure ØQueueTimeS = INT(CALCULATE(AVERAGE(ServiceSessions[TotalQueueTime]), ServiceSessions[TotalQueueTime]>0))
+		lineageTag: 5d72376f-fe6b-4ea5-a1cd-678e70e3bc2c
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Average (mean) time of service sessions in seconds, calculated as the total time of the service sessions over the number of service sessions in the selected dataset
+	measure ØTotalTime = INT(CALCULATE(AVERAGE(ServiceSessions[TotalTime]), ServiceSessions[TotalTime] >0))
+		lineageTag: 25a68331-1ab9-4d33-aa93-4a85cf7dee86
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Average (mean) time of service sessions formatted as HH:MM:SS
+	measure ØTotalTime_HHMMSS =
+			
+			IF (NOT ISBLANK ([ØTotalTime]), //show blank instead of empty string
+			    IF(INT([ØTotalTime])>=86400, FORMAT (QUOTIENT(INT([ØTotalTime]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ØTotalTime]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ØTotalTime]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ØTotalTime]), 60), "00") //SECONDS
+			)
+		lineageTag: 7b765700-3caa-4680-9b79-e945a71b4acf
+
+	measure ØTotalConnectedTime_HHMMSS =
+			
+			IF (NOT ISBLANK ([ØTotalConnectedTimeS]), //show blank instead of empty string
+			    IF(INT([ØTotalConnectedTimeS])>=86400, FORMAT (QUOTIENT(INT([ØTotalConnectedTimeS]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ØTotalConnectedTimeS]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ØTotalConnectedTimeS]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ØTotalConnectedTimeS]), 60), "00") //SECONDS
+			)
+		lineageTag: 00611106-d7a7-4913-a1e0-059560161786
+
+	measure ØQueueTime =
+			
+			IF (NOT ISBLANK ([ØQueueTimeS]), //show blank instead of empty string
+			    IF(INT([ØQueueTimeS])>=86400, FORMAT (QUOTIENT(INT([ØQueueTimeS]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ØQueueTimeS]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ØQueueTimeS]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ØQueueTimeS]), 60), "00") //SECONDS
+			)
+		lineageTag: cf101b26-cebf-4b04-817c-26e457da59d2
+
+	measure ØIvrTime =
+			
+			IF (NOT ISBLANK ([ØIvrTimeS]), //show blank instead of empty string
+			    IF(INT([ØIvrTimeS])>=86400, FORMAT (QUOTIENT(INT([ØIvrTimeS]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ØIvrTimeS]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ØIvrTimeS]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ØIvrTimeS]), 60), "00") //SECONDS
+			)
+		lineageTag: a30baa8d-7eb4-46de-b97e-67126c76bf45
+
+	/// Count of service sessions with a total queue time > 0
+	/// 
+	/// ΣQueuedSessions =
+	/// CALCULATE (
+	/// [ΣTotalSessions],
+	/// FILTER (
+	/// VALUES ( ServiceSessions[TotalQueueTime] ),
+	/// ServiceSessions[TotalQueueTime]  > 0
+	/// )
+	/// )
+	measure ΣQueuedSessions =
+			
+			CALCULATE (
+			    [ΣTotalSessions],
+			    FILTER (
+			        VALUES ( ServiceSessions[TotalQueueTime] ),
+			         ServiceSessions[TotalQueueTime]  > 0
+			    )
+			)
+		formatString: 0
+		lineageTag: 520c8a21-69d1-4656-a5a9-a88f15f63544
+
+	/// Percentage of service sessions with an outcome group equal to "Handled By User"
+	/// over the count of queued service sessions (ss with a queue time > 0)
+	/// 
+	/// %Reachability = DIVIDE([ΣHandledByUser(OG)],[ΣQueuedSessions])*100
+	measure %Reachability = DIVIDE([ΣHandledByUser(OG)],[ΣQueuedSessions])*100
+		formatString: 0.0
+		lineageTag: 7bef6d28-f951-441c-ad82-014d5bb0172a
+
+	/// Count of service sessions with an outcome group = "Handled by User"
+	measure ΣHandledByUser(OG) =
+			
+			CALCULATE (
+			    [ΣTotalSessions],
+			    FILTER (
+			        VALUES ( ServiceSessionOutcomes[OutcomeGroup] ),
+			         ServiceSessionOutcomes[OutcomeGroup] = "Handled By User"
+			    )
+			)
+		formatString: 0
+		lineageTag: 441bd9a8-cc3c-4925-b174-2e4f237bee87
+
+	/// Count of service sessions with an outcome group  equal to "Hangup By Customer"
+	/// 
+	/// ΣHangupByCustomer(OG) =
+	/// CALCULATE (
+	/// [ΣTotalSessions],
+	/// FILTER (
+	/// VALUES ( ServiceSessionOutcomes[OutcomeGroup]),
+	/// ServiceSessionOutcomes[OutcomeGroup] = "Hangup By Customer"
+	/// )
+	/// )
+	measure ΣHangupByCustomer(OG) =
+			
+			CALCULATE (
+			    [ΣTotalSessions],
+			    FILTER (
+			        VALUES ( ServiceSessionOutcomes[OutcomeGroup]),
+			         ServiceSessionOutcomes[OutcomeGroup] = "Hangup By Customer"
+			    )
+			)
+		formatString: 0
+		lineageTag: 495b832b-dc4f-4a57-8ae2-67edea5bc18a
+
+	/// Count of service sessions with an outcome group  equal to "Hangup By Customer" AND a duration below the SLA value set for the service.
+	/// 
+	/// ΣHangupInQueueSLA =
+	/// CALCULATE (
+	/// [ΣHangupByCustomer(OG)],
+	/// FILTER ( VALUES ( ServiceSessions[IsUnderSla] ), ServiceSessions[IsUnderSla] = TRUE() )
+	/// )
+	measure ΣHangupInQueueSLA =
+			
+			CALCULATE (
+			    [ΣHangupByCustomer(OG)],
+			    FILTER ( VALUES ( ServiceSessions[IsUnderSla] ), ServiceSessions[IsUnderSla] = TRUE() )
+			)
+		formatString: 0
+		lineageTag: 5435cd80-6351-48e3-aa68-ea351d57159d
+
+	/// Percentage of service sessions with an outcome of "Hangup By Customer" AND a duration below SLA, out of all the service sessions that have an outcome of  "Hangup By Customer"
+	/// 
+	/// %HangupSLA = DIVIDE([ΣHangupInQueueSLA],[ΣHangupByCustomer(OG)]) * 100
+	measure %HangupSLA = DIVIDE([ΣHangupInQueueSLA],[ΣHangupByCustomer(OG)]) * 100
+		formatString: 0.0
+		lineageTag: 9748fa61-f39f-47f1-83d4-76a57e8cefaf
+
+	measure ØTotalAcwTimeS = INT(CALCULATE(AVERAGE(ServiceSessions[AcwTime]), ServiceSessions[AcwTime]>0))
+		formatString: 0
+		lineageTag: f2eae5dc-860f-4359-a6a2-c486012ba512
+
+	/// Sum of the after call work time (seconds)
+	measure ΣTotalAcwTime = SUM(ServiceSessions[AcwTime])
+		lineageTag: ed3c97f9-0f74-4b41-86b7-929dbff6e34c
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Sum of the total after call work time (seconds) formatted as HH:MM:SS
+	measure ΣTotalAcwTime_HHMMSS =
+			
+			IF (NOT ISBLANK ([ΣTotalAcwTime]), //show blank instead of empty string
+			    IF(INT([ΣTotalAcwTime])>=86400, FORMAT (QUOTIENT(INT([ΣTotalAcwTime]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ΣTotalAcwTime]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ΣTotalAcwTime]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ΣTotalAcwTime]), 60), "00") //SECONDS
+			)
+		lineageTag: 9b580745-0ae9-4ce1-b76a-1b5007a72534
+
+	measure ØTotalAcwTime_HHMMSS =
+			
+			IF (NOT ISBLANK ([ØTotalAcwTimeS]), //show blank instead of empty string
+			    IF(INT([ØTotalAcwTimeS])>=86400, FORMAT (QUOTIENT(INT([ØTotalAcwTimeS]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ØTotalAcwTimeS]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ØTotalAcwTimeS]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ØTotalAcwTimeS]), 60), "00") //SECONDS
+			)
+		lineageTag: f2fffaae-215f-432b-b7a1-18fa93ce60ec
+
+	/// Count of service sessions with an outcome group = "Handled by System"
+	measure ΣHandledBySystem(OG) =
+			
+			CALCULATE (
+			    [ΣTotalSessions],
+			    FILTER (
+			        VALUES ( ServiceSessionOutcomes[OutcomeGroup] ),
+			         ServiceSessionOutcomes[OutcomeGroup] = "Handled By System"
+			    )
+			)
+		formatString: 0
+		lineageTag: 90821806-aadd-424b-bc00-d7d8476d53e7
+
+	/// Count of service sessions with an outcome group = "Not Handled"
+	measure ΣNotHandled(OG) =
+			
+			CALCULATE (
+			    [ΣTotalSessions],
+			    FILTER (
+			        VALUES ( ServiceSessionOutcomes[OutcomeGroup] ),
+			         ServiceSessionOutcomes[OutcomeGroup] = "Not Handled"
+			    )
+			)
+		formatString: 0
+		lineageTag: 1cb00e54-bb5b-4018-97ce-24faab075740
+
+	/// Count of service sessions with an outcome = "Workflow Internal Transfer Successful"
+	measure ΣWorkflowInternalTransfer(Outcome) =
+			
+			CALCULATE (
+			    [ΣTotalSessions],
+			    FILTER (
+			        VALUES ( ServiceSessionOutcomes[Outcome] ),
+			         ServiceSessionOutcomes[Outcome] = "Workflow Internal Transfer Successful"
+			    )
+			)
+		formatString: 0
+		lineageTag: 471a2532-19e9-499d-a00a-49d770a21958
+
+	/// Count of service sessions with an outcome = "Workflow Conversation Recorded"
+	measure ΣWorkflowExternalTransfer(Outcome) =
+			
+			CALCULATE (
+			    [ΣTotalSessions],
+			    FILTER (
+			        VALUES ( ServiceSessionOutcomes[Outcome] ),
+			         ServiceSessionOutcomes[Outcome] = "Workflow External Transfer Successful"
+			    )
+			)
+		formatString: 0
+		lineageTag: a1ecde20-8716-44b5-832d-29cc2c6668ce
+
+	/// Count of service sessions with an outcome = "Workflow Conversation Recorded"
+	measure ΣVoicemail(Outcome) =
+			
+			CALCULATE (
+			    [ΣTotalSessions],
+			    FILTER (
+			        VALUES ( ServiceSessionOutcomes[Outcome] ),
+			         ServiceSessionOutcomes[Outcome] = "Workflow Conversation Recorded"
+			    )
+			)
+		formatString: 0
+		lineageTag: 67a90323-5426-42d7-aded-a253fe491e69
+
+	/// Count of service sessions where outcome = "Customer Hangup In Ivr"
+	measure ΣCustomerHangupInIvr(Outcome) =
+			
+			CALCULATE (
+			    [ΣTotalSessions],
+			    FILTER (
+			        VALUES ( ServiceSessionOutcomes[Outcome] ),
+			         ServiceSessionOutcomes[Outcome] = "Customer Hangup In Ivr"
+			    )
+			)
+		formatString: 0
+		lineageTag: 7ad8c189-fad8-48ef-8121-bb8a4837245e
+
+	/// Count of service sessions where outcome is IN
+	/// "Customer Hangup In Ivr"
+	/// OR
+	/// "Customer Hangup In Ivr After Queue"
+	measure ΣCustomerHangupInQueue(Outcome) =
+			
+			CALCULATE (
+			    [ΣTotalSessions],
+			    FILTER (
+			        VALUES ( ServiceSessionOutcomes[Outcome] ),
+			         ServiceSessionOutcomes[Outcome] IN {"Customer Hangup In Queue", "Customer Hangup In Ivr After Queue"}
+			    )
+			)
+		formatString: 0
+		lineageTag: 07dd9acc-8846-41a0-be41-871856435241
+
+	/// Count of service sessions where outcome = "Customer Hangup Before Accept"
+	measure ΣCustomerHangupBeforeAccept(Outcome) =
+			
+			CALCULATE (
+			    [ΣTotalSessions],
+			    FILTER (
+			        VALUES ( ServiceSessionOutcomes[Outcome] ),
+			         ServiceSessionOutcomes[Outcome] = "Customer Hangup Before Accept"
+			    )
+			)
+		formatString: 0
+		lineageTag: 1fd7d726-37df-475c-9607-06ac72749bf3
+
+	/// Count of service sessions with an outcome = "User Accepted"
+	measure ΣFirstCallResolution(Outcome) =
+			
+			CALCULATE (
+			    [ΣTotalSessions],
+			    FILTER (
+			        VALUES ( ServiceSessionOutcomes[Outcome] ),
+			         ServiceSessionOutcomes[Outcome] = "User Accepted"
+			    )
+			)
+		formatString: 0
+		lineageTag: 6893513e-131a-4fd1-bdf2-40630cab3950
+
+	/// Count of service sessions with an outcome = "Transferred Externally"
+	measure ΣWorkflowUserExternalTransfer(Outcome) =
+			
+			CALCULATE (
+			    [ΣTotalUserSessions],
+			    FILTER (
+			        VALUES ( UserSessionOutcomes[UserOutcome] ),
+			         UserSessionOutcomes[UserOutcome] = "Transferred Externally"
+			    )
+			)
+		formatString: 0
+		lineageTag: 424aa97d-524a-434f-a3f6-e29ad98865a7
+
+	/// Average (mean) of HoldTime in seconds, calculated as the total HoldTime over the number of service sessions in the selected dataset.
+	measure ØHoldTimeS = INT(CALCULATE(AVERAGE(ServiceSessions[HoldTime]), ServiceSessions[HoldTime]>0))
+		formatString: 0
+		lineageTag: 5d69dfbc-3250-4fe9-9188-9b544c5b18e9
+
+	/// Mean average of hold time seconds (ØHoldTimeS)  formatted as HH:MM:SS
+	measure ØHoldTime_HHMMSS =
+			
+			IF (NOT ISBLANK (ServiceSessions[ØHoldTimeS]), //show blank instead of empty string
+			    IF(INT(ServiceSessions[ØHoldTimeS])>=86400, FORMAT (QUOTIENT(INT(ServiceSessions[ØHoldTimeS]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT(ServiceSessions[ØHoldTimeS]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT(ServiceSessions[ØHoldTimeS]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT(ServiceSessions[ØHoldTimeS]), 60), "00") //SECONDS
+			)
+		lineageTag: 2a1735d1-736f-4d16-a7a6-92e86796f417
+
+	/// Sum of the total time (seconds) during which a customer was put "on hold" during consult sessions (park attempts are not included).
+	measure ΣHoldTimeS = SUM(ServiceSessions[HoldTime])
+		lineageTag: 7e6ce4d5-da1e-4854-bd39-870b9f7975b1
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Hold time seconds (ΣHoldTimeS) formatted as HH:MM:SS
+	measure ΣHoldTime_HHMMSS =
+			
+			IF (NOT ISBLANK (ServiceSessions[ΣHoldTimeS]), //show blank instead of empty string
+			    IF(INT(ServiceSessions[ΣHoldTimeS])>=86400, FORMAT (QUOTIENT(INT(ServiceSessions[ΣHoldTimeS]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT(ServiceSessions[ΣHoldTimeS]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT(ServiceSessions[ΣHoldTimeS]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT(ServiceSessions[ΣHoldTimeS]), 60), "00") //SECONDS
+			)
+		lineageTag: c76c53cf-5da2-400b-b4a6-3013e946577f
+
+	/// Logic created to define the text to be shown for a button logic
+	measure 'Button Text' =
+			
+			VAR ValidSelection = ISFILTERED(ServiceSessions[Id])
+			VAR Result =
+			IF(
+			    ValidSelection,
+			    "See Session Details",
+			    "Select Session"
+			)
+			RETURN
+			    Result
+		lineageTag: 4f4aeb0e-acfc-49f6-b4d8-6c00651c774d
+
+		changedProperty = IsHidden
+
+	/// Technical object used for report design to display totals in a multi line.
+	measure MultiLineTotal = ```
+			
+			VAR KPI1_TEXT = "ΣTotal:  " & FORMAT([ΣTotalSessions],"0")
+			VAR KPI2_TEXT = "ΣHandledByUser: " & FORMAT([ΣHandledByUser(OG)], "0")
+			VAR KPI3_TEXT = "ΣHandledBySystem:  " & FORMAT([ΣHandledBySystem(OG)], "0")
+			VAR KPI4_TEXT = "ΣHangupByCustomer:  " & FORMAT([ΣHangupByCustomer(OG)], "0")
+			VAR KPI5_TEXT = "ΣNotHandled:  " & FORMAT([ΣNotHandled(OG)], "0")
+			VAR KPI6_TEXT = "ΣOutbound:  " & FORMAT([ΣTotalOutboundSessions], "0")
+			VAR SUMMARY_TEXT = KPI1_TEXT & UNICHAR(10) & KPI2_TEXT & UNICHAR(10) & KPI3_TEXT & UNICHAR(10) & KPI4_TEXT & UNICHAR(10) & KPI5_TEXT & UNICHAR(10) & KPI6_TEXT
+			RETURN 
+			SUMMARY_TEXT
+			
+			```
+		lineageTag: 7fefca68-cb5b-4e34-b84f-59260b296a05
+
+	/// Technical object (for design purposes) containing the logic to check if a cross filter is active in the ServiceSessions (1,0)
+	measure FilterActive = IF(ISCROSSFILTERED(ServiceSessions),1,0)
+		formatString: 0
+		lineageTag: 64487264-97a7-4cc6-8ce4-11f0588e22ad
+
+	/// Sum of DialoutTime --> Time in seconds calculated from the moment we try to reach the Destination, until it accepts, declines, or it times out
+	measure ΣTotalDialOutTime = SUM(ServiceSessions[DialOutTime])
+		lineageTag: 73c4c5cd-1d97-4592-a080-f1704d400d9b
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// ΣTotalDialOutTime formatted as HH:MM:SS
+	measure ΣTotalDialOutTime_HHMMSS = ```
+			
+			IF (NOT ISBLANK ([ΣTotalDialOutTime]), //show blank instead of empty string
+			    IF(INT([ΣTotalDialOutTime])>=86400, FORMAT (QUOTIENT(INT([ΣTotalDialOutTime]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ΣTotalDialOutTime]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ΣTotalDialOutTime]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ΣTotalDialOutTime]), 60), "00") //SECONDS
+			)
+			
+			```
+		lineageTag: c56f0f41-39ff-412a-aad4-b43b09ca87a6
+
+	/// Count of service sessions with an outcome  = "Destination Accepted"
+	/// 
+	/// ΣDestinationAccepted =
+	/// CALCULATE (
+	/// [ΣTotalSessions],
+	/// FILTER (
+	/// VALUES (ServiceSessionOutcomes[Outcome]),
+	/// ServiceSessionOutcomes[Outcome] = "Destination Accepted"
+	/// )
+	/// )
+	/// 
+	measure ΣDestinationAccepted = ```
+			
+			CALCULATE (
+			    [ΣTotalSessions],
+			    FILTER (
+			        VALUES (ServiceSessionOutcomes[Outcome]),
+			         ServiceSessionOutcomes[Outcome] = "Destination Accepted"
+			    )
+			)
+			
+			```
+		formatString: 0
+		lineageTag: dff5e1a1-bfb3-47aa-bd33-ae5d62c9a28f
+
+	/// Percentage of service sessions with an outcome  = "Destination Accepted" out of all service sessions.
+	measure %DestinationAccpeted = DIVIDE([ΣDestinationAccepted],[ΣTotalSessions]) * 100
+		lineageTag: 561adde4-57b0-4f1c-a226-e75bc45bba6e
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Count of service sessions with an outcome = "Destination Declined"
+	/// 
+	/// ΣDestinationDeclined =
+	/// CALCULATE (
+	/// [ΣTotalSessions],
+	/// FILTER (
+	/// VALUES (ServiceSessionOutcomes[Outcome]),
+	/// ServiceSessionOutcomes[Outcome] = "Destination Declined"
+	/// )
+	/// )
+	measure ΣDestinationDeclined =
+			
+			CALCULATE (
+			    [ΣTotalSessions],
+			    FILTER (
+			        VALUES (ServiceSessionOutcomes[Outcome]),
+			         ServiceSessionOutcomes[Outcome] = "Destination Declined"
+			    )
+			)
+		formatString: 0
+		lineageTag: 41c3baa5-200a-42d7-a4ce-702b4010b46a
+
+	/// Count of service sessions with an outcome = "User Aborted"
+	/// 
+	/// ΣUserAborted =
+	/// CALCULATE (
+	/// [ΣTotalSessions],
+	/// FILTER (
+	/// VALUES (ServiceSessionOutcomes[Outcome]),
+	/// ServiceSessionOutcomes[Outcome] = "User Aborted"
+	/// )
+	/// )
+	measure ΣUserAborted =
+			
+			CALCULATE (
+			    [ΣTotalSessions],
+			    FILTER (
+			        VALUES (ServiceSessionOutcomes[Outcome]),
+			         ServiceSessionOutcomes[Outcome] = "User Aborted"
+			    )
+			)
+		formatString: 0
+		lineageTag: c3d4919c-b620-4290-ab76-9d01736053db
+
+	/// Count of service sessions with an outcome = "Destination Not Reached"
+	measure ΣDestinationNotReached =
+			
+			CALCULATE (
+			    [ΣTotalSessions],
+			    FILTER (
+			        VALUES (ServiceSessionOutcomes[Outcome]),
+			         ServiceSessionOutcomes[Outcome] = "Destination Not Reached"
+			    )
+			)
+		formatString: 0
+		lineageTag: aa2776c0-495d-4deb-8b29-1e75b9da28ee
+
+	/// Count of service sessions where task direction name = "Outbound"
+	measure ΣTotalOutboundSessions =
+			
+			CALCULATE (
+			    [ΣTotalSessions],
+			    FILTER (
+			        VALUES (TaskDirections[Name]),
+			         TaskDirections[Name] = "Outbound"
+			    )
+			)
+		formatString: 0
+		lineageTag: 68493d72-26f2-4c79-a40a-b4e0dcf58d76
+
+	/// Technical object used for report design to display totals in a multi line.
+	measure MultiLineTotalOutbound = ```
+			
+			VAR KPI1_TEXT = "ΣTotal: " & FORMAT([ΣTotalOutboundSessions],"0")
+			VAR KPI2_TEXT = "ΣDestinationAccepted: " & FORMAT([ΣDestinationAccepted], "0")
+			VAR KPI3_TEXT = "ΣDestinationNotReached: " & FORMAT([ΣDestinationNotReached], "0")
+			VAR KPI4_TEXT = "ΣDestinationDeclined: " & FORMAT([ΣDestinationDeclined], "0")
+			VAR KPI5_TEXT = "ΣUserAborted: " & FORMAT([ΣUserAborted], "0")
+			VAR SUMMARY_TEXT = KPI1_TEXT & UNICHAR(10) & UNICHAR(13) & KPI2_TEXT & UNICHAR(10) & KPI3_TEXT & UNICHAR(10) & KPI4_TEXT & UNICHAR(10) & KPI5_TEXT
+			RETURN 
+			SUMMARY_TEXT
+			
+			```
+		lineageTag: 3b89b44b-8df8-4e4b-b9f3-f4905d11c5e9
+
+	/// Technical object used for report design to display totals in a multi line.
+	measure MultiLineTotalInbound = ```
+			
+			VAR KPI1_TEXT = "ΣTotal: " & FORMAT([ΣTotalInboundSessions],"0")
+			VAR KPI2_TEXT = "ΣHandledByUser: " & FORMAT([ΣHandledByUser(OG)], "0")
+			VAR KPI3_TEXT = "ΣHandledBySystem: " & FORMAT([ΣHandledBySystem(OG)], "0")
+			VAR KPI4_TEXT = "ΣHangupByCustomer: " & FORMAT([ΣHangupByCustomer(OG)], "0")
+			VAR KPI5_TEXT = "ΣNotHandled: " & FORMAT(CALCULATE ([ΣNotHandled(OG)], FILTER (VALUES (TaskDirections[Name]), TaskDirections[Name] = "Inbound")), "0")
+			VAR SUMMARY_TEXT = KPI1_TEXT & UNICHAR(10) & KPI2_TEXT & UNICHAR(10) & KPI3_TEXT & UNICHAR(10) & KPI4_TEXT & UNICHAR(10) & KPI5_TEXT
+			RETURN 
+			SUMMARY_TEXT
+			```
+		lineageTag: 11cc49b0-caaf-4de8-9a7f-17f611f289b5
+
+	/// Count of service sessions where task direction name = "Inbound"
+	measure ΣTotalInboundSessions =
+			
+			CALCULATE (
+			    [ΣTotalSessions],
+			    FILTER (
+			        VALUES (TaskDirections[Name]),
+			         TaskDirections[Name] = "Inbound"
+			    )
+			)
+		formatString: 0
+		lineageTag: 980a9055-bf2f-459b-ace4-683050d12612
+
+	/// Count of service sessions where task direction name = "External"
+	measure ΣTotalExternalSessions =
+			
+			CALCULATE (
+			    [ΣTotalSessions],
+			    FILTER (
+			        VALUES (TaskDirections[Name]),
+			         TaskDirections[Name] = "External"
+			    )
+			)
+		formatString: 0
+		lineageTag: d04ec8ed-a4ce-4299-b142-c38c9fd86e37
+
+	/// Average after call extended work time
+	/// 
+	/// DAX:
+	/// INT(CALCULATE(AVERAGE(ServiceSessions[AcwExtendedTime]), ServiceSessions[AcwExtendedTime]>0))
+	measure ØAverageAcwExtendedTimeS = INT(CALCULATE(AVERAGE(ServiceSessions[AcwExtendedTime]), ServiceSessions[AcwExtendedTime]>0))
+		formatString: 0
+		lineageTag: c142eb7d-e0e0-43bc-9c67-4d69e2897c1e
+
+	/// Total after call extended work time
+	/// 
+	/// DAX:
+	/// SUM(ServiceSessions[AcwExtendedTime])
+	measure ΣTotalAcwExtendedTime = SUM(ServiceSessions[AcwExtendedTime])
+		lineageTag: b2c9f93b-35d7-4cad-838b-2b62a1b548f8
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Total after call extended work time (measure: ΣTotalAcwExtendedTime) formatted as HH:MM:SS
+	measure ΣTotalAcwExtendedTime_HHMMSS =
+			IF (NOT ISBLANK ([ΣTotalAcwExtendedTime]), //show blank instead of empty string
+			    IF(INT([ΣTotalAcwExtendedTime])>=86400, FORMAT (QUOTIENT(INT([ΣTotalAcwExtendedTime]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ΣTotalAcwExtendedTime]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ΣTotalAcwExtendedTime]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ΣTotalAcwExtendedTime]), 60), "00") //SECONDS
+			)
+		lineageTag: 62feed6b-dc07-4a19-be9e-acf0b08719ad
+
+	/// Average after call extended work time (measure: ØAverageAcwExtendedTimeS) formatted as HH:MM:SS
+	measure ØAverageAcwExtendedTime_HHMMSS =
+			IF (NOT ISBLANK ([ØAverageAcwExtendedTimeS]), //show blank instead of empty string
+			    IF(INT([ØAverageAcwExtendedTimeS])>=86400, FORMAT (QUOTIENT(INT([ØAverageAcwExtendedTimeS]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ØAverageAcwExtendedTimeS]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ØAverageAcwExtendedTimeS]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ØAverageAcwExtendedTimeS]), 60), "00") //SECONDS
+			)
+		lineageTag: 03eb797a-0abc-40ac-96f3-a9836cc7bb1e
+
+	/// Technical measure to identify Service Sessions with at least a Tag or Primary/Secondary code to filter the Tag-Codes page.
+	/// 
+	/// 
+	/// Tag-CodesCheck = COALESCE(Count (ServiceSessions[Tags]), Count(ServiceSessions[FirstPrimaryCodeId]), Count(ServiceSessions[FirstSecondaryCodeId]))
+	/// 
+	measure Tag-CodesCheck = COALESCE(Count (ServiceSessionTagsStrings[Tags]), Count(ServiceSessions[FirstPrimaryCodeId]), Count(ServiceSessions[FirstSecondaryCodeId]))
+		formatString: 0
+		isHidden
+		lineageTag: 19185ff7-cfca-4c90-8932-d3202d7df4b2
+
+		changedProperty = IsHidden
+
+	measure '% Taux d''abandon' =
+			
+			DIVIDE(
+			    CALCULATE([ΣTotalSessions], OutcomeGroups[OutcomeGroup] = "Hangup By Customer"),
+			    [ΣTotalSessions]
+			)
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		lineageTag: c5770368-90d6-43d7-ad48-c91a4e6490a2
+
+	measure 'Objectif décroché' = 90
+		formatString: 0
+		lineageTag: 47cad1f7-df17-4ae3-88a7-a4de5ba39d47
+
+	measure 'Objectif attente (s)' = 30
+		formatString: 0
+		lineageTag: f4603a1a-448e-4609-b789-ff5b7b4b749f
+
+	measure 'Objectif abandon' = 0.05
+		formatString: 0\ %;-0\ %;0\ %
+		lineageTag: 5d80aea8-fffb-4346-a046-d37bf6aed7ab
+
+	measure 'Libele appels' = "Nb total de sessions d'appels traitées par le service sur la période sélectionnée."
+		lineageTag: dab7f5e7-71d3-4961-a773-2927dd02c06c
+
+	measure 'Pic de charge (heure)' =
+			
+			VAR _Vol =
+			    ADDCOLUMNS ( VALUES ( ServiceSessions[Hours] ), "@Vol", [ΣTotalSessions] )
+			VAR _Max = MAXX ( _Vol, [@Vol] )
+			RETURN
+			    CONCATENATEX (
+			        FILTER ( _Vol, [@Vol] = _Max ),
+			        FORMAT ( ServiceSessions[Hours], "0" ) & "h",
+			        " / ",
+			        ServiceSessions[Hours], ASC
+			    )
+		lineageTag: fde4d1f6-6488-4fd8-9ec2-14e7f6644992
+
+	measure 'Pic de charge' =
+			
+			VAR _Vol = ADDCOLUMNS ( VALUES ( ServiceSessions[Hours] ), "@Vol", [ΣTotalSessions] )
+			VAR _Max = MAXX ( _Vol, [@Vol] )
+			VAR _Heure =
+			    CONCATENATEX ( FILTER ( _Vol, [@Vol] = _Max ),
+			        FORMAT ( ServiceSessions[Hours], "0" ) & "h", " / ", ServiceSessions[Hours], ASC )
+			RETURN
+			    _Heure & " (" & FORMAT ( _Max, "#,0" ) & " appels)"
+		lineageTag: 7617b967-5c9d-46aa-ab0d-11de5f918675
+
+	measure 'Pic de charge (jour+heure)' =
+			
+			VAR _Grid =
+			    ADDCOLUMNS (
+			        SUMMARIZE ( ServiceSessions, SessionDates[DayOfWeekName], ServiceSessions[Hours] ),
+			        "@Vol", [ΣTotalSessions]
+			    )
+			VAR _Max = MAXX ( _Grid, [@Vol] )
+			RETURN
+			    CONCATENATEX ( FILTER ( _Grid, [@Vol] = _Max ),
+			        SessionDates[DayOfWeekName] & " " & FORMAT ( ServiceSessions[Hours], "0" ) & "h", " / " )
+		lineageTag: 2d5429a0-e114-436c-974c-9ee85f7b35b1
+
+	measure 'Pic charge (titre)' = "Tranche horaire qui concentre le plus grand nombre d'appels sur la période sélectionnée."
+		lineageTag: 7ee6b634-a4be-4be2-9b98-fb38341d60d8
+
+	measure 'Moyenne appels / heure' =
+			
+			DIVIDE (
+			    [ΣTotalSessions],
+			    COUNTROWS (
+			        SUMMARIZE ( ServiceSessions, ServiceSessions[Date], ServiceSessions[Hours] )
+			    )
+			)
+		lineageTag: ea0bb47c-5c3e-4c97-a259-ebece4c7467d
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure Abandons =
+			
+			CALCULATE (
+			    [ΣTotalSessions],
+			    ServiceSessionOutcomes[OutcomeGroup] = "Hangup by Customer"
+			)
+		formatString: 0
+		lineageTag: 376d57a1-55d0-45af-84fd-83d092108533
+
+	measure 'Moyenne appels / jour' =
+			
+			DIVIDE (
+			    [ΣTotalSessions],
+			    DISTINCTCOUNT ( ServiceSessions[Date] )
+			)
+		lineageTag: d5457606-de6c-4287-a6de-e192419b5f80
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Id
+		dataType: string
+		lineageTag: 35f8a739-7f64-4f4a-94d6-8739ee0baaab
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Timestamp of the service session start time in UTC
+	column StartedAt
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: a2f92769-d6fd-40f5-9e0e-bccfc6793ed9
+		summarizeBy: none
+		sourceColumn: StartedAt
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Total queue time in seconds
+	column TotalQueueTime
+		dataType: double
+		isHidden
+		lineageTag: 0640c0e5-7c31-4415-bfda-c1ab9b1fc24c
+		summarizeBy: sum
+		sourceColumn: TotalQueueTime
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column TotalIvrTime
+		dataType: double
+		isHidden
+		lineageTag: 5a58b2f5-a821-4308-9fc9-8afc804ef299
+		summarizeBy: sum
+		sourceColumn: TotalIvrTime
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column TotalConnectedTime
+		dataType: double
+		isHidden
+		lineageTag: 27ab0d45-dd84-4f6a-89db-220e75862e3e
+		summarizeBy: sum
+		sourceColumn: TotalConnectedTime
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column IsUnderSla
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 92a9f4f3-279d-4ad4-936e-09cd45209d37
+		summarizeBy: none
+		sourceColumn: IsUnderSla
+
+		annotation SummarizationSetBy = Automatic
+
+	column OutcomeId
+		dataType: int64
+		isHidden
+		lineageTag: 08739102-128b-4a72-aab3-af66a26f591a
+		summarizeBy: none
+		sourceColumn: OutcomeId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Sum of all service sessions time calculations
+	/// 
+	/// TotalTime = ServiceSessions[TotalConnectedTime] + ServiceSessions[TotalIvrTime] + ServiceSessions[TotalQueueTime]
+	/// + ServiceSessions[AcwTime] + ServiceSessions[DialoutTime]
+	column TotalTime = ```
+			ServiceSessions[TotalConnectedTime] + ServiceSessions[TotalIvrTime] + ServiceSessions[TotalQueueTime] 
+			+ ServiceSessions[AcwTime] + ServiceSessions[DialoutTime]
+			```
+		lineageTag: 80c67f54-064b-4907-b506-58f3e10c9f5d
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// StartedAt timestamp of the service session converted into the time zone selected in the paramaters at the time of refresh
+	column 'Local Time'
+		dataType: dateTime
+		formatString: yyyy-mm-dd hh:mm:ss
+		lineageTag: 01d450a5-d807-4a6b-bc96-cf17ca7affd8
+		summarizeBy: none
+		sourceColumn: Local Time
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+		annotation PBI_FormatHint = {"isCustom":true}
+
+	/// Date of the service session based on the Local time timestamp
+	column Date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 35d28246-3c33-483e-8e0c-5e4c3c647760
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isCustom":true}
+
+	column Time
+		dataType: string
+		lineageTag: b002e8f8-a55f-409a-8a47-21fea4ce68e2
+		summarizeBy: none
+		sourceColumn: Time
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Returns the hour portion from the Local Time (e.g. if Local Time is 2023-01-01 17:24:10 the value returned is 17)
+	column Hours
+		dataType: int64
+		formatString: 0
+		lineageTag: e479b5ef-acf3-4a94-83c9-96e4191dd7f8
+		summarizeBy: sum
+		sourceColumn: Hours
+
+		annotation SummarizationSetBy = Automatic
+
+	column Minutes
+		dataType: int64
+		formatString: 0
+		lineageTag: a5723351-c508-43b1-9647-f0ac8e0a1611
+		summarizeBy: sum
+		sourceColumn: Minutes
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Calculates the 15 minutes buckets in which the Local Time falls into formatted as HH:MM:SS (e.g.  2024-02-29 17:40:55 falls into the 17:30:00 fixed 15 minutes bucket).
+	column Fixed15Min
+		dataType: dateTime
+		formatString: Long Time
+		lineageTag: c5194b27-232f-48bf-b169-32e9759fb690
+		summarizeBy: none
+		sourceColumn: Fixed15Min
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+	column ServiceId
+		dataType: string
+		lineageTag: f1179300-709a-4dba-8b73-a40892db1825
+		summarizeBy: none
+		sourceColumn: ServiceId
+
+		annotation SummarizationSetBy = Automatic
+
+	column InitialCallerId
+		dataType: string
+		lineageTag: 26e75677-3cc7-44de-9a66-5cf41549ce08
+		summarizeBy: none
+		sourceColumn: InitialCallerId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Distribution policy level applied at the time the user was selected (1, 2, 3... )
+	column DistributionPolicyLevel
+		dataType: int64
+		lineageTag: 2805138e-c9c7-4e5a-8d43-61420db3248d
+		summarizeBy: sum
+		sourceColumn: DistributionPolicyLevel
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Distribution Algorithm id. Can be used to join  to the DistributionAlgorithm dimension to retrieve the details of the distribution algorithm
+	column DistributionAlgorithm
+		dataType: int64
+		lineageTag: 873fb014-0fe4-45e5-9923-dfa2d9bee65c
+		summarizeBy: none
+		sourceColumn: DistributionAlgorithm
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Time of the after work call as total number of seconds
+	column AcwTime
+		dataType: double
+		lineageTag: 214aa4a3-f713-40a3-8c0c-00fbcbafaa68
+		summarizeBy: sum
+		sourceColumn: AcwTime
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Sum of the total time (seconds) during which a customer was put "on hold" during consult sessions (park attempts are not included).
+	column HoldTime
+		dataType: double
+		lineageTag: b1cb3587-4a94-44ad-8293-3f67512409dc
+		summarizeBy: sum
+		sourceColumn: HoldTime
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Count of how many times a customer was put "on hold" during consult sessions (park attempts are not counted).
+	column HoldCount
+		dataType: int64
+		formatString: 0
+		lineageTag: 9ba03503-34c4-405b-be2d-b984c4962fee
+		summarizeBy: sum
+		sourceColumn: HoldCount
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Id of the first primary code selected for the service session.
+	/// Related to Id in PrimaryCodes
+	column FirstPrimaryCodeId
+		dataType: string
+		lineageTag: e1796154-272a-419c-8ded-fd1a142f054f
+		summarizeBy: none
+		sourceColumn: FirstPrimaryCodeId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Id of the first secondary code selected for the service session.
+	/// Related to Id in SecondaryCodes
+	column FirstSecondaryCodeId
+		dataType: string
+		lineageTag: 61000d1f-9484-40f1-8edd-d8fac8bfdaa9
+		summarizeBy: none
+		sourceColumn: FirstSecondaryCodeId
+
+		annotation SummarizationSetBy = Automatic
+
+	column UnifiedConversationId
+		dataType: string
+		lineageTag: 8ae62f8f-ebe6-4056-b1f3-8b6bf94f2987
+		summarizeBy: none
+		sourceColumn: UnifiedConversationId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Time of the extended after work call as total number of seconds
+	column AcwExtendedTime
+		dataType: double
+		lineageTag: d075474c-bf03-479f-be59-307630b6a935
+		summarizeBy: sum
+		sourceColumn: AcwExtendedTime
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Time in seconds calculated from the moment we try to reach the Destination, until it accepts, declines, or it times out
+	column DialoutTime
+		dataType: double
+		lineageTag: 09fec536-2235-4941-b505-2c4b1bb6d237
+		summarizeBy: sum
+		sourceColumn: DialoutTime
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Id of the distribution priority with a relationship to Id in DistributionPriorityType
+	column DistributionPriority
+		dataType: int64
+		formatString: 0
+		lineageTag: b755ca05-96d5-44c0-bd31-2ebfea9ffb1b
+		summarizeBy: none
+		sourceColumn: DistributionPriority
+
+		annotation SummarizationSetBy = Automatic
+
+	column TaskTypeId
+		dataType: int64
+		formatString: 0
+		lineageTag: 6eff6309-d32e-42ff-8222-d4ecbc258d0e
+		summarizeBy: none
+		sourceColumn: TaskTypeId
+
+		annotation SummarizationSetBy = Automatic
+
+	column TenantId
+		dataType: string
+		lineageTag: 36821792-6f1e-42ba-af32-1ea4d02eee82
+		summarizeBy: none
+		sourceColumn: TenantId
+
+		annotation SummarizationSetBy = Automatic
+
+	column OutboundAttempt
+		dataType: int64
+		formatString: 0
+		lineageTag: 0062e492-0d7a-49a8-961c-d263b06d0055
+		summarizeBy: sum
+		sourceColumn: OutboundAttempt
+
+		annotation SummarizationSetBy = Automatic
+
+	column InitialModality
+		dataType: int64
+		formatString: 0
+		lineageTag: 8f65a77d-c7c7-457c-8c5e-54b5b09ac4f8
+		summarizeBy: none
+		sourceColumn: InitialModality
+
+		annotation SummarizationSetBy = Automatic
+
+	/// UPN or PSTN of transfer destination, which leads to the termination of the Service session (Successful or Failed)
+	column LastTransferDestination
+		dataType: string
+		lineageTag: 1f2bf2ad-bb3a-4ae6-b0a9-2d58bf7b1e2b
+		summarizeBy: none
+		sourceColumn: LastTransferDestination
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Transfer type id of the transfer, which leads to the termination of the Service session (Successful or Failed)
+	/// 
+	column LastTransferTypeId
+		dataType: int64
+		formatString: 0
+		lineageTag: 7f381ff9-c711-4f3d-a493-437ace5e970d
+		summarizeBy: none
+		sourceColumn: LastTransferTypeId
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrganizationUnitId
+		dataType: string
+		lineageTag: 5ceca876-45ce-48b2-a94b-0026cdf8b7da
+		summarizeBy: none
+		sourceColumn: OrganizationUnitId
+
+		annotation SummarizationSetBy = Automatic
+
+	column ServiceOrganizationUnitId
+		dataType: string
+		lineageTag: 38aefc8c-b24c-4b84-9b03-6aa7a67de3b2
+		summarizeBy: none
+		sourceColumn: ServiceOrganizationUnitId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Flag (True/False) indicating whether the call is within the Short Abandons Threshold as set for the service in the Nimbus General Service Settings  > Reporting section > Short Abandons Threshold.
+	column IsShortConversation
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 4fb69782-279b-45e8-8645-0be5ab168cfc
+		summarizeBy: none
+		sourceColumn: IsShortConversation
+
+		annotation SummarizationSetBy = Automatic
+
+	column OpeningHoursTypeId
+		dataType: int64
+		formatString: 0
+		lineageTag: f69855af-747f-4e76-a476-6ad6e5baf58f
+		summarizeBy: none
+		sourceColumn: OpeningHoursTypeId
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsStandbyDuty
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 4c29caf9-55d4-4b79-8cb9-9153842334dd
+		summarizeBy: none
+		sourceColumn: IsStandbyDuty
+
+		annotation SummarizationSetBy = Automatic
+
+	column ParkCount
+		dataType: int64
+		formatString: 0
+		lineageTag: 54d381b1-a303-4c5a-b961-b504cc575ba3
+		summarizeBy: sum
+		sourceColumn: ParkCount
+
+		annotation SummarizationSetBy = Automatic
+
+	column ParkTime
+		dataType: double
+		lineageTag: aecf35fb-dba1-4d55-bf63-449f64319850
+		summarizeBy: sum
+		sourceColumn: ParkTime
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column OriginalCalledNumber
+		dataType: string
+		lineageTag: f1562789-be86-43e7-9fb1-8065c7ad6904
+		summarizeBy: none
+		sourceColumn: OriginalCalledNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column OriginalCalledTargetType
+		dataType: string
+		lineageTag: 5bcc8b7a-f9fa-457d-bdd8-f3f6b73269e5
+		summarizeBy: none
+		sourceColumn: OriginalCalledTargetType
+
+		annotation SummarizationSetBy = Automatic
+
+	column OriginalCalledDisplay
+		dataType: string
+		lineageTag: 1a2912ef-bc7d-43ff-85fe-1f8f830c6b26
+		summarizeBy: none
+		sourceColumn: OriginalCalledDisplay
+
+		annotation SummarizationSetBy = Automatic
+
+	column TransferOnUserExit
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 8100e2d4-3597-4e1d-9a2b-381959f3d0e7
+		summarizeBy: none
+		sourceColumn: TransferOnUserExit
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Tranche attente' =
+			
+			VAR s = ServiceSessions[TotalQueueTime]
+			RETURN
+			SWITCH ( TRUE (),
+			    s < 10,  "< 10 s",
+			    s < 30,  "10–30 s",
+			    s < 60,  "30–60 s",
+			    s < 120, "1–2 min",
+			    s < 300, "2–5 min",
+			    "> 5 min"
+			)
+		lineageTag: 9f666e05-e6be-4e50-9e90-0ecef74e49a5
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Tranche attente (ordre)' =
+			
+			VAR s = ServiceSessions[TotalQueueTime]
+			RETURN SWITCH ( TRUE (), s<10,1, s<30,2, s<60,3, s<120,4, s<300,5, 6 )
+		formatString: 0
+		lineageTag: c46224a8-1fc4-4306-aec7-efc4afae5046
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	hierarchy 'Hours Hierarchy'
+		lineageTag: e8845b41-0d2a-4e03-9881-1925cb8773d2
+
+		level Hours
+			lineageTag: e77e5c4d-8c5a-4c19-b208-480a2754dd0e
+			column: Hours
+
+		level Fixed15Min
+			lineageTag: ed5ef2a7-6374-4f1c-b678-a6e1586e0d18
+			column: Fixed15Min
+
+		level Time
+			lineageTag: c02e5961-6c13-413f-bad6-3730751a28bf
+			column: Time
+
+	partition ServiceSessions-e92814f0-75bc-4ad1-903a-d63eaa43d484 = m
+		mode: import
+		queryGroup: Facts\ServiceSessions
+		source = ```
+				let
+				    Source = GlobalSource, // source from odata preview
+				    
+				    ServiceSessions_table = Source{[Name="ServiceSessions",Signature="table"]}[Data],
+				    #"Filtered Rows" = Table.SelectRows(ServiceSessions_table, each ([StartedAt] >= DateTime.AddZone(RangeStart,0) and [StartedAt] < DateTime.AddZone(RangeEnd,0))), // date range from parameters with incremental refresh naming convention
+				
+				    #"Inserted Local Time" = Table.AddColumn(#"Filtered Rows", "Local Time", each ToLocalDateTimeZone([StartedAt]), type datetimezone),
+				    #"Inserted Date" = Table.AddColumn(#"Inserted Local Time", "Date", each DateTime.Date([Local Time]), type date),
+				    #"Inserted Time" = Table.AddColumn(#"Inserted Date", "Time", each DateTime.Time([Local Time]), type time),
+				    HourCol = Table.AddColumn(#"Inserted Time", "Hours", each Time.Hour([Time]), Int64.Type),
+				    MinuteCol = Table.AddColumn(HourCol, "Minutes", each Time.Minute([Time]), Int64.Type),
+				    Fixed15Min = Table.AddColumn(MinuteCol,"Fixed15Min",each 
+				            if Number.IntegerDivide([Minutes],15) = 0 then Number.ToText([Hours]) & ":00:00"
+				            else if Number.IntegerDivide([Minutes],15) = 1 then Number.ToText([Hours]) & ":15:00"
+				            else if Number.IntegerDivide([Minutes],15) = 2 then Number.ToText([Hours]) & ":30:00"
+				            else Number.ToText([Hours]) & ":45:00"),
+				    TotalQueueTimeNullto0 = Table.ReplaceValue(Fixed15Min,null,0,Replacer.ReplaceValue,{"TotalQueueTime"}),
+				    TotalIvrTimeNullto0 = Table.ReplaceValue(TotalQueueTimeNullto0,null,0,Replacer.ReplaceValue,{"TotalIvrTime"}),
+				    TotalConnectedTimeNullto0 = Table.ReplaceValue(TotalIvrTimeNullto0,null,0,Replacer.ReplaceValue,{"TotalConnectedTime"}),
+				    AcwTimeNullto0 = Table.ReplaceValue(TotalConnectedTimeNullto0,null,0,Replacer.ReplaceValue,{"AcwTime"}),
+				    HoldTimeNullto0 = Table.ReplaceValue(AcwTimeNullto0,null,0,Replacer.ReplaceValue,{"HoldTime"}),
+				    #"Changed Type" = Table.TransformColumnTypes(HoldTimeNullto0,{{"Fixed15Min", type time}})
+				in
+				    #"Changed Type"
+				```
+
+	annotation PBI_ResultType = Exception
+
+	annotation PBI_NavigationStepName = Navigation
+

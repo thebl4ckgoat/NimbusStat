@@ -1,0 +1,67 @@
+table CallersUnifiedSessions
+	lineageTag: 2ff005bb-186f-48f0-809a-0c71b7de9fc4
+
+	column CallerId
+		dataType: string
+		isKey
+		lineageTag: 37278e48-1320-4db5-acc0-538c8b6c58b8
+		summarizeBy: none
+		sourceColumn: CallerId
+
+		annotation SummarizationSetBy = Automatic
+
+	column O365Id
+		dataType: string
+		lineageTag: 1ae804e7-eaea-4aad-a593-7275f4e0f5eb
+		summarizeBy: none
+		sourceColumn: O365Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Upn
+		dataType: string
+		lineageTag: d7c2b2fb-edf7-46f3-9f9f-4da01dfdbf23
+		summarizeBy: none
+		sourceColumn: Upn
+
+		annotation SummarizationSetBy = Automatic
+
+	column TelNumber
+		dataType: string
+		lineageTag: 8fc6622f-8cc6-40e4-90f3-6c20a7053195
+		summarizeBy: none
+		sourceColumn: TelNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerIdentifier
+		dataType: string
+		lineageTag: fda2e576-61e3-454a-88d4-7583a7143833
+		summarizeBy: none
+		sourceColumn: CustomerIdentifier
+
+		annotation SummarizationSetBy = Automatic
+
+	column TenantId
+		dataType: string
+		lineageTag: 63644664-bf44-4a93-85d7-358662ebc583
+		summarizeBy: none
+		sourceColumn: TenantId
+
+		annotation SummarizationSetBy = Automatic
+
+	partition CallersUnifiedSessions = m
+		mode: import
+		queryGroup: Dimensions
+		source =
+				let
+				    Source = GlobalSource,
+				    Callers_table = Source{[Name="Callers",Signature="table"]}[Data],
+				    #"Renamed Id" = Table.RenameColumns(Callers_table,{{"Id", "CallerId"}})
+				in
+				  #"Renamed Id"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Exception
+

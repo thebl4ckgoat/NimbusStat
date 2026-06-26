@@ -1,0 +1,35 @@
+table TaskTypeGroups
+	lineageTag: 6947b5ff-b86e-4e61-8534-94c510efc875
+
+	column Id
+		dataType: int64
+		formatString: 0
+		lineageTag: a7e88dee-58e4-4a8b-90a0-67129487ef42
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		lineageTag: d30d6f92-c267-4e03-a026-63bf23cba5bc
+		summarizeBy: none
+		sourceColumn: Name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition TaskTypeGroups-872c384c-1235-48db-a675-4e285f311dc2 = m
+		mode: import
+		queryGroup: Dimensions
+		source =
+				let
+				    Source = GlobalSource,
+				    TaskTypeGroups_table = Source{[Name="TaskTypeGroups",Signature="table"]}[Data],
+				    StopFolding = Table.StopFolding(TaskTypeGroups_table)
+				in
+				    StopFolding
+
+	annotation PBI_ResultType = Table
+

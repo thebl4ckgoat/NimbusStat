@@ -1,0 +1,52 @@
+table TagsUserSessions
+	lineageTag: e1a52fb8-75fe-4874-bdc8-12e27de5796f
+
+	column Id
+		dataType: string
+		lineageTag: da91adfa-751f-4f64-8199-80614221ad0b
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Tag
+		dataType: string
+		lineageTag: 28e1f043-1889-4830-ab00-91062328837d
+		summarizeBy: none
+		sourceColumn: Tag
+
+		annotation SummarizationSetBy = Automatic
+
+	column CreatedAt
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 4bd1b7d1-6a95-4455-af00-f3712a7099e9
+		summarizeBy: none
+		sourceColumn: CreatedAt
+
+		annotation SummarizationSetBy = Automatic
+
+	column TenantId
+		dataType: string
+		lineageTag: ee1bd713-55ad-48dc-b7e1-05efb2d1216a
+		summarizeBy: none
+		sourceColumn: TenantId
+
+		annotation SummarizationSetBy = Automatic
+
+	partition TagsUserSessions = m
+		mode: import
+		queryGroup: Dimensions
+		source =
+				let
+				    Source = GlobalSource,
+				    SourceTable = Source{[Name="Tags",Signature="table"]}[Data],
+				    #"Renamed Columns" = Table.RenameColumns(SourceTable,{{"Name", "Tag"}}),
+				    #"Merged Queries" = Table.NestedJoin(#"Renamed Columns", {"Id"}, UserSessionTags, {"TagIdUserSession"}, "UserSessionTags", JoinKind.Inner)
+				in
+				    #"Merged Queries"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Exception
+

@@ -1,0 +1,73 @@
+table ServiceSessionOutcomes
+	lineageTag: afa9fbc1-a998-40ec-8cca-8b972b7abc9e
+
+	column Id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 4bdb94b6-7ad2-468b-a0e4-ff7bcf7ccf50
+		summarizeBy: none
+		sourceColumn: Id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column MeansHandled
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 920b0f75-9d7d-44f9-8e17-350d100a8301
+		summarizeBy: none
+		sourceColumn: MeansHandled
+
+		annotation SummarizationSetBy = Automatic
+
+	column HandledText = if(ServiceSessionOutcomes[MeansHandled] = TRUE() , "Handled", "Not Handled")
+		lineageTag: 7790b983-46b6-46b6-bd93-8062aeb6a14a
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column GroupId
+		dataType: int64
+		formatString: 0
+		lineageTag: 3de4c6a3-12d8-4944-beff-a6add685af34
+		summarizeBy: none
+		sourceColumn: GroupId
+
+		annotation SummarizationSetBy = Automatic
+
+	column Outcome
+		dataType: string
+		lineageTag: e15504e9-50b4-4342-ae05-0f0409b0ce63
+		summarizeBy: none
+		sourceColumn: Outcome
+
+		annotation SummarizationSetBy = Automatic
+
+	column OutcomeGroup
+		dataType: string
+		lineageTag: a804c2d4-f558-49b7-971c-4a688f181883
+		summarizeBy: none
+		sourceColumn: OutcomeGroup
+
+		annotation SummarizationSetBy = Automatic
+
+	partition ServiceSessionOutcomes-712529ca-fa87-40d2-892b-454d5aa0fcbc = m
+		mode: import
+		queryGroup: Dimensions
+		source =
+				let
+				    Source = GlobalSource,
+				    ServiceSessionOutcomes_table = Source{[Name="ServiceSessionOutcomes",Signature="table"]}[Data],
+				    StopFolding = Table.StopFolding(ServiceSessionOutcomes_table),
+				    #"Renamed Columns" = Table.RenameColumns(StopFolding, {{"Name", "Outcome"}}),
+				    #"Merged Queries" = Table.NestedJoin(#"Renamed Columns", {"GroupId"}, OutcomeGroups, {"Id"}, "ServiceSessionOutcomeGroups", JoinKind.Inner),
+				    #"Expanded ServiceSessionOutcomeGroups" = Table.ExpandTableColumn(#"Merged Queries", "ServiceSessionOutcomeGroups", {"OutcomeGroup"}, {"OutcomeGroup"})
+				in
+				    #"Expanded ServiceSessionOutcomeGroups"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

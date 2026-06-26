@@ -1,0 +1,272 @@
+relationship a719e4c4-eecf-499e-86cd-fef0e34ca0ff
+	fromColumn: ServiceSessions.OutcomeId
+	toColumn: ServiceSessionOutcomes.Id
+
+relationship 7dfa6cc5-8bfe-4e79-b911-69caabef317e
+	fromColumn: UserSessions.UserId
+	toColumn: Users.Id
+
+relationship 3d22c22c-0b8a-4503-9f2f-83391ea7ec1c
+	fromColumn: UserSessions.OutcomeId
+	toColumn: UserSessionOutcomes.Id
+
+relationship 91b7e848-6a0d-4705-ac0f-4e5839ec3a10
+	fromColumn: ServiceSessions.ServiceId
+	toColumn: Services.Id
+
+relationship 63924023-938b-46db-a351-3fa89eaace74
+	crossFilteringBehavior: bothDirections
+	fromColumn: UserSessions.ServiceSessionId
+	toColumn: ServiceSessions.Id
+
+relationship 9f3d4df3-6364-4674-909d-31e1921611a7
+	fromColumn: ServiceSessions.DistributionAlgorithm
+	toColumn: DistributionAlgorithm.Id
+
+relationship a752aba7-5619-4873-9678-a8aa3e545520
+	crossFilteringBehavior: bothDirections
+	fromColumn: ServiceSessions.FirstPrimaryCodeId
+	toColumn: PrimaryCodes.Id
+
+relationship 0fd3fe0d-72d9-4078-bb60-e6b3625fa59e
+	fromColumn: ServiceSessions.FirstSecondaryCodeId
+	toColumn: SecondaryCodes.Id
+
+relationship c0e4fc67-d032-4152-9227-8a12914ac9fe
+	fromColumn: Services.OrganizationUnitId
+	toColumn: OrganizationUnits.Id
+
+relationship 589f5804-1546-4fd1-9712-de2782be4b8c
+	fromColumn: Users.OrganizationUnitId
+	toColumn: UserOrganizationUnits.Id
+
+relationship 0589ef51-46cc-4215-b8e4-47727750a82f
+	crossFilteringBehavior: bothDirections
+	fromColumn: UserStates.UserStateTypeId
+	toColumn: UserStateTypes.Id
+
+relationship 8d176b24-9cf2-419a-b58e-bc6cf92115d2
+	fromColumn: UserStates.UserO365Id
+	toColumn: Users.Id
+
+relationship 806da742-0719-4df7-bfbe-d8d6e6af8d1d
+	fromColumn: ServiceSessions.InitialCallerId
+	toColumn: Callers.CallerId
+
+	annotation PBI_IsFromSource = FS
+
+relationship 39d8a15c-0612-4120-8127-ac4f2d853e13
+	crossFilteringBehavior: bothDirections
+	fromColumn: TaskTypes.TaskDirectionId
+	toColumn: TaskDirections.Id
+
+relationship 6a066ed8-fa6c-4849-9682-6271bb1f6e52
+	fromColumn: ServiceSessions.TaskTypeId
+	toColumn: TaskTypes.Id
+
+relationship 76bb511a-7452-434c-9dcf-c846b456038d
+	fromColumn: ServiceSessions.DistributionPriority
+	toColumn: DistributionPriorityTypes.Id
+
+relationship 2a559b98-c254-4602-9787-65930bca09b9
+	fromColumn: UserSessions.DistributionPriority
+	toColumn: UserSessionDistributionPriority.Id
+
+relationship dfc3930a-34be-4676-9859-69cbe9770690
+	crossFilteringBehavior: bothDirections
+	fromColumn: TaskTypes.TaskTypeGroupId
+	toColumn: TaskTypeGroups.Id
+
+relationship fa2dd841-aa7f-4571-9bf7-1a55daaa1c53
+	fromColumn: UserSessions.DistributionTypeId
+	toColumn: DistributionTypes.Id
+
+relationship 89f18988-ec9b-4613-ac93-ae2656808709
+	crossFilteringBehavior: bothDirections
+	fromColumn: UserStates.ResponsibilityProfileId
+	toColumn: ResponsibilityProfiles.Id
+
+relationship 3c0cf661-81ac-46fe-815f-d4c9f3ab80ee
+	fromColumn: UserStates.NotAvailableReasonId
+	toColumn: NotAvailableReasons.Id
+
+relationship 9168ce04-3627-43e6-b989-309872e11541
+	fromColumn: UserSessions.InitialModality
+	toColumn: UserSessionModalityType.Id
+
+relationship 818a754a-f44d-49bb-a54c-59ba6d41ba01
+	fromColumn: ServiceSessions.InitialModality
+	toColumn: ServiceSessionModalityType.Id
+
+relationship 17c7dbf0-6c62-4180-9f45-08db722873d8
+	crossFilteringBehavior: bothDirections
+	fromColumn: TransferSessions.TransferSessionOutcomeId
+	toColumn: TransferSessionOutcomes.Id
+
+relationship 2d5bc759-cffd-46ad-8940-e341bf7fdbff
+	fromColumn: TransferSessionTypes.DestinationTypeId
+	toColumn: TransferSessionDestinationTypes.Id
+
+relationship 1049e71a-66d4-4b22-9f29-fbb902777285
+	crossFilteringBehavior: bothDirections
+	fromColumn: TransferSessions.TransferSessionTypeId
+	toColumn: TransferSessionTypes.Id
+
+relationship 4f50c873-b1ea-4b0f-a606-0ac306fbaf13
+	crossFilteringBehavior: bothDirections
+	fromColumn: TransferSessions.ServiceIdTo
+	toColumn: TransferDestinationService.Id
+
+relationship 09b27d4f-34e7-4133-87ed-52b5c2ea9162
+	fromColumn: TransferDestinationService.OrganizationUnitId
+	toColumn: TransferDestinationOU.Id
+
+relationship a83044df-790f-41b9-a8ac-6f53b1575b5b
+	fromColumn: UserSessionOutcomes.ActionGroupId
+	toColumn: UserSessionActionGroups.Id
+
+	annotation PBI_IsFromSource = FS
+
+relationship 633bcd5f-4b4b-4264-a98f-9b485ee5e72e
+	fromColumn: TransferSessions.UserTransferActionTypeId
+	toColumn: UserTransferActionTypes.Id
+
+relationship a72f01d9-72fa-4b11-a393-a6161525c8bc
+	fromColumn: ServiceSessions.LastTransferTypeId
+	toColumn: LastTransferType.Id
+
+relationship a43d8688-738c-4355-b56c-36df8a2f92e2
+	crossFilteringBehavior: bothDirections
+	fromColumn: TransferSessions.ServiceSessionIdFrom
+	toColumn: ServiceSessions.Id
+
+relationship ba222364-c2bf-4838-bd10-fcbe2bbb6de8
+	fromColumn: TransferSessions.ServiceIdFrom
+	toColumn: TransferSourceService.Id
+
+relationship 969d1a48-6e65-453f-a101-31eeacec3c8e
+	fromColumn: TransferSourceService.OrganizationUnitId
+	toColumn: TransferSourceOU.Id
+
+relationship b2a02793-13cc-4f73-80ef-7bdd5f8a37e5
+	fromColumn: ServiceSessions.OpeningHoursTypeId
+	toColumn: OpeningHoursTypes.Id
+
+relationship c29a5920-ee65-4126-aa61-4a7495bdc6ea
+	fromColumn: ServiceSessions.Date
+	toColumn: SessionDates.Date
+
+relationship 1200a765-9abb-4289-91a6-7e29d457330e
+	fromColumn: UserSessions.Date
+	toColumn: UserSessionDates.Date
+
+relationship f9ed7d7f-c18c-41bf-bcfe-9e2ada941a0d
+	fromColumn: TransferSessions.Date
+	toColumn: TransferDate.Date
+
+relationship 6e5ee688-d80b-429f-916e-ad2a9d14a8a1
+	fromColumn: Callers.OriginType
+	toColumn: OriginType.OriginType
+
+relationship 03d38b14-87dc-172b-66c6-7f531900173d
+	fromColumn: UserStates.Date
+	toColumn: UserSessionDates.Date
+
+relationship 1b26bcc9-b3fd-10d5-7c93-b50156ee5183
+	crossFilteringBehavior: bothDirections
+	fromColumn: ServiceSessionTags.ServiceSessionId
+	toColumn: ServiceSessions.Id
+
+relationship 5bb3215d-48f4-b106-3fa2-82ca6c1fc693
+	crossFilteringBehavior: bothDirections
+	fromColumn: ServiceSessionTags.TagId
+	toColumn: Tags.Id
+
+relationship f3b82734-20be-00f0-2c7f-3a42531c9f11
+	crossFilteringBehavior: bothDirections
+	fromColumn: ServiceSessions.UnifiedConversationId
+	toColumn: UnifiedSessions.UnifiedConversationId
+
+relationship 1a13d89b-f364-71ed-d712-40f997ee99f1
+	isActive: false
+	crossFilteringBehavior: bothDirections
+	fromColumn: UserSessions.UnifiedConversationId
+	toColumn: UnifiedSessions.UnifiedConversationId
+
+relationship 963015f8-6741-3e16-a7bb-4136fa08d70e
+	isActive: false
+	crossFilteringBehavior: bothDirections
+	fromColumn: UnifiedSessions.IncomingServiceId
+	toColumn: Services.Id
+
+relationship 27fe65a1-5038-d60c-02a2-1a26f663316a
+	isActive: false
+	crossFilteringBehavior: bothDirections
+	fromColumn: UnifiedSessions.FirstQueuedServiceId
+	toColumn: Services.Id
+
+relationship 92ac5a9e-2a64-2cf6-39bc-1f7177f9fb9f
+	isActive: false
+	crossFilteringBehavior: bothDirections
+	fromColumn: UnifiedSessions.LastQueuedServiceId
+	toColumn: Services.Id
+
+relationship 078ea193-3f63-6127-da69-cfcd0f77e15d
+	isActive: false
+	crossFilteringBehavior: bothDirections
+	fromColumn: UnifiedSessions.InitialCallerId
+	toColumn: Callers.CallerId
+
+relationship 3eb41cb8-2101-3c28-3175-5fa8e8778d41
+	isActive: false
+	crossFilteringBehavior: bothDirections
+	fromColumn: UnifiedSessions.Date
+	toColumn: SessionDates.Date
+
+relationship 9b2a76ad-bfc3-4bc9-b7af-1ffc9bd34f1a
+	crossFilteringBehavior: bothDirections
+	fromColumn: UnifiedSessions.OutcomeId
+	toColumn: UnifiedSessionOutcome.Id
+
+relationship 15289189-7b45-c747-321f-636883b1280c
+	crossFilteringBehavior: bothDirections
+	fromColumn: UnifiedSessionOutcome.GroupId
+	toColumn: OutcomeGroups.Id
+
+relationship c8a2aedd-a3f1-3ad3-bf01-f472340aca84
+	crossFilteringBehavior: bothDirections
+	fromColumn: UserSessionTags.UserSessionId
+	toColumn: UserSessions.Id
+
+relationship 5acc0554-f53d-3014-4ca3-94ea309391af
+	crossFilteringBehavior: bothDirections
+	fromColumn: UserSessions.Id
+	toColumn: UserSessionTagsStrings.UserSessionId
+
+relationship 6aa092f7-d3a0-3bbb-d6d4-240e9354bac4
+	crossFilteringBehavior: bothDirections
+	fromColumn: UserSessionTags.TagIdUserSession
+	toColumn: TagsUserSessions.Id
+
+relationship dc004f59-7481-824e-4fd3-2ae14c25c216
+	isActive: false
+	crossFilteringBehavior: bothDirections
+	fromColumn: UserSessions.SecondaryCodeId
+	toColumn: SecondaryCodes.Id
+
+relationship 8677056a-2310-0d84-d4d0-2d79c05d6848
+	isActive: false
+	crossFilteringBehavior: bothDirections
+	fromColumn: UserSessions.LastTransferTypeId
+	toColumn: TransferSessionTypes.Id
+
+relationship 9cfdb543-b291-bfe6-99b7-9c19bc9ee33c
+	crossFilteringBehavior: bothDirections
+	fromColumn: UserSessions.PrimaryCodeId
+	toColumn: PrimaryCodesUserSessions.Id
+
+relationship f61e0b41-90e0-591c-cfda-65305193afc9
+	crossFilteringBehavior: bothDirections
+	fromColumn: ServiceSessions.Id
+	toColumn: ServiceSessionTagsStrings.ServiceSessionId
+

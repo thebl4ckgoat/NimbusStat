@@ -1,0 +1,79 @@
+table PrimaryCodesUserSessions
+	lineageTag: 512bb91e-113a-449e-a3c9-7558323b8494
+
+	column Id
+		dataType: string
+		lineageTag: 6d6ae9f4-5e33-402a-8efc-7c275ce08628
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column PrimaryCode
+		dataType: string
+		lineageTag: a6594253-7496-46a9-a8e0-57f68f3aaf78
+		summarizeBy: none
+		sourceColumn: PrimaryCode
+
+		annotation SummarizationSetBy = Automatic
+
+	column Description
+		dataType: string
+		lineageTag: 830550f4-6bc3-40c2-a9a4-7a9c1ad76f77
+		summarizeBy: none
+		sourceColumn: Description
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsDeleted
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 9285bac6-2558-4f0e-9283-594ab0fd572a
+		summarizeBy: none
+		sourceColumn: IsDeleted
+
+		annotation SummarizationSetBy = Automatic
+
+	column TenantId
+		dataType: string
+		lineageTag: 2fffc28d-6bcf-4d4d-a10e-24df88da1dc1
+		summarizeBy: none
+		sourceColumn: TenantId
+
+		annotation SummarizationSetBy = Automatic
+
+	column CreatedAt
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 7c106d59-f292-4a33-97a3-f7bb391768ff
+		summarizeBy: none
+		sourceColumn: CreatedAt
+
+		annotation SummarizationSetBy = Automatic
+
+	column UpdatedAt
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: c9590887-4220-45ce-91d7-f668d2b9e97b
+		summarizeBy: none
+		sourceColumn: UpdatedAt
+
+		annotation SummarizationSetBy = Automatic
+
+	partition PrimaryCodesUserSessions = m
+		mode: import
+		queryGroup: Dimensions
+		source = ```
+				let
+				    Source = GlobalSource,
+				    PrimaryCodes_table = Source{[Name="PrimaryCodes",Signature="table"]}[Data],
+				    StopFolding = Table.StopFolding(PrimaryCodes_table),	
+				    #"Renamed Columns" = Table.RenameColumns(StopFolding, {{"Name", "PrimaryCode"}})
+				in
+				    #"Renamed Columns"
+				```
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Exception
+

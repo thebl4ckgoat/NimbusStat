@@ -1,0 +1,996 @@
+table UserSessions
+	lineageTag: 0b555dee-3d69-4be1-a5bc-0e97aec8d621
+
+	refreshPolicy
+		policyType: basic
+		rollingWindowGranularity: year
+		rollingWindowPeriods: 1
+		incrementalGranularity: day
+		incrementalPeriods: 1
+		sourceExpression = ```
+			let
+			    Source = GlobalSource,
+			    UserSessions_table = Source{[Name="UserSessions",Signature="table"]}[Data],
+			    #"Filtered Rows" = Table.SelectRows(UserSessions_table, each ([UserSelectedAt] >= DateTime.AddZone(RangeStart,0) and [UserSelectedAt] < DateTime.AddZone(RangeEnd,0))) , // date filter Incr Refresh date parameters
+			    
+			    #"Inserted Local Time" = Table.AddColumn(#"Filtered Rows", "Local Time", each ToLocalDateTimeZone([UserSelectedAt]), type datetimezone),   
+			
+			
+			    #"Inserted Date" = Table.AddColumn(#"Inserted Local Time", "Date", each DateTime.Date([Local Time]), type date),
+			    #"Inserted Time" = Table.AddColumn(#"Inserted Date", "Time", each DateTime.Time([Local Time]), type time),
+			    HourCol = Table.AddColumn(#"Inserted Time", "Hours", each Time.Hour([Time]), Int64.Type),
+			    MinuteCol = Table.AddColumn(HourCol, "Minutes", each Time.Minute([Time]), Int64.Type),
+			    Fixed15Min = Table.AddColumn(MinuteCol,"Fixed15Min",each 
+			            if Number.IntegerDivide([Minutes],15) = 0 then Number.ToText([Hours]) & ":00:00"
+			            else if Number.IntegerDivide([Minutes],15) = 1 then Number.ToText([Hours]) & ":15:00"
+			            else if Number.IntegerDivide([Minutes],15) = 2 then Number.ToText([Hours]) & ":30:00"
+			            else Number.ToText([Hours]) & ":45:00"),
+			    ConferencedTimeNullto0 = Table.ReplaceValue(Fixed15Min,null,0,Replacer.ReplaceValue,{"ConferencedTime"}),
+			    ConsultationTimeNullto0 = Table.ReplaceValue(ConferencedTimeNullto0,null,0,Replacer.ReplaceValue,{"ConsultationTime"}),
+			    AcwTimeNullto0 = Table.ReplaceValue(ConsultationTimeNullto0,null,0,Replacer.ReplaceValue,{"AcwTime"}),
+			    ConnectedTimeNullto0 = Table.ReplaceValue(AcwTimeNullto0,null,0,Replacer.ReplaceValue,{"ConnectedTime"}),
+			    RingTimeNullto0 = Table.ReplaceValue(ConnectedTimeNullto0,null,0,Replacer.ReplaceValue,{"RingTime"}),
+			    #"Changed Type" = Table.TransformColumnTypes(RingTimeNullto0,{{"Fixed15Min", type time}})
+			in
+			    #"Changed Type"
+			```
+
+	/// Average connected time expressed in seconds
+	measure ØConnectedTimeS = INT(CALCULATE(AVERAGE(UserSessions[ConnectedTime]), UserSessions[ConnectedTime]>0))
+		lineageTag: ae5d5a4a-e117-436b-a19e-87fcfee76633
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Average connected time formatted as HH:MM:SS
+	measure ØConnectedTime_HHMMSS =
+			
+			IF (NOT ISBLANK ([ØConnectedTimeS]), //show blank instead of empty string
+			    IF(INT([ØConnectedTimeS])>=86400, FORMAT (QUOTIENT(INT([ØConnectedTimeS]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ØConnectedTimeS]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ØConnectedTimeS]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ØConnectedTimeS]), 60), "00") //SECONDS
+			)
+		lineageTag: 4d89de4d-b8e4-4199-bdb4-880a24334dd7
+
+	/// Count of all user sessions in the selected dataset
+	/// 
+	/// ΣTotalUserSessions = COUNT(UserSessions[Id])
+	measure ΣTotalUserSessions = COUNT(UserSessions[Id])
+		formatString: 0
+		lineageTag: 716eb1f9-7118-49fb-ac55-2ecd26f12500
+
+	/// Average ring time in seconds
+	measure ØRingTimeS = INT(CALCULATE(AVERAGE(UserSessions[RingTime]), UserSessions[RingTime]>0))
+		lineageTag: 52023224-3ab7-4c90-907b-a16a96b7f609
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Average ring time formatted as HH:MM:SS
+	measure ØRingTime_HHMMSS =
+			
+			IF (NOT ISBLANK ([ØRingTimeS]), //show blank instead of empty string
+			    IF(INT([ØRingTimeS])>=86400, FORMAT (QUOTIENT(INT([ØRingTimeS]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ØRingTimeS]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ØRingTimeS]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ØRingTimeS]), 60), "00") //SECONDS
+			)
+		lineageTag: 7349b507-25fa-42b7-a7a0-03afe4dbed2e
+
+	/// Sum of ΣTotalUserSessions --> count of user sessions where the  User Session Outcome = "Accepted"
+	/// 
+	/// 
+	/// ΣAcceptedUserSessions =
+	/// CALCULATE (
+	/// [ΣTotalUserSessions],
+	/// FILTER (
+	/// VALUES ( UserSessionOutcomes[HandledText]),
+	/// UserSessionOutcomes[HandledText] = "Accepted"
+	/// )
+	/// )
+	/// 
+	measure ΣAcceptedUserSessions =
+			
+			CALCULATE (
+			    [ΣTotalUserSessions],
+			    FILTER (
+			        VALUES ( UserSessionOutcomes[HandledText]),
+			         UserSessionOutcomes[HandledText] = "Accepted"
+			    )
+			)
+		formatString: 0
+		lineageTag: 6903bc01-d97b-4958-9917-dddb66e4fcec
+
+	/// Ratio of accepted user sessions, to the total number of user sessions for this Nimbus user, for the selected period
+	/// 
+	/// DIVIDE([ Σ AcceptedUserSessions],[ Σ TotalUserSessions])*100
+	measure '%Acceptance Rate' = DIVIDE([ΣAcceptedUserSessions],[ΣTotalUserSessions])*100
+		formatString: 0.0
+		lineageTag: b0fd4ace-e950-4f80-b788-711bc8079039
+
+	/// Count of user sessions for the last 30 days in relation to today's date.
+	/// 
+	/// Note that if the report itself does not contain the last 30 days of data this KPI will yield a null value.
+	measure ΣUserSessions30d =
+			
+			VAR CurrentDate = TODAY()
+			RETURN
+			CALCULATE(
+			    [ΣTotalUserSessions],
+			    DATESBETWEEN(UserSessionDates[Date], CurrentDate - 30, CurrentDate - 1)
+			) + 0
+		formatString: 0
+		lineageTag: 73037581-1910-4b19-acea-fbc963910a64
+
+	/// Counts user sessions in relation to the current system date.
+	/// Note: if the report doesn't contain data for today, this measure will yield a null value.
+	measure ΣUserSessionsToday =
+			
+			VAR CurrentDate = TODAY()
+			RETURN
+			CALCULATE(
+			    [ΣTotalUserSessions],
+			    UserSessionDates[Date]=CurrentDate
+			) + 0
+		formatString: 0
+		lineageTag: 4869f582-083f-4fc8-a4dd-6b625d341cd7
+
+	/// Sum of connected time in seconds
+	measure ΣConnectedTime = SUM(UserSessions[ConnectedTime])
+		lineageTag: 6ad3d234-e53c-41e6-9818-efa8cfb3f6cd
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Sum of connected time formatted as HH:MM:SS
+	measure ΣConnectedTime_HHMMSS =
+			
+			IF (NOT ISBLANK (UserSessions[ΣConnectedTime]), //show blank instead of empty string
+			    IF(INT(UserSessions[ΣConnectedTime])>=86400, FORMAT (QUOTIENT(INT(UserSessions[ΣConnectedTime]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT(UserSessions[ΣConnectedTime]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT(UserSessions[ΣConnectedTime]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT(UserSessions[ΣConnectedTime]), 60), "00") //SECONDS
+			)
+		lineageTag: faebbaa8-b1c9-425e-9346-03e0e1caee85
+
+	/// Sum of RingTime = Sum of the length of time the invitation card was shown to  a Nimbus user for the Handled attempt (i.e. Declined and RONA attempts are ignored)).
+	measure ΣRingTime = SUM(UserSessions[RingTime])
+		lineageTag: ccaa3cbc-a497-4339-bf46-a92dc4918619
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Sum of RingTime formatted as HH:MM:SS
+	measure ΣRingTime_HHMMSS =
+			
+			IF (NOT ISBLANK (UserSessions[ΣRingTime]), //show blank instead of empty string
+			    IF(INT(UserSessions[ΣRingTime])>=86400, FORMAT (QUOTIENT(INT(UserSessions[ΣRingTime]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT(UserSessions[ΣRingTime]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT(UserSessions[ΣRingTime]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT(UserSessions[ΣRingTime]), 60), "00") //SECONDS
+			)
+		lineageTag: 56d2dfaf-1dd4-426b-9d1a-d1b7735cca35
+
+	/// Average after call work time
+	/// 
+	/// ØAcwTimeS = INT(CALCULATE(AVERAGE(UserSessions[AcwTime]), UserSessions[AcwTime]>0))
+	measure ØAcwTimeS = INT(CALCULATE(AVERAGE(UserSessions[AcwTime]), UserSessions[AcwTime]>0))
+		formatString: 0
+		lineageTag: ce51ea7f-9f40-451c-9178-102ef1a5811f
+
+	/// Sum of the after call work time in seconds
+	measure ΣAcwTime = SUM(UserSessions[AcwTime])
+		lineageTag: a83e5bec-6fa8-43cb-a2f8-cca734183088
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Average of the after call work time formatted as HH:MM:SS
+	measure ØAcwTime_HHMMSS =
+			
+			IF (NOT ISBLANK ([ØAcwTimeS]), //show blank instead of empty string
+			    IF(INT([ØAcwTimeS])>=86400, FORMAT (QUOTIENT(INT([ØAcwTimeS]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ØAcwTimeS]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ØAcwTimeS]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ØAcwTimeS]), 60), "00") //SECONDS
+			)
+		lineageTag: afee956f-41e0-4052-ae89-5d9b103976c7
+
+	/// Sum of the after call work formatted as HH:MM:SS
+	measure ΣAcwTime_HHMMSS =
+			
+			IF (NOT ISBLANK ([ΣAcwTime]), //show blank instead of empty string
+			    IF(INT([ΣAcwTime])>=86400, FORMAT (QUOTIENT(INT([ΣAcwTime]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ΣAcwTime]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ΣAcwTime]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ΣAcwTime]), 60), "00") //SECONDS
+			)
+		lineageTag: bf54d296-e53b-460f-929b-6c9cf0c14b5f
+
+	/// Sum of the count of user sessions where the user session outcome = "Accepted"
+	/// 
+	/// ΣFirstCallUserResolution =
+	/// CALCULATE (
+	/// [ΣTotalUserSessions],
+	/// FILTER (
+	/// VALUES ( UserSessionOutcomes[UserOutcome] ),
+	/// UserSessionOutcomes[UserOutcome] = "Accepted"
+	/// )
+	/// )
+	measure ΣFirstCallUserResolution =
+			
+			CALCULATE (
+			    [ΣTotalUserSessions],
+			    FILTER (
+			        VALUES ( UserSessionOutcomes[UserOutcome] ),
+			         UserSessionOutcomes[UserOutcome] = "Accepted"
+			    )
+			)
+		formatString: 0
+		lineageTag: 1bff238d-fbd8-42bb-be87-4423cdd7dd46
+
+	/// Sum of the count of user sessions where the user session outcome = "Transferred Internally"
+	/// 
+	/// ΣInternalTransfer =
+	/// CALCULATE (
+	/// [ΣTotalUserSessions],
+	/// FILTER (
+	/// VALUES ( UserSessionOutcomes[UserOutcome] ),
+	/// UserSessionOutcomes[UserOutcome] = "Transferred Internally"
+	/// )
+	/// )
+	measure ΣInternalTransfer =
+			
+			CALCULATE (
+			    [ΣTotalUserSessions],
+			    FILTER (
+			        VALUES ( UserSessionOutcomes[UserOutcome] ),
+			         UserSessionOutcomes[UserOutcome] = "Transferred Internally"
+			    )
+			)
+		formatString: 0
+		lineageTag: 72aad6e2-cfed-4056-b911-8518db71d2b6
+
+	/// Sum of the count of user sessions where the user session outcome = "Declined"
+	/// 
+	/// ΣDeclinedUserSessions =
+	/// CALCULATE (
+	/// [ΣTotalUserSessions],
+	/// FILTER (
+	/// VALUES ( UserSessionOutcomes[UserOutcome] ),
+	/// UserSessionOutcomes[UserOutcome] = "Declined"
+	/// )
+	/// )
+	measure ΣDeclinedUserSessions =
+			
+			CALCULATE (
+			    [ΣTotalUserSessions],
+			    FILTER (
+			        VALUES ( UserSessionOutcomes[UserOutcome] ),
+			         UserSessionOutcomes[UserOutcome] = "Declined"
+			    )
+			)
+		formatString: 0
+		lineageTag: 4ac6ae1f-d457-4643-9e0d-86c3b49a043f
+
+	/// Sum of the count of user sessions where the user session outcome = "Transferred Externally"
+	/// 
+	/// ΣExternalTransfer =
+	/// CALCULATE (
+	/// [ΣTotalUserSessions],
+	/// FILTER (
+	/// VALUES ( UserSessionOutcomes[UserOutcome] ),
+	/// UserSessionOutcomes[UserOutcome] = "Transferred Externally"
+	/// )
+	/// )
+	measure ΣExternalTransfer =
+			
+			CALCULATE (
+			    [ΣTotalUserSessions],
+			    FILTER (
+			        VALUES ( UserSessionOutcomes[UserOutcome] ),
+			         UserSessionOutcomes[UserOutcome] = "Transferred Externally"
+			    )
+			)
+		formatString: 0
+		lineageTag: cd93f94a-ace7-4ac0-8926-b6c69c9628fb
+
+	/// Sum of the count of user sessions where the user session outcome = "Ignored"
+	/// 
+	/// ΣIgnoredUserSessions =
+	/// CALCULATE (
+	/// [ΣTotalUserSessions],
+	/// FILTER (
+	/// VALUES ( UserSessionOutcomes[UserOutcome] ),
+	/// UserSessionOutcomes[UserOutcome] = "Ignored"
+	/// )
+	/// )
+	measure ΣIgnoredUserSessions =
+			
+			CALCULATE (
+			    [ΣTotalUserSessions],
+			    FILTER (
+			        VALUES ( UserSessionOutcomes[UserOutcome] ),
+			         UserSessionOutcomes[UserOutcome] = "Ignored"
+			    )
+			)
+		formatString: 0
+		lineageTag: 58a213f4-97ec-47d3-bddb-7e3452781bb1
+
+	/// Sum of consultation time in seconds
+	/// 
+	/// ΣConsultationTimeS = SUM(UserSessions[ConsultationTime])
+	measure ΣConsultationTimeS = SUM(UserSessions[ConsultationTime])
+		lineageTag: 5df89b11-4573-494c-abac-47446b4214f3
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Sum of consultation time formatted as HH:MM:SS
+	measure ΣConsultationTime_HHMMSS =
+			
+			IF (NOT ISBLANK (UserSessions[ΣConsultationTimeS]), //show blank instead of empty string
+			    IF(INT(UserSessions[ΣConsultationTimeS])>=86400, FORMAT (QUOTIENT(INT(UserSessions[ΣConnectedTime]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT(UserSessions[ΣConsultationTimeS]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT(UserSessions[ΣConsultationTimeS]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT(UserSessions[ΣConsultationTimeS]), 60), "00") //SECONDS
+			)
+		lineageTag: 7603558c-5297-456f-860e-68ec76a9c560
+
+	/// Average consultation time expressed in seconds
+	measure ØConsultationTimeS = INT(CALCULATE(AVERAGE(UserSessions[ConsultationTime]), UserSessions[ConsultationTime]>0))
+		formatString: 0
+		lineageTag: 49c03cae-761b-4fd9-8af0-103a0828187b
+
+	/// Average consultation time formatted as HH:MM:SS
+	measure ØConsultationTime_HHMMSS =
+			
+			IF (NOT ISBLANK (UserSessions[ØConsultationTimeS]), //show blank instead of empty string
+			    IF(INT(UserSessions[ØConsultationTimeS])>=86400, FORMAT (QUOTIENT(INT(UserSessions[ΣConnectedTime]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT(UserSessions[ØConsultationTimeS]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT(UserSessions[ØConsultationTimeS]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT(UserSessions[ØConsultationTimeS]), 60), "00") //SECONDS
+			)
+		lineageTag: 85d45d3a-d019-4523-b224-1ac1549d4fa9
+
+	/// Sum of the conference time in seconds
+	measure ΣConferencedTimeS = SUM(UserSessions[ConferencedTime])
+		lineageTag: 712f0f17-f44d-4c9d-bd35-388dd130ecf4
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Average conference time expressed in seconds
+	/// 
+	/// ØConferencedTimeS = INT(CALCULATE(AVERAGE(UserSessions[ConferencedTime]), UserSessions[ConferencedTime]>0))
+	measure ØConferencedTimeS = INT(CALCULATE(AVERAGE(UserSessions[ConferencedTime]), UserSessions[ConferencedTime]>0))
+		formatString: 0
+		lineageTag: 156d0c4c-9f65-4dee-8cba-0624e39dea7b
+
+	/// Average conference time formatted as HH:MM.SS
+	measure ØConferencedTime_HHMMSS =
+			
+			IF (NOT ISBLANK (UserSessions[ØConferencedTimeS]), //show blank instead of empty string
+			    IF(INT(UserSessions[ØConsultationTimeS])>=86400, FORMAT (QUOTIENT(INT(UserSessions[ØConferencedTimeS]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT(UserSessions[ØConferencedTimeS]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT(UserSessions[ØConferencedTimeS]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT(UserSessions[ØConferencedTimeS]), 60), "00") //SECONDS
+			)
+		lineageTag: acd61b6c-df48-41b8-867b-bbb54f150377
+
+	/// Sum of the conference time formatted as HH:MM:SS
+	measure ΣConferencedTime_HHMMSS =
+			
+			IF (NOT ISBLANK (UserSessions[ΣConferencedTimeS]), //show blank instead of empty string
+			    IF(INT(UserSessions[ΣConferencedTimeS])>=86400, FORMAT (QUOTIENT(INT(UserSessions[ΣConferencedTimeS]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT(UserSessions[ΣConferencedTimeS]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT(UserSessions[ΣConferencedTimeS]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT(UserSessions[ΣConferencedTimeS]), 60), "00") //SECONDS
+			)
+		lineageTag: e8bce4ab-5e96-474b-95d4-748ceeff2731
+
+	/// Sum of the count of user sessions ended by transfer (user sessions where the ActionGroup = "Transferred")
+	/// 
+	/// ΣTransferredUserSessions =
+	/// CALCULATE (
+	/// [ΣTotalUserSessions],
+	/// FILTER (
+	/// VALUES ( UserSessionOutcomes[ActionGroup]),
+	/// UserSessionOutcomes[ActionGroup] = "Transferred"
+	/// )
+	/// )
+	measure ΣTransferredUserSessions =
+			
+			CALCULATE (
+			    [ΣTotalUserSessions],
+			    FILTER (
+			        VALUES ( UserSessionOutcomes[ActionGroup]),
+			         UserSessionOutcomes[ActionGroup] = "Transferred"
+			    )
+			)
+		formatString: 0
+		lineageTag: 2ba97eeb-f637-4a49-8c46-feba13140fd4
+
+	/// Sum of the count of user sessions that contain at least one consultation.
+	/// 
+	/// ΣConsultedUserSessions =
+	/// CALCULATE (
+	/// [ΣTotalUserSessions],
+	/// FILTER (
+	/// VALUES ( UserSessions[ConsultationCount]),
+	/// UserSessions[ConsultationCount]>0
+	/// )
+	/// )
+	/// 
+	measure ΣConsultedUserSessions =
+			
+			CALCULATE (
+			    [ΣTotalUserSessions],
+			    FILTER (
+			        VALUES ( UserSessions[ConsultationCount]),
+			         UserSessions[ConsultationCount]>0
+			    )
+			)
+		formatString: 0
+		lineageTag: 4c484ea7-c61d-450b-858d-61c93daf8bd4
+
+	/// Ratio of user sessions ended by transfer, to the total number of user sessions
+	/// 
+	/// %Transfer Rate = DIVIDE([ΣTransferredUserSessions],[ΣAcceptedUserSessions])*100
+	measure '%Transfer Rate' = DIVIDE([ΣTransferredUserSessions],[ΣAcceptedUserSessions])*100
+		formatString: 0.0
+		lineageTag: cf4e75fa-94a3-4f81-8aa6-0e0affe55d9d
+
+	/// Ratio of user sessions with consultations, to the total number of user sessions, for this Nimbus user, for the selected period
+	/// 
+	/// %Consulted Rate = DIVIDE([ΣConsultedUserSessions],[ΣAcceptedUserSessions])*100
+	/// 
+	/// 
+	measure '%Consulted Rate' = DIVIDE([ΣConsultedUserSessions],[ΣAcceptedUserSessions])*100
+		formatString: 0.0
+		lineageTag: c10655f1-0cb1-434d-99e6-7c8e09bb1487
+
+	/// Average of the after call work extended time
+	/// 
+	/// DAX:
+	/// INT(CALCULATE(AVERAGE(UserSessions[AcwExtendedTime]), UserSessions[AcwExtendedTime]>0))
+	measure ØAcwExtendedTimeS = INT(CALCULATE(AVERAGE(UserSessions[AcwExtendedTime]), UserSessions[AcwExtendedTime]>0))
+		formatString: 0
+		lineageTag: dd828196-4d69-4de8-823b-dfa6d9100704
+
+	/// Sum or the extended After Call Work time
+	/// 
+	/// DAX:
+	/// SUM(UserSessions[AcwExtendedTime])
+	measure ΣAcwExtendedTime = SUM(UserSessions[AcwExtendedTime])
+		lineageTag: bdcfa713-0c9c-46d4-acef-e999d7d5e0ba
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Average after call extended work time (measure: ØAcwExtendedTimeS) formatted as HH:MM:SS
+	measure ØAcwExtendedTime_HHMMSS =
+			IF (NOT ISBLANK ([ØAcwExtendedTimeS]), //show blank instead of empty string
+			    IF(INT([ØAcwExtendedTimeS])>=86400, FORMAT (QUOTIENT(INT([ØAcwExtendedTimeS]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ØAcwExtendedTimeS]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ØAcwExtendedTimeS]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ØAcwExtendedTimeS]), 60), "00") //SECONDS
+			)
+		lineageTag: a10e5605-86df-469c-9123-a87aff03e46d
+
+	/// Sum of the extended after call work time (measure: ΣAcwExtendedTime) formatted as HH:MM:SS
+	measure ΣAcwExtendedTime_HHMMSS =
+			IF (NOT ISBLANK ([ΣAcwExtendedTime]), //show blank instead of empty string
+			    IF(INT([ΣAcwExtendedTime])>=86400, FORMAT (QUOTIENT(INT([ΣAcwExtendedTime]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ΣAcwExtendedTime]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ΣAcwExtendedTime]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ΣAcwExtendedTime]), 60), "00") //SECONDS
+			)
+		lineageTag: ac9043f4-3581-40e1-a0b5-2a16f26e81e8
+
+	/// Transfer Type of the transfer that led to the termination of the User session (Successful or Failed)
+	/// 
+	/// The logic resolves the type (name) for the LastTransferTypeId found in the UserSessions entity using the relationship between UserSessions and TransferSeeeionTypes.
+	measure LastTransferDesitinationType = CALCULATE(max (TransferSessionTypes[Name]), USERELATIONSHIP(UserSessions[LastTransferTypeId], TransferSessionTypes[Id]))
+		lineageTag: 72366f71-cb2e-4598-bccf-62b71883fc0b
+
+	/// Technical Power BI measure. It provides a flag used to check the presence of Tags and Codes in the Tags and Codes report pages so that irrelevant data can be filtered out.
+	measure Tag-CodesCheckUS = COALESCE(Count (UserSessionTagsStrings[UserSessionId]), Count(UserSessions[PrimaryCodeId]), Count(UserSessions[SecondaryCodeId]))
+		formatString: 0
+		lineageTag: 21b04ca2-f983-4981-a244-78aa038154d5
+
+	measure '% Taux d''occupation' =
+			
+			DIVIDE (
+			    [ΣConnectedSeconds],
+			    [ΣConnectedSeconds] + [ΣSelectableSeconds]
+			)
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		lineageTag: 89fb9721-07be-4dea-bc90-179fc54d0c78
+
+	measure '% Taux d''occupation (avec ACW)' =
+			
+			CALCULATE (
+			    DIVIDE (
+			        [ΣConnectedSeconds] + [ΣACWSeconds],
+			        [ΣConnectedSeconds] + [ΣACWSeconds] + [ΣSelectableSeconds]
+			    ),
+			    TREATAS ( VALUES ( SessionDates[Date] ),          UserStates[Date] ),
+			    TREATAS ( VALUES ( Services[Groupe Téléphonie] ), Users[Groupe] )
+			)
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		lineageTag: 48d05b6b-0ab9-4f4a-938d-8cf2db7531c3
+
+	column Id
+		dataType: string
+		isHidden
+		lineageTag: 88989a85-262f-4040-9c81-54c8526a4cdc
+		summarizeBy: none
+		sourceColumn: Id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Timestamp of the start of the user session in UTC
+	column UserSelectedAt
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 37db8de5-b7d6-46a5-b614-cd332499202b
+		summarizeBy: none
+		sourceColumn: UserSelectedAt
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Length of the time a task is offered to an available Nimbus user by Nimbus.
+	/// The overall ring time is calculated for each user session, irrespective of the modality or outcome of the session.
+	/// 
+	/// ☝ Note that due to variables outside Nimbus (e.g. MS Teams processing times or local networks) there could be a delay between the start of the ring time logged by Nimbus and the actual time the card is presented to the user by Teams. This can result in variable multi-second lag that cannot be calculated or predicted by Nimbus
+	column RingTime
+		dataType: double
+		lineageTag: d963aa1d-5541-4748-acac-e1fea6489476
+		summarizeBy: sum
+		sourceColumn: RingTime
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Overall time the user was connected for each user session expressed in seconds.
+	/// 
+	/// For Inbound Tasks:
+	/// The time is calculated from the moment the user accepts the inbound task until the end of the session
+	/// 
+	/// For Outbound Tasks:
+	/// Time is calculated from the moment the outbound task is accepted by the customer and the end of the user session.
+	column ConnectedTime
+		dataType: double
+		lineageTag: 2101ca0e-c3a7-4469-b52f-973112bd602b
+		summarizeBy: sum
+		sourceColumn: ConnectedTime
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// If of the user
+	column UserId
+		dataType: string
+		isHidden
+		lineageTag: 0d8326ef-e2a2-4574-b3ee-72d7f193f259
+		summarizeBy: none
+		sourceColumn: UserId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Id of the session Outcome.
+	/// Can be used to join with the UserSessionOutcomes table to resolve the outcome name.
+	column OutcomeId
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: f3eaba13-6245-48a2-b1ba-ce78a9b394da
+		summarizeBy: none
+		sourceColumn: OutcomeId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// UserSelectedAt timestamp converted into the time zone that was selected in the report parameters at refresh time
+	column 'Local Time'
+		dataType: dateTime
+		formatString: yyyy-mm-dd hh:mm:ss
+		lineageTag: 4a73c6bb-8844-4709-8ecd-55887c64e921
+		summarizeBy: none
+		sourceColumn: Local Time
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isCustom":true}
+
+	/// Date of the user session extracted from the Local Time
+	column Date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 93dc36e2-736c-4626-be3d-bc02eea5c9df
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isCustom":true}
+
+	/// Time portion of the Local time timestamp
+	column Time
+		dataType: dateTime
+		formatString: Long Time
+		lineageTag: bcbf6023-746a-418d-a8d6-cbed36d10a21
+		summarizeBy: none
+		sourceColumn: Time
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+	/// Returns the hour portion from the Local Time (e.g. if Local Time is 2023-01-01 17:24:10 the value returned is 17)
+	column Hours
+		dataType: int64
+		formatString: 0
+		lineageTag: 6b2a06e0-532d-404b-ab3b-4a1254361ad8
+		summarizeBy: sum
+		sourceColumn: Hours
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Minute portion extracted from the Local Time timestamp value
+	column Minutes
+		dataType: int64
+		formatString: 0
+		lineageTag: 12ad3535-0dd3-4765-ab5b-88f5d16ca39f
+		summarizeBy: sum
+		sourceColumn: Minutes
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Calculates the 15 minutes buckets in which the Local Time falls into formatted as HH:MM:SS (e.g.  2024-02-29 17:40:55 falls into the 17:30:00 fixed 15 minutes bucket).
+	column Fixed15Min
+		dataType: dateTime
+		formatString: Long Time
+		lineageTag: 18fe063d-7520-469e-9867-eadef21d9a8d
+		summarizeBy: none
+		sourceColumn: Fixed15Min
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+	/// Id of the distribution type.
+	/// Can be used to join with the DistributionType entity, e.g. to resolve the distribution type name.
+	/// 
+	/// The distribution type informs us in which way the task was sent to the user (e.g. Broadcast, DirectConference etc.)
+	column DistributionTypeId
+		dataType: int64
+		formatString: 0
+		lineageTag: 12ff46df-b912-4157-8bc5-e1b08ffbb631
+		summarizeBy: none
+		sourceColumn: DistributionTypeId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Id of the Service Session parenting the User Session
+	column ServiceSessionId
+		dataType: string
+		lineageTag: b53d0793-38a0-4ec4-9aa2-b84ea015f95e
+		summarizeBy: none
+		sourceColumn: ServiceSessionId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Profile level. In which distribution profile the user was selected (1, 2, 3... )
+	column DistributionPolicyLevel
+		dataType: int64
+		formatString: 0
+		lineageTag: 9a67cd7b-4a3f-4cd1-9a8f-ae4a73c6610a
+		summarizeBy: sum
+		sourceColumn: DistributionPolicyLevel
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Distribution Algorithm id. Can be used to join  to the DistributionAlgorithm dimension to retrieve the details of the distribution algorithm
+	column DistributionAlgorithm
+		dataType: int64
+		formatString: 0
+		lineageTag: 27d10d67-8825-4e19-b135-49027f7706f5
+		summarizeBy: sum
+		sourceColumn: DistributionAlgorithm
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Short for "After-Call Work".
+	/// Additional time granted to Users to complete Tasks following a call, such as: complete CRM tickets or adding Tags and Codes to the Session for Reporting purposes.
+	column AcwTime
+		dataType: double
+		lineageTag: bcf44fa6-afd2-4ba4-bf71-d99c71c7489f
+		summarizeBy: sum
+		sourceColumn: AcwTime
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Count of consultations during the user session
+	column ConsultationCount
+		dataType: int64
+		formatString: 0
+		lineageTag: 3cf1ae19-ca8c-49d4-a687-fe0c0e02568a
+		summarizeBy: sum
+		sourceColumn: ConsultationCount
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Total time user spent in conference with consultant only (while the customer is on hold)
+	column ConsultationTime
+		dataType: double
+		lineageTag: 3f5ff29c-e786-44ae-a38f-c5d3ef78c3b1
+		summarizeBy: sum
+		sourceColumn: ConsultationTime
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Total time user spend in conference with customer and consultant
+	column ConferencedTime
+		dataType: double
+		lineageTag: 832c9abc-3581-4945-9ac8-1b5f48a931e8
+		summarizeBy: sum
+		sourceColumn: ConferencedTime
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Id of the unified conversation associated with the user session. It allows to identify all sessions with a common unified conversation id.
+	column UnifiedConversationId
+		dataType: string
+		lineageTag: db79d88f-46ed-435b-818c-eba839ecd115
+		summarizeBy: none
+		sourceColumn: UnifiedConversationId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// After Call Work extended by a user (if configured to allow users to do so).
+	column AcwExtendedTime
+		dataType: double
+		lineageTag: 809089d6-d2f4-4bb7-b956-2e56dff1fdfe
+		summarizeBy: sum
+		sourceColumn: AcwExtendedTime
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Id of the distribution priority with a relationship to Id in DistributionPriorityType
+	column DistributionPriority
+		dataType: int64
+		formatString: 0
+		lineageTag: 74628e05-c1e3-4723-a446-133c3008f17c
+		summarizeBy: none
+		sourceColumn: DistributionPriority
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Id of the task type. Can be used to join to the TaskTypes table to resolve the name of the task type (e.g. "Call on Behalf", "Inbound Direct" etc.).
+	column TaskTypeId
+		dataType: int64
+		formatString: 0
+		lineageTag: 5df1d207-810a-49b4-9247-fed6737de56a
+		summarizeBy: count
+		sourceColumn: TaskTypeId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Id of the Tenant
+	column TenantId
+		dataType: string
+		lineageTag: db61f97a-0548-46ef-9a2c-6b6eeb7a27a1
+		summarizeBy: none
+		sourceColumn: TenantId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Id of the modality of the user session.
+	/// It can be used to join to the Modality table in order to resolve the name.
+	column InitialModality
+		dataType: int64
+		formatString: 0
+		lineageTag: fe8a1440-3f6f-43fd-b18c-963884d47d13
+		summarizeBy: none
+		sourceColumn: InitialModality
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Flag indicating whether the user was set as preferred agent for the routing policy.
+	/// For additional details, please read the distribution policies descriptions and options in the Knowledge Base.
+	/// 
+	/// Please note that distribution policies are a Contact Center feature. Both services and users need the Contact Center license to enable the corresponding configuration tabs.
+	column IsPreferred
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: cb5088d3-50d9-476e-a4dd-11c3e7856977
+		summarizeBy: none
+		sourceColumn: IsPreferred
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Flag indicating whether the policy for this user was set to "LastUserRouting" when this user session occurred. For additional details, read about distribution policies on the KB.
+	/// 
+	/// Please note that distribution policies are a Contact Center feature. Both services and users need the Contact Center license to enable the corresponding configuration tabs.
+	column LastUserRouting
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 7b122f37-2e21-45ef-8d16-a5ea441c2720
+		summarizeBy: none
+		sourceColumn: LastUserRouting
+
+		annotation SummarizationSetBy = Automatic
+
+	/// LastTransferDestination (UPN or PSTN of transfer destination) that led to the termination of the User session (Successful or Failed)
+	column LastTransferDestination
+		dataType: string
+		lineageTag: 9c9b9d1b-4e9d-41fd-9a21-65ddb349569c
+		summarizeBy: none
+		sourceColumn: LastTransferDestination
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Transfer type id of the destination of the transfer that led to the termination of the User session (Successful or Failed)
+	column LastTransferTypeId
+		dataType: int64
+		formatString: 0
+		lineageTag: 8ec46bb6-3307-4b3d-ae5a-8a33cf218a7d
+		summarizeBy: count
+		sourceColumn: LastTransferTypeId
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrganizationUnitId
+		dataType: string
+		lineageTag: 5d353097-1598-4d35-812f-f741e804e0c1
+		summarizeBy: none
+		sourceColumn: OrganizationUnitId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Id of the Primary Code selected by the agent during this user session (if applicable).
+	/// It can be used to join to the PrimaryCodes table to resolve the value of the actual code.
+	column PrimaryCodeId
+		dataType: string
+		lineageTag: f2a28d55-9b9e-483a-aa04-b26902807e3c
+		summarizeBy: none
+		sourceColumn: PrimaryCodeId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Id of the Secondary Code selected by the agent during this user session (if applicable).
+	/// It can be used to join to the SecondaryCodes table to resolve the value of the actual code.
+	column SecondaryCodeId
+		dataType: string
+		lineageTag: c2a10497-ec0b-4964-99e5-495208aaa653
+		summarizeBy: none
+		sourceColumn: SecondaryCodeId
+
+		annotation SummarizationSetBy = Automatic
+
+	column StartedWithTransfer
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 36135107-7cb3-46b1-aae7-b155e03e6d81
+		summarizeBy: none
+		sourceColumn: StartedWithTransfer
+
+		annotation SummarizationSetBy = Automatic
+
+	column HoldCount
+		dataType: int64
+		formatString: 0
+		lineageTag: 255a428a-dd06-4841-b560-840f862e4d6e
+		summarizeBy: sum
+		sourceColumn: HoldCount
+
+		annotation SummarizationSetBy = Automatic
+
+	column HoldTime
+		dataType: double
+		lineageTag: b5c5f76b-66b2-4102-9f0f-50a43ea88069
+		summarizeBy: sum
+		sourceColumn: HoldTime
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column ParkCount
+		dataType: int64
+		formatString: 0
+		lineageTag: 79a1b79f-3d16-4c15-879d-90daece7ad4d
+		summarizeBy: sum
+		sourceColumn: ParkCount
+
+		annotation SummarizationSetBy = Automatic
+
+	column ParkTime
+		dataType: double
+		lineageTag: 9e086ea1-38a6-4197-bf89-9c632e4ae189
+		summarizeBy: sum
+		sourceColumn: ParkTime
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column CommunicationTypeId
+		dataType: int64
+		formatString: 0
+		lineageTag: ab0e69b9-6eb5-4a70-983e-e7fd3a2017d2
+		summarizeBy: count
+		sourceColumn: CommunicationTypeId
+
+		annotation SummarizationSetBy = Automatic
+
+	column DirectCallOrgUnitId
+		dataType: string
+		lineageTag: 57c0aabc-1d3e-4c64-8bc8-c02fc20bce4f
+		summarizeBy: none
+		sourceColumn: DirectCallOrgUnitId
+
+		annotation SummarizationSetBy = Automatic
+
+	hierarchy 'Hours Hierarchy'
+		lineageTag: dfbc44ec-cbb3-434a-b1bd-f95a781d741e
+
+		level Hours
+			lineageTag: f9f0d0fc-44df-492f-b762-e4bc111c660e
+			column: Hours
+
+		level Fixed15Min
+			lineageTag: 3c4de745-0a89-40b8-84a0-0fa80b780c27
+			column: Fixed15Min
+
+		level Time
+			lineageTag: 5ed15009-6220-4577-a9c8-dae243b27704
+			column: Time
+
+	partition UserSessions-206e9d14-85a1-41d0-b032-d79335e3fc9b = m
+		mode: import
+		queryGroup: Facts\UserSessions
+		source = ```
+				let
+				    Source = GlobalSource,
+				    UserSessions_table = Source{[Name="UserSessions",Signature="table"]}[Data],
+				    #"Filtered Rows" = Table.SelectRows(UserSessions_table, each ([UserSelectedAt] >= DateTime.AddZone(RangeStart,0) and [UserSelectedAt] < DateTime.AddZone(RangeEnd,0))) , // date filter Incr Refresh date parameters
+				    
+				    #"Inserted Local Time" = Table.AddColumn(#"Filtered Rows", "Local Time", each ToLocalDateTimeZone([UserSelectedAt]), type datetimezone),   
+				
+				
+				    #"Inserted Date" = Table.AddColumn(#"Inserted Local Time", "Date", each DateTime.Date([Local Time]), type date),
+				    #"Inserted Time" = Table.AddColumn(#"Inserted Date", "Time", each DateTime.Time([Local Time]), type time),
+				    HourCol = Table.AddColumn(#"Inserted Time", "Hours", each Time.Hour([Time]), Int64.Type),
+				    MinuteCol = Table.AddColumn(HourCol, "Minutes", each Time.Minute([Time]), Int64.Type),
+				    Fixed15Min = Table.AddColumn(MinuteCol,"Fixed15Min",each 
+				            if Number.IntegerDivide([Minutes],15) = 0 then Number.ToText([Hours]) & ":00:00"
+				            else if Number.IntegerDivide([Minutes],15) = 1 then Number.ToText([Hours]) & ":15:00"
+				            else if Number.IntegerDivide([Minutes],15) = 2 then Number.ToText([Hours]) & ":30:00"
+				            else Number.ToText([Hours]) & ":45:00"),
+				    ConferencedTimeNullto0 = Table.ReplaceValue(Fixed15Min,null,0,Replacer.ReplaceValue,{"ConferencedTime"}),
+				    ConsultationTimeNullto0 = Table.ReplaceValue(ConferencedTimeNullto0,null,0,Replacer.ReplaceValue,{"ConsultationTime"}),
+				    AcwTimeNullto0 = Table.ReplaceValue(ConsultationTimeNullto0,null,0,Replacer.ReplaceValue,{"AcwTime"}),
+				    ConnectedTimeNullto0 = Table.ReplaceValue(AcwTimeNullto0,null,0,Replacer.ReplaceValue,{"ConnectedTime"}),
+				    RingTimeNullto0 = Table.ReplaceValue(ConnectedTimeNullto0,null,0,Replacer.ReplaceValue,{"RingTime"}),
+				    #"Changed Type" = Table.TransformColumnTypes(RingTimeNullto0,{{"Fixed15Min", type time}})
+				in
+				    #"Changed Type"
+				```
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

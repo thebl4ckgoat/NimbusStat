@@ -1,0 +1,9 @@
+role 'Coordination Charleroi'
+	modelPermission: read
+
+	tablePermission Services = [Groupe Téléphonie] = "Coordination Charleroi"
+
+	tablePermission Users = [Groupe] = "Coordination Charleroi"
+
+	annotation PBI_Id = c08eb98b08cb410fb349d125c46ee0b9
+

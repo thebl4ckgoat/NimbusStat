@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "Statistiques Téléphonie - Direction"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "52acdfde-c746-47fe-9c9f-9e3095939076"
+  }
+}

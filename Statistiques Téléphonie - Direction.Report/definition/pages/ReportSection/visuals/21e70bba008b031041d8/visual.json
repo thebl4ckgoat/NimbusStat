@@ -1,0 +1,45 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "21e70bba008b031041d8",
+  "position": {
+    "x": 41.107921928817454,
+    "y": 516.96326061997706,
+    "z": 15000,
+    "height": 504.50631458094148,
+    "width": 1500,
+    "tabOrder": 8000
+  },
+  "visualGroup": {
+    "displayName": "Slicer Panel1",
+    "groupMode": "ScaleMode",
+    "objects": {
+      "lockAspect": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "isHidden": true
+}

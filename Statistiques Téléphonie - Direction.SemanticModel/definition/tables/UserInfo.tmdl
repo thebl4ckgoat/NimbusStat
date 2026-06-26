@@ -1,0 +1,126 @@
+table UserInfo
+	lineageTag: a40bc4d3-796c-429b-982a-ead63d233849
+
+	measure DaxUserPrincipalName = USERPRINCIPALNAME()
+		lineageTag: f6319a3a-1635-4f42-acfc-cbe2523efdba
+
+	measure IsFilterActive = IF(ISCROSSFILTERED(ServiceSessions),1,IF(ISCROSSFILTERED(UserSessions),1,0))
+		formatString: 0
+		lineageTag: eb295983-34ab-48ef-a2bc-67d6f8ba0781
+
+	column UserId
+		dataType: string
+		lineageTag: 3becd9d3-1684-4c89-b3ca-f0f7e1d66533
+		summarizeBy: none
+		sourceColumn: UserId
+
+		annotation SummarizationSetBy = Automatic
+
+	column TenantId
+		dataType: string
+		lineageTag: 80779f6c-2eee-4b0a-9e61-d2f63c606e9f
+		summarizeBy: none
+		sourceColumn: TenantId
+
+		annotation SummarizationSetBy = Automatic
+
+	column Email
+		dataType: string
+		lineageTag: 51933c5a-039e-4cd0-8376-b4d916457699
+		summarizeBy: none
+		sourceColumn: Email
+
+		annotation SummarizationSetBy = Automatic
+
+	column DBUserName
+		dataType: string
+		lineageTag: 57d98e3e-b83b-4332-992a-e914ed9d1554
+		summarizeBy: none
+		sourceColumn: DBUserName
+
+		annotation SummarizationSetBy = Automatic
+
+	column Timestamp
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 4e0cf45f-3776-4508-96ca-4d9679e92888
+		summarizeBy: none
+		sourceColumn: Timestamp
+
+		annotation SummarizationSetBy = Automatic
+
+	column RowId
+		dataType: string
+		lineageTag: 7d177445-36ad-4bbc-9def-c35f9b333ed9
+		summarizeBy: none
+		sourceColumn: RowId
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Local Time'
+		dataType: string
+		lineageTag: f78bbb2c-1b44-45c0-88f4-573466e909c9
+		summarizeBy: none
+		sourceColumn: Local Time
+
+		annotation SummarizationSetBy = Automatic
+
+	column Date
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 7a3884bc-1458-4f54-a4f4-e79a6d46ff96
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Time
+		dataType: dateTime
+		formatString: Long Time
+		lineageTag: 4e1ea921-7ce4-4fbc-b553-3af7a111b914
+		summarizeBy: none
+		sourceColumn: Time
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+	column 'Refresh Date UTC'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: b123086d-8eb1-4fc2-98de-6d36db7e6ab8
+		summarizeBy: none
+		sourceColumn: Refresh Date UTC
+
+		annotation SummarizationSetBy = Automatic
+
+	column Description
+		dataType: string
+		lineageTag: 3548f664-1253-429b-93cc-e48a404b7109
+		summarizeBy: none
+		sourceColumn: Description
+
+		annotation SummarizationSetBy = Automatic
+
+	partition UserInfo-0013daa6-47f7-4a93-aea9-d1e246eb43a8 = m
+		mode: import
+		source = ```
+				let
+				    Source = GlobalSource,
+				    UserInfo_table = Source{[Name="UserInfo",Signature="table"]}[Data],
+				    StopFolding = Table.StopFolding(UserInfo_table),	
+				    #"Renamed Columns" = Table.RenameColumns(StopFolding,{{"Name", "DBUserName"}}),
+				    #"Added Custom" = Table.AddColumn(#"Renamed Columns", "RowId", each 1),
+				    #"Added RefreshDate UTC" = Table.AddColumn(#"Added Custom", "Refresh Date UTC", each DateTimeZone.UtcNow(), type datetimezone),
+				    #"Inserted Local Time" = Table.AddColumn(#"Added RefreshDate UTC", "Local Time", each ToLocalDateTimeZone([Refresh Date UTC])),
+				    #"Inserted Date" = Table.AddColumn(#"Inserted Local Time", "Date", each DateTime.Date([Local Time]), type date),
+				    #"Inserted Time" = Table.AddColumn(#"Inserted Date", "Time", each DateTime.Time([Local Time]), type time)
+				
+				in
+				    #"Inserted Time"
+				```
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,74 @@
+table UserSessionOutcomes
+	lineageTag: 9c942563-7991-4e46-99c4-d84411fb1db8
+
+	column Id
+		dataType: int64
+		formatString: 0
+		lineageTag: d5e262af-c00c-4cfa-a360-1766f755c64a
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column UserOutcome
+		dataType: string
+		lineageTag: 6052675c-3b5c-478a-b334-053e4b5b0279
+		summarizeBy: none
+		sourceColumn: UserOutcome
+
+		annotation SummarizationSetBy = Automatic
+
+	column ActionGroupId
+		dataType: int64
+		formatString: 0
+		lineageTag: 1255c84d-3bed-4da9-ad12-82c27fc7d045
+		summarizeBy: none
+		sourceColumn: ActionGroupId
+
+		annotation SummarizationSetBy = Automatic
+
+	column HandledTextId
+		dataType: int64
+		formatString: 0
+		lineageTag: 9e845f09-6392-49b3-8c2d-317817fb1693
+		summarizeBy: count
+		sourceColumn: HandledTextId
+
+		annotation SummarizationSetBy = Automatic
+
+	column HandledText
+		dataType: string
+		lineageTag: 9bdd247b-208a-4f2c-8a5e-d8db6cb8c0de
+		summarizeBy: none
+		sourceColumn: HandledText
+
+		annotation SummarizationSetBy = Automatic
+
+	column ActionGroup
+		dataType: string
+		lineageTag: 19ce183b-e58e-4f75-bb34-0e98faaced7d
+		summarizeBy: none
+		sourceColumn: ActionGroup
+
+		annotation SummarizationSetBy = Automatic
+
+	partition UserSessionOutcomes-25d0ee52-eda9-4472-b3f5-4988832cdc38 = m
+		mode: import
+		queryGroup: Dimensions
+		source = ```
+				let
+				    Source = GlobalSource,
+				    UserSessionOutcomes_table = Source{[Name="UserSessionOutcomes",Signature="table"]}[Data],
+				    StopFolding = Table.StopFolding(UserSessionOutcomes_table),	
+				    #"Renamed Columns" = Table.RenameColumns(StopFolding,{{"Name", "UserOutcome"}}),
+				    #"Merged Queries" = Table.NestedJoin(#"Renamed Columns", {"HandledTextId"}, UserSessionHandledTexts, {"Id"}, "UserSessionHandledTexts", JoinKind.Inner),
+				    #"Merged Queries1" = Table.NestedJoin(#"Merged Queries", {"ActionGroupId"}, UserSessionActionGroups, {"Id"}, "UserSessionActionGroups", JoinKind.Inner),
+				    #"Expanded UserSessionHandledTexts" = Table.ExpandTableColumn(#"Merged Queries1", "UserSessionHandledTexts", {"Name"}, {"UserSessionHandledTexts.Name"}),
+				    #"Expanded UserSessionActionGroups" = Table.ExpandTableColumn(#"Expanded UserSessionHandledTexts", "UserSessionActionGroups", {"Name"}, {"UserSessionActionGroups.Name"}),
+				    #"Renamed Columns1" = Table.RenameColumns(#"Expanded UserSessionActionGroups",{{"UserSessionHandledTexts.Name", "HandledText"}, {"UserSessionActionGroups.Name", "ActionGroup"}})
+				in
+				    #"Renamed Columns1"
+				```
+
+	annotation PBI_ResultType = Exception
+

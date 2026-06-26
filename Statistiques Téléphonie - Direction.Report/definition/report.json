@@ -1,0 +1,211 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.3.0/schema.json",
+  "themeCollection": {
+    "baseTheme": {
+      "name": "CY25SU11",
+      "reportVersionAtImport": {
+        "visual": "2.4.0",
+        "report": "3.0.0",
+        "page": "2.3.0"
+      },
+      "type": "SharedResources"
+    },
+    "customTheme": {
+      "name": "AccessibleCityPark",
+      "reportVersionAtImport": {
+        "visual": "2.4.0",
+        "report": "3.0.0",
+        "page": "2.3.0"
+      },
+      "type": "SharedResources"
+    }
+  },
+  "objects": {
+    "section": [
+      {
+        "properties": {
+          "verticalAlignment": {
+            "expr": {
+              "Literal": {
+                "Value": "'Top'"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "outspacePane": [
+      {
+        "properties": {
+          "expanded": {
+            "expr": {
+              "Literal": {
+                "Value": "false"
+              }
+            }
+          },
+          "visible": {
+            "expr": {
+              "Literal": {
+                "Value": "false"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "publicCustomVisuals": [
+    "HierarchySlicer1458836712039",
+    "sankey02300D1BE6F5427989F3DE31CCA9E0F32020",
+    "textFilter25A4896A83E0487089E2B90C9AE57C8A",
+    "WordCloud1447959067750"
+  ],
+  "resourcePackages": [
+    {
+      "name": "SharedResources",
+      "type": "SharedResources",
+      "items": [
+        {
+          "name": "AccessibleCityPark",
+          "path": "BuiltInThemes/AccessibleCityPark.json",
+          "type": "CustomTheme"
+        },
+        {
+          "name": "CY25SU11",
+          "path": "BaseThemes/CY25SU11.json",
+          "type": "BaseTheme"
+        }
+      ]
+    },
+    {
+      "name": "RegisteredResources",
+      "type": "RegisteredResources",
+      "items": [
+        {
+          "name": "arrow-left@2x9641281829996535.png",
+          "path": "arrow-left@2x9641281829996535.png",
+          "type": "Image"
+        },
+        {
+          "name": "ASD_logo_mail_fond_transparent5445483865814752.png",
+          "path": "ASD_logo_mail_fond_transparent5445483865814752.png",
+          "type": "Image"
+        },
+        {
+          "name": "comments4289210549935023.png",
+          "path": "comments4289210549935023.png",
+          "type": "Image"
+        },
+        {
+          "name": "customer-journey09274353869484409.png",
+          "path": "customer-journey09274353869484409.png",
+          "type": "Image"
+        },
+        {
+          "name": "filter24802244517714112.png",
+          "path": "filter24802244517714112.png",
+          "type": "Image"
+        },
+        {
+          "name": "filter42339532639946365.png",
+          "path": "filter42339532639946365.png",
+          "type": "Image"
+        },
+        {
+          "name": "MicrosoftTeams-image_(2)48364791230114035.png",
+          "path": "MicrosoftTeams-image_(2)48364791230114035.png",
+          "type": "Image"
+        },
+        {
+          "name": "phone508180015907995.png",
+          "path": "phone508180015907995.png",
+          "type": "Image"
+        },
+        {
+          "name": "presence2561746672528473.png",
+          "path": "presence2561746672528473.png",
+          "type": "Image"
+        },
+        {
+          "name": "reset@2x8159148188472936.png",
+          "path": "reset@2x8159148188472936.png",
+          "type": "Image"
+        },
+        {
+          "name": "reset13034682391835894.png",
+          "path": "reset13034682391835894.png",
+          "type": "Image"
+        },
+        {
+          "name": "Sidebar_1912048021981674.png",
+          "path": "Sidebar_1912048021981674.png",
+          "type": "Image"
+        },
+        {
+          "name": "Sidebar_28745633949662208.png",
+          "path": "Sidebar_28745633949662208.png",
+          "type": "Image"
+        },
+        {
+          "name": "Sidebar_33842071217337626.png",
+          "path": "Sidebar_33842071217337626.png",
+          "type": "Image"
+        },
+        {
+          "name": "Sidebar_406761516571095139.png",
+          "path": "Sidebar_406761516571095139.png",
+          "type": "Image"
+        },
+        {
+          "name": "Sidebar_6357817369276465.png",
+          "path": "Sidebar_6357817369276465.png",
+          "type": "Image"
+        },
+        {
+          "name": "Sidebar_712054810006905958.png",
+          "path": "Sidebar_712054810006905958.png",
+          "type": "Image"
+        },
+        {
+          "name": "Sidebar_88228965855481147.png",
+          "path": "Sidebar_88228965855481147.png",
+          "type": "Image"
+        },
+        {
+          "name": "tags891211682060755.png",
+          "path": "tags891211682060755.png",
+          "type": "Image"
+        },
+        {
+          "name": "transfer9217739356947199.png",
+          "path": "transfer9217739356947199.png",
+          "type": "Image"
+        },
+        {
+          "name": "user920108070178927.png",
+          "path": "user920108070178927.png",
+          "type": "Image"
+        },
+        {
+          "name": "users28573284453094616.png",
+          "path": "users28573284453094616.png",
+          "type": "Image"
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "useStylableVisualContainerHeader": true,
+    "defaultDrillFilterOtherVisuals": true,
+    "allowChangeFilterTypes": true,
+    "useEnhancedTooltips": true
+  },
+  "slowDataSourceSettings": {
+    "isCrossHighlightingDisabled": false,
+    "isSlicerSelectionsButtonEnabled": false,
+    "isFilterSelectionsButtonEnabled": false,
+    "isFieldWellButtonEnabled": false,
+    "isApplyAllButtonEnabled": false
+  }
+}

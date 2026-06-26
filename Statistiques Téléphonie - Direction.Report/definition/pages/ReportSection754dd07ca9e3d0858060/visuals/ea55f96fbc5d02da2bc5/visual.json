@@ -1,0 +1,151 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "ea55f96fbc5d02da2bc5",
+  "position": {
+    "x": 0,
+    "y": 271.79896907216494,
+    "z": 1000,
+    "height": 83,
+    "width": 620,
+    "tabOrder": 8000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "TransferSessions"
+                        }
+                      },
+                      "Property": "StartedAt"
+                    }
+                  },
+                  "Function": 3
+                }
+              },
+              "queryRef": "TransferSessions.StartedAt",
+              "nativeQueryRef": "Earliest TransferSession",
+              "displayName": "Earliest TransferSession"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "TransferSessions"
+                        }
+                      },
+                      "Property": "StartedAt"
+                    }
+                  },
+                  "Function": 4
+                }
+              },
+              "queryRef": "TransferSessions.StartedAt1",
+              "nativeQueryRef": "Latest TransferSession",
+              "displayName": "Latest TransferSession"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "TransferSessions"
+                    }
+                  },
+                  "Property": "TotalTransfers"
+                }
+              },
+              "queryRef": "TransferSessions.TotalTransfers",
+              "nativeQueryRef": "TotalTransfers"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "160.83118297300916D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "TransferSessions.StartedAt"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "164.76071296982977D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "TransferSessions.StartedAt1"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "115.12370600242288D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "TransferSessions.TotalTransfers"
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {}
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Transfer Sessions'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

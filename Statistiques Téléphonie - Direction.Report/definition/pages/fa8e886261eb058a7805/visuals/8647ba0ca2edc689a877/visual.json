@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "8647ba0ca2edc689a877",
+  "position": {
+    "x": 0,
+    "y": 65.1497005988024,
+    "z": 1000,
+    "height": 144.35129740518963,
+    "width": 2560,
+    "tabOrder": 0
+  },
+  "visualGroup": {
+    "displayName": "Slicers",
+    "groupMode": "ScaleMode"
+  }
+}

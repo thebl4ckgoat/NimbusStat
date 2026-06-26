@@ -1,0 +1,193 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "4b422c21c0138a782a48",
+  "position": {
+    "x": 0,
+    "y": 29.072164948453608,
+    "z": 0,
+    "height": 83.505154639175259,
+    "width": 620,
+    "tabOrder": 6000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "ServiceSessions"
+                        }
+                      },
+                      "Property": "StartedAt"
+                    }
+                  },
+                  "Function": 3
+                }
+              },
+              "queryRef": "ServiceSessions.StartedAt",
+              "nativeQueryRef": "Earliest ServiceSession",
+              "displayName": "Earliest ServiceSession"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "ServiceSessions"
+                        }
+                      },
+                      "Property": "StartedAt"
+                    }
+                  },
+                  "Function": 4
+                }
+              },
+              "queryRef": "ServiceSessions.StartedAt1",
+              "nativeQueryRef": "Latest ServiceSession",
+              "displayName": "Latest ServiceSession"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ServiceSessions"
+                    }
+                  },
+                  "Property": "ΣTotalSessions"
+                }
+              },
+              "queryRef": "ServiceSessions.ΣTotalSessions",
+              "nativeQueryRef": "ΣTotalSessions"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "ServiceSessions"
+                        }
+                      },
+                      "Property": "UnifiedConversationId"
+                    }
+                  },
+                  "Function": 2
+                }
+              },
+              "queryRef": "ServiceSessions.UnifiedConversationId",
+              "nativeQueryRef": "Unique Unified conversations",
+              "displayName": "Unique Unified conversations"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Aggregation": {
+                "Expression": {
+                  "Column": {
+                    "Expression": {
+                      "SourceRef": {
+                        "Entity": "ServiceSessions"
+                      }
+                    },
+                    "Property": "UnifiedConversationId"
+                  }
+                },
+                "Function": 2
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "156.74323407098785D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "ServiceSessions.StartedAt"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "161.73320930132957D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "ServiceSessions.StartedAt1"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "101.50723443343531D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "ServiceSessions.ΣTotalSessions"
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {}
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Service Sessions'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "e46f94b51fcff3569092",
+  "position": {
+    "x": 1376.4925373134329,
+    "y": 160.69460390355914,
+    "z": 4000,
+    "height": 437.23880597014926,
+    "width": 502.01492537313436,
+    "tabOrder": 11000
+  },
+  "visualGroup": {
+    "displayName": "User Profile Pie",
+    "groupMode": "ScaleMode"
+  }
+}

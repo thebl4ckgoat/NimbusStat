@@ -1,0 +1,91 @@
+/// Service Session Tag Strings enables users to view all the tags associated to a single Service Session ID (as assigned by the user  in the first user session). The tags are shown as one string, separated by comma (e.g. Tag1, Tag2, Tag3, ...).
+table ServiceSessionTagsStrings
+	lineageTag: a20ca59c-4d33-4a22-9a72-b4bdcfe31070
+
+	refreshPolicy
+		policyType: basic
+		rollingWindowGranularity: year
+		rollingWindowPeriods: 1
+		incrementalGranularity: day
+		incrementalPeriods: 1
+		sourceExpression =
+			let
+			    Source = GlobalSource,
+			    ServiceSessionTags_table = Source{[Name="ServiceSessionTagsStrings",Signature="table"]}[Data],
+			    #"Filtered Rows" = Table.SelectRows(ServiceSessionTags_table, each ([StartedAt] >= DateTime.AddZone(RangeStart,0) and [StartedAt] < DateTime.AddZone(RangeEnd,0))),
+			    #"Renamed Columns" = Table.RenameColumns(#"Filtered Rows",{{"TagsString", "Tags"}}),
+			    ServiceSessionTags_table1 = Table.StopFolding(#"Renamed Columns")
+			in
+			    ServiceSessionTags_table1
+
+	/// Id of the Service Session associated with the string of tags
+	column ServiceSessionId
+		dataType: string
+		lineageTag: 7ac94019-385d-4e44-b280-2c2acc81d22c
+		summarizeBy: none
+		sourceColumn: ServiceSessionId
+
+		annotation SummarizationSetBy = Automatic
+
+	column TenantId
+		dataType: string
+		lineageTag: 454ea8f4-e5c0-4aa8-a50c-9ea19d3e9839
+		summarizeBy: none
+		sourceColumn: TenantId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Id of the Service associated with the service session
+	column ServiceId
+		dataType: string
+		lineageTag: 30c32975-a5ea-455f-b31d-368db53f89e7
+		summarizeBy: none
+		sourceColumn: ServiceId
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrganizationUnitId
+		dataType: string
+		lineageTag: 7301fe63-26a1-46f1-9056-92b19f0966a8
+		summarizeBy: none
+		sourceColumn: OrganizationUnitId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Starting time of the service session associated with the string of tags.
+	/// Can be used to align filters, reduce the size of the data retrieved and to set incremental refresh.
+	column StartedAt
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: b65412fb-a793-4239-a8f1-b280c6c2b9e5
+		summarizeBy: none
+		sourceColumn: StartedAt
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Shows all the tags that were entered in the first User Session associated with the Service Session into a single string, separated by comma (e.g. Tag1, Tag2, Tag3, ...)
+	column Tags
+		dataType: string
+		lineageTag: b4fc42a5-36bd-467a-aaf5-ee5a23a04f15
+		summarizeBy: none
+		sourceColumn: Tags
+
+		annotation SummarizationSetBy = Automatic
+
+	partition ServiceSessionTagsStrings = m
+		mode: import
+		queryGroup: Facts\ServiceSessions
+		source =
+				let
+				    Source = GlobalSource,
+				    ServiceSessionTags_table = Source{[Name="ServiceSessionTagsStrings",Signature="table"]}[Data],
+				    #"Filtered Rows" = Table.SelectRows(ServiceSessionTags_table, each ([StartedAt] >= DateTime.AddZone(RangeStart,0) and [StartedAt] < DateTime.AddZone(RangeEnd,0))),
+				    #"Renamed Columns" = Table.RenameColumns(#"Filtered Rows",{{"TagsString", "Tags"}}),
+				    ServiceSessionTags_table1 = Table.StopFolding(#"Renamed Columns")
+				in
+				    ServiceSessionTags_table1
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

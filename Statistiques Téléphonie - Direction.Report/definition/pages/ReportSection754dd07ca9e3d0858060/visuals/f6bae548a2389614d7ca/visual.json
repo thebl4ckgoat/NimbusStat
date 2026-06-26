@@ -1,0 +1,179 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "f6bae548a2389614d7ca",
+  "position": {
+    "x": 0,
+    "y": 514.020618556701,
+    "z": 3000,
+    "height": 83,
+    "width": 620,
+    "tabOrder": 9000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "UserStates"
+                        }
+                      },
+                      "Property": "Start"
+                    }
+                  },
+                  "Function": 3
+                }
+              },
+              "queryRef": "UserStates.Start",
+              "nativeQueryRef": "Earliest UserState",
+              "displayName": "Earliest UserState"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "UserStates"
+                        }
+                      },
+                      "Property": "Start"
+                    }
+                  },
+                  "Function": 4
+                }
+              },
+              "queryRef": "UserStates.Start1",
+              "nativeQueryRef": "Latest UserState",
+              "displayName": "Latest UserState"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "UserStates"
+                        }
+                      },
+                      "Property": "Id"
+                    }
+                  },
+                  "Function": 2
+                }
+              },
+              "queryRef": "UserStates.Id",
+              "nativeQueryRef": "Total User States",
+              "displayName": "Total User States"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Aggregation": {
+                "Expression": {
+                  "Column": {
+                    "Expression": {
+                      "SourceRef": {
+                        "Entity": "UserStates"
+                      }
+                    },
+                    "Property": "Id"
+                  }
+                },
+                "Function": 2
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "161.96005387885327D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "UserStates.Start"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "168.80508889944468D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "UserStates.Start1"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "176.65975541206046D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "UserStates.Id"
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {}
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'User States'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

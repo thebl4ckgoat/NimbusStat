@@ -1,0 +1,225 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "ReportSection83a0f66be12eecb684bc",
+  "displayName": "Tags-Codes 1st User",
+  "displayOption": "FitToPage",
+  "height": 1085,
+  "width": 1920,
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "Filter3a867c90865e57a3c5dc",
+        "displayName": "Modality",
+        "ordinal": 0,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ServiceSessionModalityType"
+              }
+            },
+            "Property": "Name"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "Filter235a379feaaeab6a6aa9",
+        "ordinal": 1,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "PrimaryCodes"
+              }
+            },
+            "Property": "PrimaryCode"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "3512ef63580e0080d046",
+        "ordinal": 2,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "SecondaryCodes"
+              }
+            },
+            "Property": "SecondaryCode"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "Filtera1aaf48953eb04cd5057",
+        "displayName": "TaskType",
+        "ordinal": 3,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "TaskTypes"
+              }
+            },
+            "Property": "Name"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User",
+        "objects": {
+          "general": [
+            {
+              "properties": {
+                "requireSingleSelect": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "true"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "Filter1775a37e27390b72c36d",
+        "ordinal": 4,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Tags"
+              }
+            },
+            "Property": "Tag"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "Filterda83882ba1e0079b4503",
+        "ordinal": 5,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Services"
+              }
+            },
+            "Property": "Name"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "Drillthrough"
+      }
+    ],
+    "filterSortOrder": "Custom"
+  },
+  "pageBinding": {
+    "name": "Pod3",
+    "type": "Drillthrough",
+    "parameters": [
+      {
+        "name": "Param_Filterda83882ba1e0079b4503",
+        "boundFilter": "Filterda83882ba1e0079b4503",
+        "fieldExpr": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Services"
+              }
+            },
+            "Property": "Name"
+          }
+        }
+      },
+      {
+        "name": "Param_Filtera1aaf48953eb04cd5057",
+        "boundFilter": "Filtera1aaf48953eb04cd5057",
+        "qnaSingleSelectRequired": true,
+        "fieldExpr": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "TaskTypes"
+              }
+            },
+            "Property": "Name"
+          }
+        }
+      }
+    ]
+  },
+  "objects": {
+    "background": [
+      {
+        "properties": {
+          "transparency": {
+            "expr": {
+              "Literal": {
+                "Value": "0D"
+              }
+            }
+          },
+          "color": {
+            "solid": {
+              "color": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'#e6e6e6'"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "visibility": "HiddenInViewMode",
+  "visualInteractions": [
+    {
+      "source": "fbad5029936d99731c92",
+      "target": "220c6b5572ce2e780840",
+      "type": "DataFilter"
+    },
+    {
+      "source": "9c3eb823e4fdad022beb",
+      "target": "220c6b5572ce2e780840",
+      "type": "DataFilter"
+    },
+    {
+      "source": "9c3eb823e4fdad022beb",
+      "target": "4d9e284b6d10db57cfa3",
+      "type": "DataFilter"
+    },
+    {
+      "source": "73b3673e74b18bbda8a4",
+      "target": "9c3eb823e4fdad022beb",
+      "type": "DataFilter"
+    },
+    {
+      "source": "73b3673e74b18bbda8a4",
+      "target": "fbad5029936d99731c92",
+      "type": "DataFilter"
+    },
+    {
+      "source": "73b3673e74b18bbda8a4",
+      "target": "4d9e284b6d10db57cfa3",
+      "type": "DataFilter"
+    },
+    {
+      "source": "73b3673e74b18bbda8a4",
+      "target": "220c6b5572ce2e780840",
+      "type": "DataFilter"
+    }
+  ]
+}

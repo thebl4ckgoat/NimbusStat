@@ -1,0 +1,33 @@
+table UserSessionModalityType
+	lineageTag: 31df47c0-2ae4-4bda-9b6f-0b87fbe0c92a
+
+	column Id
+		dataType: int64
+		formatString: 0
+		lineageTag: ada5021e-c3ea-465e-a641-e4919f0ec8c0
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		lineageTag: fc4b82d3-906d-467b-a438-89c807e0af2a
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition UserSessionModalityType-fa461e1c-ccaa-4307-a851-01443a30c2e6 = m
+		mode: import
+		queryGroup: Dimensions
+		source =
+				let
+				    Source = GlobalSource,
+				    ModalityTypes_table = Source{[Name="ModalityTypes",Signature="table"]}[Data],
+				    StopFolding = Table.StopFolding(ModalityTypes_table)
+				in
+				    StopFolding
+
+	annotation PBI_ResultType = Exception
+

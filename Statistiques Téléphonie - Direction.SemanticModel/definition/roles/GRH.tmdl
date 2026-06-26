@@ -1,0 +1,9 @@
+role GRH
+	modelPermission: read
+
+	tablePermission Services = [Groupe Téléphonie] = "GRH"
+
+	tablePermission Users = [Groupe] = "GRH"
+
+	annotation PBI_Id = b767c8f2f2ef48b88b6781006bf7109c
+

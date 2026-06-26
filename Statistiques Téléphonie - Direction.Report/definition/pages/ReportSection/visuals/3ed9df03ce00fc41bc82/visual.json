@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "3ed9df03ce00fc41bc82",
+  "position": {
+    "x": 1688,
+    "y": 163,
+    "z": 7000,
+    "height": 149,
+    "width": 192,
+    "tabOrder": 3000
+  },
+  "visualGroup": {
+    "displayName": "ØQueue Time",
+    "groupMode": "ScaleMode"
+  }
+}

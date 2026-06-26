@@ -1,0 +1,113 @@
+table Callers
+	lineageTag: 6ed0787b-2274-4b31-bada-b1389debfc28
+
+	measure '% Appels répétés' =
+			
+			VAR _Seuil = 3
+			VAR _Recurrents =
+			    CALCULATETABLE (
+			        VALUES ( Callers[Caller] ),
+			        FILTER ( VALUES ( Callers[Caller] ), [ΣTotalSessions] >= _Seuil )
+			    )
+			RETURN
+			DIVIDE (
+			    CALCULATE ( [ΣTotalSessions], _Recurrents ),
+			    [ΣTotalSessions]
+			)
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		lineageTag: 66a20854-594a-4f74-8918-171326f43757
+
+	measure 'Titre (Part d''appels répétés)' = "Pourcentage du volume total d'appels provenant d'appelants ayant contacté le service au moins 3 fois sur la période."
+		lineageTag: 71b75f84-81af-407e-81e9-a3ec70336a80
+
+	column CallerId
+		dataType: string
+		isKey
+		lineageTag: d78a6844-110c-490c-97d0-c38b8fd914f7
+		summarizeBy: none
+		sourceColumn: CallerId
+
+		annotation SummarizationSetBy = Automatic
+
+	column O365Id
+		dataType: string
+		lineageTag: f19d2101-f882-46be-ba77-b4d7fb6cbeae
+		summarizeBy: none
+		sourceColumn: O365Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Upn
+		dataType: string
+		lineageTag: 5162c1a6-70e5-4b42-b195-30c5e6f82476
+		summarizeBy: none
+		sourceColumn: Upn
+
+		annotation SummarizationSetBy = Automatic
+
+	column TelNumber
+		dataType: string
+		lineageTag: a477f43c-444c-49c6-8284-a3cdc33b560a
+		summarizeBy: none
+		sourceColumn: TelNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column TenantId
+		dataType: string
+		lineageTag: 51bceea1-2941-48af-b7a8-7dabd00ea7fc
+		summarizeBy: none
+		sourceColumn: TenantId
+
+		annotation SummarizationSetBy = Automatic
+
+	column OriginType
+		dataType: string
+		lineageTag: a5f96440-a8cb-449f-ad4b-71d6e75f43fe
+		summarizeBy: none
+		sourceColumn: OriginType
+
+		annotation SummarizationSetBy = Automatic
+
+	column Caller
+		dataType: string
+		lineageTag: 030e2bf2-794a-4d9d-8047-9dd063f03ed8
+		summarizeBy: none
+		sourceColumn: Caller
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Type appelant' =
+			
+			SWITCH (
+			    Callers[OriginType],
+			    "PSTN", "Usager",
+			    "INTL", "Personnel",
+			    "Autre"
+			)
+		lineageTag: 7431436f-7ac5-483f-a2cb-75cbbaa67409
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Callers-b6e432b4-79e9-4481-8e32-cbaf53abd441 = m
+		mode: import
+		queryGroup: Dimensions
+		source = ```
+				let
+				    Source = GlobalSource,
+				    Callers_table = Source{[Name="Callers",Signature="table"]}[Data],
+				    StopFolding = Table.StopFolding(Callers_table),
+				    #"Renamed Id" = Table.RenameColumns(StopFolding,{{"Id", "CallerId"}}),
+				    #"Renamed CustomerIdentifier" = Table.RenameColumns(#"Renamed Id",{{"CustomerIdentifier", "Caller"}}),
+				    OriginType = Table.AddColumn(#"Renamed CustomerIdentifier", "OriginType", each 
+				        if [TelNumber] <> null then "PSTN" 
+				        else if [O365Id] <> null then "INTL" 
+				        else "UNKN"
+				        )        
+				in
+				    OriginType
+				```
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,80 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "d4954e0894ce8d78ee8b",
+  "position": {
+    "x": 1393.4751773049645,
+    "y": 199.71631205673759,
+    "z": 10000,
+    "height": 417.58865248226954,
+    "width": 517.44680851063833,
+    "tabOrder": 8000
+  },
+  "visual": {
+    "visualType": "pieChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "TransferSessionOutcomes"
+                    }
+                  },
+                  "Property": "Name"
+                }
+              },
+              "queryRef": "TransferSessionOutcomes.Name",
+              "nativeQueryRef": "Transfer Outcome",
+              "active": true,
+              "displayName": "Transfer Outcome"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "TransferSessions"
+                    }
+                  },
+                  "Property": "TotalTransfers"
+                }
+              },
+              "queryRef": "TransferSessions.TotalTransfers",
+              "nativeQueryRef": "TotalTransfers"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "legend": [
+        {
+          "properties": {
+            "showTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "position": {
+              "expr": {
+                "Literal": {
+                  "Value": "'RightCenter'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

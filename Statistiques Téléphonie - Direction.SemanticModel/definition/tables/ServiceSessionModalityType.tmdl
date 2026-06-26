@@ -1,0 +1,33 @@
+table ServiceSessionModalityType
+	lineageTag: c812b5db-3dd3-485c-ba81-90d4bdfcd141
+
+	column Id
+		dataType: int64
+		formatString: 0
+		lineageTag: e8ff7527-50c8-44d9-ad12-98f56b59d95d
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		lineageTag: 046d0db3-8d61-4091-849a-d749d25a70e0
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition ServiceSessionModalityType-7a3b9ba3-003c-43b2-b363-b5c8cc39fe4b = m
+		mode: import
+		queryGroup: Dimensions
+		source =
+				let
+				    Source = UserSessionModalityType
+				in
+				    Source
+
+	annotation PBI_ResultType = Exception
+
+	annotation PBI_NavigationStepName = Navigation
+

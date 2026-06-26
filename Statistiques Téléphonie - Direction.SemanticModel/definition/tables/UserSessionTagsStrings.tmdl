@@ -1,0 +1,99 @@
+/// User Session Tag Strings enables users to view all the tags associated to a single User Session ID in one string.
+/// 
+/// When multiple tags apply, the tags are shown in a single string, separated by comma (e.g. Tag1, Tag2, Tag3, ...).
+table UserSessionTagsStrings
+	lineageTag: 2b38b7b5-e2c6-46b7-b9cc-70f27cedfc48
+
+	refreshPolicy
+		policyType: basic
+		rollingWindowGranularity: year
+		rollingWindowPeriods: 1
+		incrementalGranularity: day
+		incrementalPeriods: 1
+		sourceExpression = ```
+			let
+			    Source = GlobalSource,
+			    Source_table = Source{[Name="UserSessionTagsStrings",Signature="table"]}[Data],
+			    #"Filtered Rows" = Table.SelectRows(Source_table, each ([UserSelectedAt] >= DateTime.AddZone(RangeStart,0) and [UserSelectedAt] < DateTime.AddZone(RangeEnd,0))),
+			    #"Renamed Columns" = Table.RenameColumns(#"Filtered Rows",{{"Tags", "TagStringsUserSessions"}})
+			    
+			in
+			    #"Renamed Columns"
+			```
+
+	/// User Session Id associated with the string of tags
+	column UserSessionId
+		dataType: string
+		lineageTag: 91ebcc24-b8a5-4fb4-930b-e39c66929717
+		summarizeBy: none
+		sourceColumn: UserSessionId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column TenantId
+		dataType: string
+		lineageTag: 1359f4a5-94e3-4ff2-bcff-054e656491b4
+		summarizeBy: none
+		sourceColumn: TenantId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Id of the user associated with the User Session during which the tags were assigned.
+	column UserId
+		dataType: string
+		lineageTag: 6884a96c-6524-4a44-a5b6-09faa9e1ea97
+		summarizeBy: none
+		sourceColumn: UserId
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrganizationUnitId
+		dataType: string
+		lineageTag: 0d1291fc-8149-45ac-9ac9-bd89ac5e3626
+		summarizeBy: none
+		sourceColumn: OrganizationUnitId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Starting time of the user session associated with the string of tags.
+	/// Can be used to align filters, reduce the size of the data retrieved and to set incremental refresh.
+	column UserSelectedAt
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 4170d919-824f-43a6-a3bc-c50af9593b8a
+		summarizeBy: none
+		sourceColumn: UserSelectedAt
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Shows all the tags associated to a User Session into a single string, separated by comma (e.g. Tag1, Tag2, Tag3, ...)
+	column TagStringsUserSessions
+		dataType: string
+		lineageTag: 03aca778-2cbb-46a4-97a2-18bbf44c56bb
+		summarizeBy: none
+		sourceColumn: TagStringsUserSessions
+
+		annotation SummarizationSetBy = Automatic
+
+	partition UserSessionTagsStrings = m
+		mode: import
+		queryGroup: Facts\UserSessions
+		source = ```
+				let
+				    Source = GlobalSource,
+				    Source_table = Source{[Name="UserSessionTagsStrings",Signature="table"]}[Data],
+				    #"Filtered Rows" = Table.SelectRows(Source_table, each ([UserSelectedAt] >= DateTime.AddZone(RangeStart,0) and [UserSelectedAt] < DateTime.AddZone(RangeEnd,0))),
+				    #"Renamed Columns" = Table.RenameColumns(#"Filtered Rows",{{"Tags", "TagStringsUserSessions"}})
+				    
+				in
+				    #"Renamed Columns"
+				```
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

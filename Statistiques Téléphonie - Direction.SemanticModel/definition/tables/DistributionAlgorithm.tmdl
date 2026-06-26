@@ -1,0 +1,34 @@
+table DistributionAlgorithm
+	lineageTag: d668124d-4fb7-4332-a675-d09e9552f743
+
+	column Id
+		dataType: int64
+		isKey
+		formatString: 0
+		lineageTag: 3c340237-1186-4d98-ab9b-d72924cbb34c
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		lineageTag: d3671cef-212d-4585-a44d-b1bceea1bedd
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DistributionAlgorithm-d6b2d5c6-842f-4238-b591-937fbdfe303f = m
+		mode: import
+		queryGroup: Dimensions
+		source =
+				let
+				    Source = GlobalSource,
+				    DistributionAlgorithms_table = Source{[Name="DistributionAlgorithms",Signature="table"]}[Data],
+				    StopFolding = Table.StopFolding(DistributionAlgorithms_table)
+				in
+				    StopFolding
+
+	annotation PBI_ResultType = Table
+

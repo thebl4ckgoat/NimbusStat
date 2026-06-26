@@ -1,0 +1,60 @@
+table TaskTypes
+	lineageTag: ab16bf6e-7607-45f9-9ca5-968b564c9506
+
+	column Id
+		dataType: int64
+		formatString: 0
+		lineageTag: e02afb76-99ec-4ce2-bc96-2ac7e7dfb95a
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		lineageTag: 3ba2d845-1945-4ac8-89a9-bd6242153ec4
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column TaskDirectionId
+		dataType: int64
+		formatString: 0
+		lineageTag: 7a21310d-135f-4d90-b8ba-3f0ef869ab34
+		summarizeBy: none
+		sourceColumn: TaskDirectionId
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsService
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 665797c3-53b3-4528-b0bc-37141adfe6da
+		summarizeBy: none
+		sourceColumn: IsService
+
+		annotation SummarizationSetBy = Automatic
+
+	column TaskTypeGroupId
+		dataType: int64
+		formatString: 0
+		lineageTag: b6e51134-9d71-4c06-9106-d7295b81fa68
+		summarizeBy: none
+		sourceColumn: TaskTypeGroupId
+
+		annotation SummarizationSetBy = Automatic
+
+	partition TaskTypes-954f5f47-d013-44d2-be43-e23a735188fd = m
+		mode: import
+		queryGroup: Dimensions
+		source =
+				let
+				    Source = GlobalSource,
+				    TaskTypes_table = Source{[Name="TaskTypes",Signature="table"]}[Data],
+				    StopFolding = Table.StopFolding(TaskTypes_table)
+				in
+				    StopFolding
+
+	annotation PBI_ResultType = Exception
+

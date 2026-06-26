@@ -1,0 +1,48 @@
+table LastTransferType
+	lineageTag: 3cfd9983-0399-42dc-87c7-851b8fcdfdbe
+
+	column Id
+		dataType: int64
+		formatString: 0
+		lineageTag: 8d933cd8-63af-4c48-be4f-9e3dce949c56
+		summarizeBy: none
+		sourceColumn: Id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		lineageTag: 7e001a5f-07ae-4d2f-8ee7-b41ccf10b2e7
+		summarizeBy: none
+		sourceColumn: Name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column DestinationTypeId
+		dataType: int64
+		formatString: 0
+		lineageTag: a00f1c07-8a69-47d7-a40a-26fe2becd687
+		summarizeBy: none
+		sourceColumn: DestinationTypeId
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition LastTransferType = m
+		mode: import
+		queryGroup: Dimensions
+		source =
+				let
+				    Source = TransferSessionTypes
+				in
+				    Source
+
+	changedProperty = IsHidden
+
+	annotation PBI_ResultType = Exception
+

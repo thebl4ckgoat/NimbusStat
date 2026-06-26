@@ -1,0 +1,97 @@
+table UserOrganizationUnits
+	lineageTag: 4329514b-5dae-43fb-af15-4ba33b5ea066
+
+	column Id
+		dataType: string
+		lineageTag: bef618cd-c23f-44b8-ab3d-b83934f8efea
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'User OU Name'
+		dataType: string
+		lineageTag: 87676061-179f-43ae-8af6-a20aa8d6450a
+		summarizeBy: none
+		sourceColumn: User OU Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column OriginalParentId
+		dataType: string
+		lineageTag: 0bad3511-a1ea-4a6f-9ccd-4208a19951d4
+		summarizeBy: none
+		sourceColumn: OriginalParentId
+
+		annotation SummarizationSetBy = Automatic
+
+	column ParentId
+		dataType: string
+		lineageTag: 153a1cc8-1ba5-465f-81b3-c2b67551668d
+		summarizeBy: none
+		sourceColumn: ParentId
+
+		annotation SummarizationSetBy = Automatic
+
+	column OU_PATH = PATH(UserOrganizationUnits[Id], UserOrganizationUnits[ParentId])
+		lineageTag: e81ffd50-d4bf-48d4-8006-6ed309423ee0
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column OULevel1 = LOOKUPVALUE(UserOrganizationUnits[User OU Name],UserOrganizationUnits[Id], PATHITEM(UserOrganizationUnits[OU_PATH],1,0))
+		lineageTag: 3e9ac269-b071-4afb-8082-59f09c4144f2
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column OULevel2 = LOOKUPVALUE(UserOrganizationUnits[User OU Name],UserOrganizationUnits[Id], PATHITEM(UserOrganizationUnits[OU_PATH],2,0))
+		lineageTag: 2582dbd2-cb8f-4206-b303-584accc98e8d
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column OULevel3 = LOOKUPVALUE(UserOrganizationUnits[User OU Name],UserOrganizationUnits[Id], PATHITEM(UserOrganizationUnits[OU_PATH],3,0))
+		lineageTag: 4e0f3c26-1a1c-4980-8bb3-1e92754f216e
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column OULevel4 = LOOKUPVALUE(UserOrganizationUnits[User OU Name],UserOrganizationUnits[Id], PATHITEM(UserOrganizationUnits[OU_PATH],4,0))
+		lineageTag: 454420b0-5b74-4543-a157-29a9dc6d542f
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column OULevel5 = LOOKUPVALUE(UserOrganizationUnits[User OU Name],UserOrganizationUnits[Id], PATHITEM(UserOrganizationUnits[OU_PATH],5,0))
+		lineageTag: cc4ff757-cf46-4e8c-b9e8-d58a529f9394
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column OULevel6 = LOOKUPVALUE(UserOrganizationUnits[User OU Name],UserOrganizationUnits[Id], PATHITEM(UserOrganizationUnits[OU_PATH],6,0))
+		lineageTag: a0479c1d-77c8-4cdf-a801-9ae816069f16
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column OULevel7 = LOOKUPVALUE(UserOrganizationUnits[User OU Name],UserOrganizationUnits[Id], PATHITEM(UserOrganizationUnits[OU_PATH],7,0))
+		lineageTag: b6380661-ae6d-4f03-bbb0-3d2ace774b90
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition UserOrganizationUnits-f792e343-8ef1-4c6c-ad6e-1decf2ae5765 = m
+		mode: import
+		queryGroup: Dimensions
+		source = ```
+				let
+				    Source = OrganizationUnits,
+				    #"Renamed" = Table.RenameColumns(Source,{{"Name", "User OU Name"}})
+				    
+				in
+				    #"Renamed"
+				```
+
+	annotation PBI_ResultType = Table
+

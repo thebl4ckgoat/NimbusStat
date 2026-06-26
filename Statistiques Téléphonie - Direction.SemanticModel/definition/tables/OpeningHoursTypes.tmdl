@@ -1,0 +1,36 @@
+table OpeningHoursTypes
+	lineageTag: 36f43c0a-b735-4b60-a1cd-15468edeae4d
+
+	column Id
+		dataType: int64
+		formatString: 0
+		lineageTag: 42cee31d-c058-4523-ab28-d412d52be134
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Name of the opening hours as set in the General Service Settings in Nimbus.
+	/// 
+	/// Data prior to the Nimbus Update 1.89 on January 2024 is not available for this field.
+	column OpeningHoursTypeName
+		dataType: string
+		lineageTag: ac219c82-fadd-4ce1-a2a5-2a8d4a240415
+		summarizeBy: none
+		sourceColumn: OpeningHoursTypeName
+
+		annotation SummarizationSetBy = Automatic
+
+	partition OpeningHoursTypes = m
+		mode: import
+		queryGroup: Dimensions
+		source =
+				let
+				    Source = GlobalSource,
+				    OpeningHoursTypes_table = Source{[Name="OpeningHoursTypes",Signature="table"]}[Data],
+				    #"Renamed Columns" = Table.RenameColumns(OpeningHoursTypes_table,{{"Name", "OpeningHoursTypeName"}})
+				in
+				    #"Renamed Columns"
+
+	annotation PBI_ResultType = Table
+

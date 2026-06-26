@@ -1,0 +1,390 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "5fab52a3d9687469c168",
+  "position": {
+    "x": 60,
+    "y": 798,
+    "z": 0,
+    "height": 258.46153846153845,
+    "width": 1830.7692307692307,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ServiceSessions"
+                    }
+                  },
+                  "Property": "Local Time"
+                }
+              },
+              "queryRef": "ServiceSessions.Local Time",
+              "nativeQueryRef": "DateTime",
+              "displayName": "DateTime"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Callers"
+                    }
+                  },
+                  "Property": "Caller"
+                }
+              },
+              "queryRef": "Callers.Caller",
+              "nativeQueryRef": "Caller"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Services"
+                    }
+                  },
+                  "Property": "Name"
+                }
+              },
+              "queryRef": "Services.Name",
+              "nativeQueryRef": "Service",
+              "displayName": "Service"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "PrimaryCodes"
+                    }
+                  },
+                  "Property": "PrimaryCode"
+                }
+              },
+              "queryRef": "PrimaryCodes.PrimaryCode",
+              "nativeQueryRef": "PrimaryCode by 1st user",
+              "displayName": "PrimaryCode by 1st user"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "SecondaryCodes"
+                    }
+                  },
+                  "Property": "SecondaryCode"
+                }
+              },
+              "queryRef": "SecondaryCodes.SecondaryCode",
+              "nativeQueryRef": "SecondaryCode by 1st user",
+              "displayName": "SecondaryCode by 1st user"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ServiceSessionTagsStrings"
+                    }
+                  },
+                  "Property": "Tags"
+                }
+              },
+              "queryRef": "ServiceSessionTagsStrings.Tags",
+              "nativeQueryRef": "Tags by 1st user",
+              "displayName": "Tags by 1st user"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "ServiceSessions"
+                  }
+                },
+                "Property": "Local Time"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "217.96890007208216D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Services.Name"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "271.31041112140485D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Callers.Caller"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "194.8571366290663D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "ServiceSessions.Local Time"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "188.7889162632368D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "PrimaryCodes.PrimaryCode"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "265.72737198015744D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "SecondaryCodes.SecondaryCode"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "638.3362660099652D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "ServiceSessionTagsStrings.Tags"
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Service Sessions with tags or codes added by the first accepting user'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "Filter3e752ff14acd499c5197",
+        "ordinal": 0,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Callers"
+              }
+            },
+            "Property": "Caller"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "Filter3098c4da7a0f94b730d7",
+        "ordinal": 1,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ServiceSessions"
+              }
+            },
+            "Property": "Local Time"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "Filter6ac724e82c987d4702a0",
+        "ordinal": 2,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "PrimaryCodes"
+              }
+            },
+            "Property": "PrimaryCode"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "Filter6db0dfde86e58f0e99c4",
+        "ordinal": 3,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "SecondaryCodes"
+              }
+            },
+            "Property": "SecondaryCode"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "Filter5fbafa079eddf1cce51f",
+        "ordinal": 4,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Services"
+              }
+            },
+            "Property": "Name"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "Filtera9394c8b162aa30d9178",
+        "ordinal": 5,
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ServiceSessionTagsStrings"
+              }
+            },
+            "Property": "Tags"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "Filterf6a927bbf69719606821",
+        "ordinal": 6,
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "ServiceSessions"
+              }
+            },
+            "Property": "Tag-CodesCheck"
+          }
+        },
+        "type": "Advanced",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "s",
+              "Entity": "ServiceSessions",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Not": {
+                  "Expression": {
+                    "Comparison": {
+                      "ComparisonKind": 0,
+                      "Left": {
+                        "Measure": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Source": "s"
+                            }
+                          },
+                          "Property": "Tag-CodesCheck"
+                        }
+                      },
+                      "Right": {
+                        "Literal": {
+                          "Value": "null"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User",
+        "isLockedInViewMode": true
+      }
+    ],
+    "filterSortOrder": "Custom"
+  }
+}

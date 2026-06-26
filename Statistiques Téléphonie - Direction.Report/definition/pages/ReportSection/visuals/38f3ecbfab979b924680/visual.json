@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "38f3ecbfab979b924680",
+  "position": {
+    "x": 1488,
+    "y": 7,
+    "z": 2000,
+    "height": 150,
+    "width": 192.33672603901613,
+    "tabOrder": 2000
+  },
+  "visualGroup": {
+    "displayName": "Ø Total Time",
+    "groupMode": "ScaleMode"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "02a354a63d010b302064",
+  "position": {
+    "x": 15.978600089166294,
+    "y": 945.02006241640652,
+    "z": 11000,
+    "height": 42.371398849330234,
+    "width": 496.676857100397,
+    "tabOrder": 11000
+  },
+  "visualGroup": {
+    "displayName": "Carte KPIs",
+    "groupMode": "ScaleMode"
+  }
+}

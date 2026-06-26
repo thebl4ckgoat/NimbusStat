@@ -1,0 +1,108 @@
+table OrganizationUnits
+	lineageTag: 29c7eb6b-e51b-4157-8298-4df180d6857a
+
+	column Id
+		dataType: string
+		lineageTag: 406b7495-36b1-4c73-81ea-5484e399d92f
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		lineageTag: 9d0a3a64-a747-49aa-886b-933de3942e45
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column OriginalParentId
+		dataType: string
+		lineageTag: 146ce4dd-695e-494d-aae4-be12f133d4ad
+		summarizeBy: none
+		sourceColumn: OriginalParentId
+
+		annotation SummarizationSetBy = Automatic
+
+	column OU_PATH = PATH(OrganizationUnits[Id], OrganizationUnits[ParentId])
+		lineageTag: c6797a76-853b-489b-b761-2a10fb344634
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column ParentIsInDataset = CONTAINS(OrganizationUnits, OrganizationUnits[Id], OrganizationUnits[OriginalParentId])
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 203c926e-47a5-4e4a-81f2-504b93797f6c
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column OULevel1 = LOOKUPVALUE(OrganizationUnits[Name],OrganizationUnits[Id], PATHITEM(OrganizationUnits[OU_PATH],1,0))
+		lineageTag: 37c74237-c729-417f-8a57-8afa1d391e8f
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column OULevel2 = LOOKUPVALUE(OrganizationUnits[Name],OrganizationUnits[Id], PATHITEM(OrganizationUnits[OU_PATH],2,0))
+		lineageTag: d52ea6bb-c0f9-42b5-9613-9daf5433d8aa
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column OULevel3 = LOOKUPVALUE(OrganizationUnits[Name],OrganizationUnits[Id], PATHITEM(OrganizationUnits[OU_PATH],3,0))
+		lineageTag: d9eb912f-e7ab-4c87-ac20-d2aa7e2b9efb
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column OULevel4 = LOOKUPVALUE(OrganizationUnits[Name],OrganizationUnits[Id], PATHITEM(OrganizationUnits[OU_PATH],4,0))
+		lineageTag: 0b9b15c9-f3bc-4880-9e89-2722f7d2a208
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column OULevel5 = LOOKUPVALUE(OrganizationUnits[Name],OrganizationUnits[Id], PATHITEM(OrganizationUnits[OU_PATH],5,0))
+		lineageTag: 25f1f13a-8858-4fb4-9fd9-e588aa6c372f
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column OULevel6 = LOOKUPVALUE(OrganizationUnits[Name],OrganizationUnits[Id], PATHITEM(OrganizationUnits[OU_PATH],6,0))
+		lineageTag: af1f7a07-22f9-4b83-9e48-241771e2f558
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column OULevel7 = LOOKUPVALUE(OrganizationUnits[Name],OrganizationUnits[Id], PATHITEM(OrganizationUnits[OU_PATH],7,0))
+		lineageTag: 6a4ab847-4b01-4a66-ae8b-19d8da625b11
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column ParentId
+		dataType: string
+		lineageTag: f6e14d28-4982-48aa-a4ac-3c64f001dd0f
+		summarizeBy: none
+		sourceColumn: ParentId
+
+		annotation SummarizationSetBy = Automatic
+
+	partition OrganizationUnits-f5e5645f-fc1a-496f-aaa5-620fcf521fea = m
+		mode: import
+		queryGroup: Dimensions
+		source = ```
+				let
+				    Source = GlobalSource,
+				    #"OU" = Source{[Name="OrganizationUnits",Signature="table"]}[Data],
+				    //replace unexisting Parents via NULL - bind them to Root
+				    PreventQueryFolding = Table.StopFolding(#"OU"),
+				    #"List" = Table.Column(PreventQueryFolding, "Id"),
+				    #"NewParents" = Table.AddColumn(PreventQueryFolding, "NewParent", each if List.Contains(#"List", [ParentId]) then [ParentId] else null),
+				    #"Renamed" = Table.RenameColumns(#"NewParents", {{"ParentId","OriginalParentId"}, {"NewParent", "ParentId"}})  
+				in
+				    #"Renamed"
+				```
+
+	annotation PBI_ResultType = Exception
+

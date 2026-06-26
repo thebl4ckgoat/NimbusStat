@@ -1,0 +1,309 @@
+table TransferSessions
+	lineageTag: b2d6feaa-96d4-4ee7-8b8b-1eed039ea2a4
+
+	refreshPolicy
+		policyType: basic
+		rollingWindowGranularity: year
+		rollingWindowPeriods: 1
+		incrementalGranularity: day
+		incrementalPeriods: 1
+		sourceExpression = ```
+			let
+			    Source = GlobalSource, // source from odata preview
+			    
+			    ServiceSessions_table = Source{[Name="TransferSessions",Signature="table"]}[Data],
+			    #"Filtered Rows" = Table.SelectRows(ServiceSessions_table, each ([StartedAt] >= DateTime.AddZone(RangeStart,0) and [StartedAt] < DateTime.AddZone(RangeEnd,0))), // date range from parameters with incremental refresh naming convention
+			
+			    #"Inserted Local Time" = Table.AddColumn(#"Filtered Rows", "Local Time", each ToLocalDateTimeZone([StartedAt]), type datetimezone), 
+			    
+			    #"Inserted Date" = Table.AddColumn(#"Inserted Local Time", "Date", each DateTime.Date([Local Time]), type date),
+			    #"Inserted Time" = Table.AddColumn(#"Inserted Date", "Time", each DateTime.Time([Local Time]), type time),
+			    #"Added Duration" = Table.AddColumn(#"Inserted Time", "DurationSeconds", each Duration.Seconds([EndedAt]-[StartedAt]), type number),
+			    #"Renamed Destination" = Table.RenameColumns(#"Added Duration",{{"Destination", "DestinationUPN"}}),
+			    #"Added Destination (Coalesced)" = Table.AddColumn(#"Renamed Destination", "Destination", each // coalesce destination names
+			
+			if [DestinationName]  <> "" then ([DestinationName] ?? [DestinationUPN])  else [DestinationUPN])
+			in
+			    #"Added Destination (Coalesced)"
+			```
+
+	/// Count of transfers
+	/// 
+	/// COUNT(TransferSessions[Id])
+	measure TotalTransfers = COUNT(TransferSessions[Id])
+		formatString: 0
+		lineageTag: 772620f1-781c-482e-90b3-b87d8203674a
+
+	/// Duration of transfer in seconds
+	measure ΣDurationSeconds(TR) = SUM(TransferSessions[DurationSeconds])
+		formatString: 0
+		lineageTag: b8042e1a-ddde-497e-8242-d7d4ad894b56
+
+	/// Transfer duration formatted as HH:MM:SS
+	measure ΣDurationTime(TR)_HHMMSS =
+			
+			IF (NOT ISBLANK ([ΣDurationSeconds(TR)]), //show blank instead of empty string
+			    IF(INT([ΣDurationSeconds(TR)])>=86400, FORMAT (QUOTIENT(INT([ΣDurationSeconds(TR)]),86400), "00" ) & "d ") //[DAYS]
+			  & FORMAT(QUOTIENT(MOD(INT([ΣDurationSeconds(TR)]), 86400),3600), "00" ) & ":" //HOURS
+			 & FORMAT(QUOTIENT(MOD(INT([ΣDurationSeconds(TR)]), 3600),60), "00") & ":" //MINUTES
+			  & FORMAT(MOD(INT([ΣDurationSeconds(TR)]), 60), "00") //SECONDS
+			)
+		lineageTag: 5238ec27-8802-4de8-b082-ebe71bf936f8
+
+	column Id
+		dataType: string
+		lineageTag: 7c756a52-7ad5-4186-a7ba-9af453080f76
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column TenantId
+		dataType: string
+		lineageTag: fd067fb3-3ff9-4824-be25-e06e1f6034dd
+		summarizeBy: none
+		sourceColumn: TenantId
+
+		annotation SummarizationSetBy = Automatic
+
+	column ServiceSessionIdFrom
+		dataType: string
+		lineageTag: 276285f9-37b1-485e-bdfd-b49a61a31c7d
+		summarizeBy: none
+		sourceColumn: ServiceSessionIdFrom
+
+		annotation SummarizationSetBy = Automatic
+
+	column UserSessionIdFrom
+		dataType: string
+		lineageTag: ff1edfca-2655-4bb4-8515-88690662c581
+		summarizeBy: none
+		sourceColumn: UserSessionIdFrom
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Start time of the transfer session in UTC
+	column StartedAt
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: e09f62d4-8ed3-4a5b-85f4-4d6ebd542fb9
+		summarizeBy: none
+		sourceColumn: StartedAt
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Transfer session end timestamp in UTC
+	column EndedAt
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 1a83f236-4644-44eb-927e-9e87f865b891
+		summarizeBy: none
+		sourceColumn: EndedAt
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Id of the Service where the transfer came from
+	column ServiceIdFrom
+		dataType: string
+		lineageTag: fa11e1a5-0663-4c53-a646-8db0fdda744f
+		summarizeBy: none
+		sourceColumn: ServiceIdFrom
+
+		annotation SummarizationSetBy = Automatic
+
+	column UserIdFrom
+		dataType: string
+		lineageTag: 8b6b873a-8e06-4062-b886-eac5ed4a7414
+		summarizeBy: none
+		sourceColumn: UserIdFrom
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Id of the service where the transfer was made to
+	column ServiceIdTo
+		dataType: string
+		lineageTag: ffbe0a00-5a8a-4ddf-b1af-e93fab31ffe8
+		summarizeBy: none
+		sourceColumn: ServiceIdTo
+
+		annotation SummarizationSetBy = Automatic
+
+	column UserIdTo
+		dataType: string
+		lineageTag: 760bf694-7c7b-40b0-b93a-3e807b9609fd
+		summarizeBy: none
+		sourceColumn: UserIdTo
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Transfer destination ( PSTN number or UPN). Renamed in Power BI: corresponds to the OData source field named Destination.
+	column DestinationUPN
+		dataType: string
+		lineageTag: c7db21a2-b888-47c0-96e8-955ac8436d25
+		summarizeBy: none
+		sourceColumn: DestinationUPN
+
+		annotation SummarizationSetBy = Automatic
+
+	column TransferSessionOutcomeId
+		dataType: int64
+		formatString: 0
+		lineageTag: 5d360425-ed6e-40cc-88e6-58fab9c6d1c9
+		summarizeBy: none
+		sourceColumn: TransferSessionOutcomeId
+
+		annotation SummarizationSetBy = Automatic
+
+	column TransferSessionTypeId
+		dataType: int64
+		formatString: 0
+		lineageTag: 6db2aae1-e525-4a53-bb43-a9d10fc19230
+		summarizeBy: none
+		sourceColumn: TransferSessionTypeId
+
+		annotation SummarizationSetBy = Automatic
+
+	column UserTransferActionTypeId
+		dataType: int64
+		formatString: 0
+		lineageTag: bb4cc6c4-c131-498e-8f33-9ee65a92f3f7
+		summarizeBy: none
+		sourceColumn: UserTransferActionTypeId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Transfer session StartedAt converted into the time zone selected in the parameters by the user
+	column 'Local Time'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: ff39b16a-79fd-4b94-a6ed-a1e09c1989df
+		summarizeBy: none
+		sourceColumn: Local Time
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Date of the transfer derived from the Local Time
+	column Date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: f528469e-fb60-4c21-9527-4968a3dc8861
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	/// Time extracted from the StartedAt timestamp (UTC)
+	column Time
+		dataType: dateTime
+		formatString: hh:nn:ss
+		lineageTag: c264245a-d6d5-4be6-b684-c7f33ebf4a49
+		summarizeBy: none
+		sourceColumn: Time
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Time
+
+		annotation PBI_FormatHint = {"isDateTimeCustom":true}
+
+	column DurationSeconds
+		dataType: double
+		lineageTag: 811d8487-fd5a-4dd3-bdbb-9adf1fc24009
+		summarizeBy: sum
+		sourceColumn: DurationSeconds
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	/// Organization Unit ID of the Service where the transfer came from
+	column ServiceFromOrganizationUnitId
+		dataType: string
+		lineageTag: 95807839-ac20-4a13-ab45-98a89cd07cd9
+		summarizeBy: none
+		sourceColumn: ServiceFromOrganizationUnitId
+
+		annotation SummarizationSetBy = Automatic
+
+	column UserFromOrganizationUnitId
+		dataType: string
+		lineageTag: 7ddc5af5-855c-4c3c-ad87-99ff7b6c56fc
+		summarizeBy: none
+		sourceColumn: UserFromOrganizationUnitId
+
+		annotation SummarizationSetBy = Automatic
+
+	column ServiceToOrganizationUnitId
+		dataType: string
+		lineageTag: 72e0f5f2-5ca6-404c-94f6-3eac214aae51
+		summarizeBy: none
+		sourceColumn: ServiceToOrganizationUnitId
+
+		annotation SummarizationSetBy = Automatic
+
+	column UserToOrganizationUnitId
+		dataType: string
+		lineageTag: 6311d086-6f30-4ada-8e15-f9c84fe947c3
+		summarizeBy: none
+		sourceColumn: UserToOrganizationUnitId
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Provides the service display name in case the transfer destination is a Nimbus service;
+	/// the display name of the user in case destination is a Nimbus user or
+	/// null, if no destination name is available.
+	column DestinationName
+		dataType: string
+		lineageTag: 3a71e1b9-38a3-4cff-9b63-2bfdef63fd63
+		summarizeBy: none
+		sourceColumn: DestinationName
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Column transformed in Power BI. Provides the destination name if available, otherwise it shows values from DestinationUPN. If neither is available a null value is shown.
+	column Destination
+		dataType: string
+		lineageTag: bec4802a-527c-4c47-be3d-8b23e761cabc
+		summarizeBy: none
+		sourceColumn: Destination
+
+		annotation SummarizationSetBy = Automatic
+
+	column TransferOnUserExit
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 5fecf64e-e8b2-40a7-9e95-411cb84333ec
+		summarizeBy: none
+		sourceColumn: TransferOnUserExit
+
+		annotation SummarizationSetBy = Automatic
+
+	partition TransferSessions-ef351655-d400-4060-8e58-3dbe652064c0 = m
+		mode: import
+		queryGroup: Facts\Transfers
+		source = ```
+				let
+				    Source = GlobalSource, // source from odata preview
+				    
+				    ServiceSessions_table = Source{[Name="TransferSessions",Signature="table"]}[Data],
+				    #"Filtered Rows" = Table.SelectRows(ServiceSessions_table, each ([StartedAt] >= DateTime.AddZone(RangeStart,0) and [StartedAt] < DateTime.AddZone(RangeEnd,0))), // date range from parameters with incremental refresh naming convention
+				
+				    #"Inserted Local Time" = Table.AddColumn(#"Filtered Rows", "Local Time", each ToLocalDateTimeZone([StartedAt]), type datetimezone), 
+				    
+				    #"Inserted Date" = Table.AddColumn(#"Inserted Local Time", "Date", each DateTime.Date([Local Time]), type date),
+				    #"Inserted Time" = Table.AddColumn(#"Inserted Date", "Time", each DateTime.Time([Local Time]), type time),
+				    #"Added Duration" = Table.AddColumn(#"Inserted Time", "DurationSeconds", each Duration.Seconds([EndedAt]-[StartedAt]), type number),
+				    #"Renamed Destination" = Table.RenameColumns(#"Added Duration",{{"Destination", "DestinationUPN"}}),
+				    #"Added Destination (Coalesced)" = Table.AddColumn(#"Renamed Destination", "Destination", each // coalesce destination names
+				
+				if [DestinationName]  <> "" then ([DestinationName] ?? [DestinationUPN])  else [DestinationUPN])
+				in
+				    #"Added Destination (Coalesced)"
+				```
+
+	annotation PBI_ResultType = Exception
+

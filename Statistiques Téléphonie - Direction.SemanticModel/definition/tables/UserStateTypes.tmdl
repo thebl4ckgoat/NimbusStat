@@ -1,0 +1,37 @@
+table UserStateTypes
+	lineageTag: 968a42b0-5b8c-4e66-87ec-fe4b8ea84ae1
+
+	column Id
+		dataType: int64
+		formatString: 0
+		lineageTag: 422d6cfd-1af6-41dc-97d7-385500b91814
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'State Type'
+		dataType: string
+		lineageTag: 723d4b60-4c3c-4bdc-ab13-1b6293d66257
+		summarizeBy: none
+		sourceColumn: State Type
+
+		annotation SummarizationSetBy = Automatic
+
+	partition UserStateTypes-032692ad-ea10-4887-b87c-fb6ff0ac7563 = m
+		mode: import
+		queryGroup: Dimensions
+		source = ```
+				let
+				    Source = GlobalSource,
+				    UserStateTypes_table = Source{[Name="UserStateTypes",Signature="table"]}[Data],
+				    StopFolding = Table.StopFolding(UserStateTypes_table),	
+				    #"Renamed Columns" = Table.RenameColumns(StopFolding, {{"Name", "State Type"}})
+				in
+				    #"Renamed Columns"
+				```
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigation
+

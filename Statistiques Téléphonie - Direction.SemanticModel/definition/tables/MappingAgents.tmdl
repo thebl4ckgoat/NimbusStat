@@ -1,0 +1,68 @@
+table MappingAgents
+	lineageTag: 9d5825d5-d71a-4f8b-b208-6e59f7b2539c
+
+	column Agent
+		lineageTag: 6e82af54-4414-43e6-ac96-caee06947aca
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Agent]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Groupe
+		lineageTag: 347c7c98-c877-4558-a3cd-5dca8a8ca6b8
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Groupe]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition MappingAgents = calculated
+		mode: import
+		source =
+				
+				DATATABLE (
+				    "Agent", STRING,
+				    "Groupe", STRING,
+				    {
+				        { "MATTEO GIOELI",             "Equipe Téléphonie" },
+				        { "CLOE ROMAGNOLO",            "Equipe Téléphonie" },
+				        { "LETIZIA DI BERNARDO",       "Equipe Téléphonie" },
+				        { "STACY KNOPS",               "Coordination Lobbes" },
+				        { "FRANCOISE MOREAU",          "Coordination Lobbes" },
+				        { "THIERRY BERWART WIN",       "Autre" },
+				        { "MARIE-CECILE WINS",         "Coordination Lalouvière" },
+				        { "AMELIE LEGRAIN",            "Equipe Téléphonie" },
+				        { "MALORIE MERENNE",           "Coordination Lalouvière" },
+				        { "STEPHANIE MINEUR",          "Coordination Charleroi" },
+				        { "APOLLINE DESSART",          "Equipe Téléphonie" },
+				        { "SARAH WALLEMME",            "Equipe Téléphonie" },
+				        { "JULIE FORMICA",             "Equipe Téléphonie" },
+				        { "ALEXANDRE DELMOTTE",        "Coordination Lobbes" },
+				        { "DOMINIQUE JONCRET",         "Equipe Téléphonie" },
+				        { "ISABELLE VERMEYLEN",        "Coordination Lalouvière" },
+				        { "ANNE-FRANCOISE NOEL",       "Autre" },
+				        { "LETIZIA MARCHIAFAVA",       "Coordination Lobbes" },
+				        { "AMARYLLIS MORTIER",         "Equipe Téléphonie" },
+				        { "GLADYS VERBRUGGEN",         "Equipe Téléphonie" },
+				        { "PERMANENCE TELEPHONIE GRH", "GRH" },
+				        { "PRISCILLIA LA BARBERA",     "Coordination Lobbes" },
+				        { "FASD NOEL AF",              "Autre" },
+				        { "MANDY JOZWIAK",             "Equipe Téléphonie" },
+				        { "TONY MASENGO",              "Autre" },
+				        { "VICKY DOGOT",               "Equipe Téléphonie" },
+				        { "LORIE VANDERDONCKT",        "Equipe Téléphonie" },
+				        { "MAUD KINT",                 "Coordination Charleroi" },
+				        { "CASSANDRA VANDERDONCKT",    "Equipe Téléphonie" },
+				        { "LILIANE CORNELIS",          "Equipe Téléphonie" },
+				        { "KEVIN BIARD",               "Autre" },
+				        { "PERMANENCE TELEPHONIE CJB", "Autre" },
+				        { "VALERIE VALENTE",           "Coordination Lalouvière" },
+				        { "AUDREY SONI",               "Equipe Téléphonie" },
+				        { "MANDY VASSART",             "Coordination Charleroi" },
+				        { "PAULINE PIRET",             "Equipe Téléphonie" }
+				    }
+				)
+
+	annotation PBI_Id = d96c717d43a540d8b8f11a563b3c40ce
+

@@ -1,0 +1,113 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "11464de51061d0770152",
+  "position": {
+    "x": 59.493670886075947,
+    "y": 8.8607594936708853,
+    "z": 1000,
+    "height": 608.86075949367091,
+    "width": 1325.3164556962024,
+    "tabOrder": 5000
+  },
+  "visual": {
+    "visualType": "sankey02300D1BE6F5427989F3DE31CCA9E0F32020",
+    "query": {
+      "queryState": {
+        "Destination": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "TransferDestinationService"
+                    }
+                  },
+                  "Property": "Name"
+                }
+              },
+              "queryRef": "TransferDestinationService.Name",
+              "nativeQueryRef": "Service To",
+              "displayName": "Service To"
+            }
+          ]
+        },
+        "Source": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "TransferSourceService"
+                    }
+                  },
+                  "Property": "Name"
+                }
+              },
+              "queryRef": "TransferSourceService.Name",
+              "nativeQueryRef": "Service From",
+              "displayName": "Service From"
+            }
+          ]
+        },
+        "Weight": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "TransferSessions"
+                    }
+                  },
+                  "Property": "TotalTransfers"
+                }
+              },
+              "queryRef": "TransferSessions.TotalTransfers",
+              "nativeQueryRef": "TotalTransfers"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "nodeComplexSettings": [
+        {
+          "properties": {
+            "nodePositions": {
+              "expr": {
+                "Literal": {
+                  "Value": "'[{\"name\":\"Coordination Charleroi\",\"x\":\"0\",\"y\":\"0\"},{\"name\":\"Coordination Lobbes\",\"x\":\"0\",\"y\":\"20\"},{\"name\":\"Coordination Lalouviere\",\"x\":\"0\",\"y\":\"40\"},{\"name\":\"Personnel - General\",\"x\":\"0\",\"y\":\"61\"},{\"name\":\"Clients - General\",\"x\":\"0\",\"y\":\"219\"},{\"name\":\"Clients - Service Aides Domicile\",\"x\":\"637\",\"y\":\"0\"},{\"name\":\"Coordination Lalouviere Debordement\",\"x\":\"637\",\"y\":\"215\"},{\"name\":\"Personnel - Operationnel - Urgent\",\"x\":\"637\",\"y\":\"230\"},{\"name\":\"Personnel - RH - Urgent\",\"x\":\"637\",\"y\":\"277\"},{\"name\":\"Personnel - RH\",\"x\":\"637\",\"y\":\"295\"},{\"name\":\"Clients - Soins Domicile CJB\",\"x\":\"637\",\"y\":\"318\"},{\"name\":\"Coordination Charleroi Debordement\",\"x\":\"637\",\"y\":\"357\"},{\"name\":\"Coordination Lobbes Debordement\",\"x\":\"637\",\"y\":\"371\"},{\"name\":\"Personnel - Informatique - Urgent\",\"x\":\"637\",\"y\":\"386\"},{\"name\":\"Personnel - Informatique\",\"x\":\"637\",\"y\":\"401\"},{\"name\":\"Personnel - Operationnel\",\"x\":\"637\",\"y\":\"418\"},{\"name\":\"Clients - Avis\",\"x\":\"637\",\"y\":\"474\"},{\"name\":\"Clients - Service Facturation\",\"x\":\"637\",\"y\":\"489\"},{\"name\":\"Clients - AutreQst\",\"x\":\"637\",\"y\":\"516\"},{\"name\":\"Callback\",\"x\":\"1274\",\"y\":\"0\"},{\"name\":\"Coordination Lalouviere Debordement Client\",\"x\":\"1274\",\"y\":\"153\"},{\"name\":null,\"x\":\"1274\",\"y\":\"306\"}]'"
+                }
+              }
+            },
+            "viewportSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "'{\"height\":\"559.6607587307315\",\"width\":\"1295.3164556962024\"}'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Service Transfer Flow'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

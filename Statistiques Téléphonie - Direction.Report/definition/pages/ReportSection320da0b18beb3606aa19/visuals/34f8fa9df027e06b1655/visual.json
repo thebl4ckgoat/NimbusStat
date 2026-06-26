@@ -1,0 +1,159 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.10.0/schema.json",
+  "name": "34f8fa9df027e06b1655",
+  "position": {
+    "x": 13.608247422680412,
+    "y": 140.41237113402062,
+    "z": 1000,
+    "height": 76.701030927835049,
+    "width": 818.35051546391753,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "ServiceSessions"
+                        }
+                      },
+                      "Property": "StartedAt"
+                    }
+                  },
+                  "Function": 3
+                }
+              },
+              "queryRef": "ServiceSessions.StartedAt",
+              "nativeQueryRef": "Earliest ServiceSession (UTC)",
+              "displayName": "Earliest ServiceSession (UTC)"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "ServiceSessions"
+                        }
+                      },
+                      "Property": "Local Time"
+                    }
+                  },
+                  "Function": 3
+                }
+              },
+              "queryRef": "ServiceSessions.Local Time",
+              "nativeQueryRef": "Earliest Local Time"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "ServiceSessions"
+                        }
+                      },
+                      "Property": "StartedAt"
+                    }
+                  },
+                  "Function": 4
+                }
+              },
+              "queryRef": "ServiceSessions.StartedAt1",
+              "nativeQueryRef": "Latest StartedAt",
+              "displayName": "Latest ServiceSession (UTC)"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "ServiceSessions"
+                        }
+                      },
+                      "Property": "Local Time"
+                    }
+                  },
+                  "Function": 4
+                }
+              },
+              "queryRef": "ServiceSessions.Local Time1",
+              "nativeQueryRef": "Latest Local Time"
+            },
+            {
+              "field": {
+                "Aggregation": {
+                  "Expression": {
+                    "Column": {
+                      "Expression": {
+                        "SourceRef": {
+                          "Entity": "ServiceSessions"
+                        }
+                      },
+                      "Property": "Id"
+                    }
+                  },
+                  "Function": 2
+                }
+              },
+              "queryRef": "ServiceSessions.Id",
+              "nativeQueryRef": "ServiceSessions loaded",
+              "displayName": "ServiceSessions loaded"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "149.3195856474159D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "ServiceSessions.Local Time"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "177.42268261028303D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "ServiceSessions.StartedAt1"
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {}
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

@@ -1,0 +1,55 @@
+table Tags
+	lineageTag: d7bd0340-ac2a-40d1-82ce-3da04c4107ea
+
+	column Id
+		dataType: string
+		lineageTag: c9a44039-3c7e-4c5e-8a2e-67b411167324
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Name of the tags associated with the Service Session (as assigned by the first user). If the first user did not assign a tag this field will show a null value even if subsequent users assigned a tag.
+	column Tag
+		dataType: string
+		lineageTag: 10fbd3b9-0629-4e7e-8898-f3261088befb
+		summarizeBy: none
+		sourceColumn: Tag
+
+		annotation SummarizationSetBy = Automatic
+
+	column CreatedAt
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 43807e0a-54e2-43f0-a167-da6172073b5a
+		summarizeBy: none
+		sourceColumn: CreatedAt
+
+		annotation SummarizationSetBy = Automatic
+
+	column TenantId
+		dataType: string
+		lineageTag: db3e69f6-8dca-46d9-ba0f-58c3683141c0
+		summarizeBy: none
+		sourceColumn: TenantId
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Tags-3ad74360-9477-415b-888a-3fb54400f352 = m
+		mode: import
+		queryGroup: Dimensions
+		source = ```
+				let
+				    Source = GlobalSource,
+				    Tags_table = Source{[Name="Tags",Signature="table"]}[Data],
+				    StopFolding = Table.StopFolding(Tags_table),	
+				    #"Renamed Columns" = Table.RenameColumns(StopFolding,{{"Name", "Tag"}}),
+				    #"Merged Queries" = Table.NestedJoin(#"Renamed Columns", {"Id"}, ServiceSessionTags, {"TagId"}, "ServiceSessionTags", JoinKind.Inner)
+				in
+				    #"Merged Queries"
+				```
+
+	annotation PBI_ResultType = Exception
+
+	annotation PBI_NavigationStepName = Navigation
+

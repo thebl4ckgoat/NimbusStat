@@ -1,0 +1,220 @@
+table UserSessionDates
+	lineageTag: c47ba5a4-1da9-4b8b-bb98-89fd2a2c6154
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: yyyy-mm-dd
+		lineageTag: 803fa72b-edcb-4721-8476-22664718e8de
+		summarizeBy: none
+		sourceColumn: Date
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation PBI_FormatHint = {"isCustom":true}
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: b8d88044-2dfa-48fe-abf0-c58cd58a5ae2
+		summarizeBy: sum
+		sourceColumn: Year
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column QuarterOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: a29044d5-d429-4b6e-9459-9e9ea812f0a4
+		summarizeBy: sum
+		sourceColumn: QuarterOfYear
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthOfYear
+		dataType: int64
+		formatString: 0
+		lineageTag: d9566f1e-a385-4e84-b998-7ee90fe18ade
+		summarizeBy: sum
+		sourceColumn: MonthOfYear
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfMonth
+		dataType: int64
+		formatString: 0
+		lineageTag: 6db5f298-2383-4027-a5e6-709c2877c6b6
+		summarizeBy: sum
+		sourceColumn: DayOfMonth
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column DateInt
+		dataType: int64
+		formatString: 0
+		lineageTag: c5f5b37f-a0ca-451d-8518-2907270505b7
+		summarizeBy: sum
+		sourceColumn: DateInt
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthName
+		dataType: string
+		lineageTag: 2f9378bf-7763-4ca7-8579-0cd1eb3c314b
+		summarizeBy: none
+		sourceColumn: MonthName
+		sortByColumn: MonthOfYear
+
+		changedProperty = IsHidden
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthInCalendar
+		dataType: string
+		lineageTag: 96833494-ee7e-4301-bd1e-6dbcf69c915f
+		summarizeBy: none
+		sourceColumn: MonthInCalendar
+		sortByColumn: YYYY-MM
+
+		changedProperty = IsHidden
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column QuarterInCalendar
+		dataType: string
+		lineageTag: d2a08c82-f322-4b75-a120-6c5236067cef
+		summarizeBy: none
+		sourceColumn: QuarterInCalendar
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayInWeek
+		dataType: int64
+		formatString: 0
+		lineageTag: 68cf86c5-352e-4a06-8f0a-50820c01c84b
+		summarizeBy: sum
+		sourceColumn: DayInWeek
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column DayOfWeekName
+		dataType: string
+		lineageTag: 9f0fadf6-25f9-4887-8da3-2fede91784d6
+		summarizeBy: none
+		sourceColumn: DayOfWeekName
+		sortByColumn: DayInWeek
+
+		changedProperty = IsHidden
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column WeekEnding
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: f4ea1773-2573-4439-b5a8-28f0c551f0df
+		summarizeBy: none
+		sourceColumn: WeekEnding
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column QuarterName
+		dataType: string
+		lineageTag: 2e9b40b9-23b1-422f-9ef3-3d535f57b09e
+		summarizeBy: none
+		sourceColumn: QuarterName
+		sortByColumn: QuarterOfYear
+
+		changedProperty = IsHidden
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
+	column YYYY-MM
+		dataType: string
+		lineageTag: 21159601-d8b9-4c3d-9889-fb8b49d33be4
+		summarizeBy: none
+		sourceColumn: YYYY-MM
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column DateSandbox
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 5f94f40f-0005-4667-bd27-5668d972bad0
+		summarizeBy: none
+		sourceColumn: DateSandbox
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	hierarchy 'Date Hierarchy'
+		lineageTag: b2b7f893-c099-4e81-8675-f2ac83f9b905
+
+		level Year
+			lineageTag: ae6377f5-ee5c-49b1-9749-29c703cfa14e
+			column: Year
+
+		level QuarterName
+			lineageTag: 6bf80995-33e8-4bbb-8a5a-2001f203062e
+			column: QuarterName
+
+		level YYYY-MM
+			lineageTag: 2306fec7-88e8-4a15-aa9e-81a1c2f3a8fb
+			column: YYYY-MM
+
+		level DayOfMonth
+			lineageTag: ac5f09a4-8dde-41b9-b399-de37c2e32b13
+			column: DayOfMonth
+
+		changedProperty = IsHidden
+
+	partition UserSessionDates-07cd46ed-4ac8-4a76-8c1e-29085e5be574 = m
+		mode: import
+		queryGroup: DateDimensions
+		source = ```
+				let
+				    Source = SessionDates
+				   
+				in
+				    Source
+				```
+
+	changedProperty = IsHidden
+
+	annotation PBI_ResultType = Table
+
+	annotation LinkedQueryName = UserSessionDates
+

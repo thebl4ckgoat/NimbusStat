@@ -1,0 +1,33 @@
+table TaskDirections
+	lineageTag: 93981303-fe8d-48b4-9217-ce20a5822226
+
+	column Id
+		dataType: int64
+		formatString: 0
+		lineageTag: 7ac44577-9c6b-4280-923e-3fba09f39686
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		lineageTag: c0301fee-83cc-4373-a768-308d900a86cf
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition TaskDirections-cc4da063-9858-43ab-9a3c-db8c6804edee = m
+		mode: import
+		queryGroup: Dimensions
+		source =
+				let
+				    Source = GlobalSource,
+				    TaskDirections_table = Source{[Name="TaskDirections",Signature="table"]}[Data],
+				    StopFolding = Table.StopFolding(TaskDirections_table)
+				in
+				    StopFolding
+
+	annotation PBI_ResultType = Exception
+

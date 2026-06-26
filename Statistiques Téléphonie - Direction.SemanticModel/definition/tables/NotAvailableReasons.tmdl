@@ -1,0 +1,51 @@
+table NotAvailableReasons
+	lineageTag: 83a00a36-336e-43b8-b001-97ccadfba38f
+
+	column Id
+		dataType: string
+		lineageTag: 238c5e8d-a1f6-4148-9431-2ceeaf06433f
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		lineageTag: 8fbd210b-64d1-4983-9339-7cad374426f3
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column TenantId
+		dataType: string
+		lineageTag: 23948e73-d4ba-4794-b79e-429821d03295
+		summarizeBy: none
+		sourceColumn: TenantId
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrganizationUnitId
+		dataType: string
+		lineageTag: 006427a1-00ff-4e45-a135-24771cf879c1
+		summarizeBy: none
+		sourceColumn: OrganizationUnitId
+
+		annotation SummarizationSetBy = Automatic
+
+	partition NotAvailableReasons-10c67a69-3651-4bb3-ac20-56a36856e32b = m
+		mode: import
+		queryGroup: Dimensions
+		source = ```
+				let
+				                Source = GlobalSource,
+				                NotAvailableReasons_table = Source{[Name="NotAvailableReasons",Signature="table"]}[Data]
+				                
+				            in
+				                NotAvailableReasons_table
+				```
+
+	annotation PBI_ResultType = Exception
+
+	annotation PBI_NavigationStepName = Navigation
+

@@ -1,0 +1,86 @@
+table TransferDestinationService
+	lineageTag: b6e5b741-932b-4944-b5ae-d30f276e5ca5
+
+	column Id
+		dataType: string
+		lineageTag: bd1acbe9-1fbd-4a6a-87bb-899a5493d65e
+		summarizeBy: none
+		sourceColumn: Id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Name
+		dataType: string
+		lineageTag: 3e135737-378d-4be3-9ac1-23c39d8d93fd
+		summarizeBy: none
+		sourceColumn: Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column TenantId
+		dataType: string
+		lineageTag: 3e1f7fef-b122-4b3f-ad00-a4de2aa8317a
+		summarizeBy: none
+		sourceColumn: TenantId
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrganizationUnitId
+		dataType: string
+		lineageTag: 8cfd15f3-19ab-4dec-907d-e2b41ae71c4b
+		summarizeBy: none
+		sourceColumn: OrganizationUnitId
+
+		annotation SummarizationSetBy = Automatic
+
+	column ServiceOrganizationUnitId
+		dataType: string
+		lineageTag: c1318412-6e71-4d9a-9c56-3549f54a8d56
+		summarizeBy: none
+		sourceColumn: ServiceOrganizationUnitId
+
+		annotation SummarizationSetBy = Automatic
+
+	column ServiceName
+		dataType: string
+		lineageTag: d8763cb5-4f43-4bda-b1a9-4c755493b40e
+		summarizeBy: none
+		sourceColumn: ServiceName
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Name - Copier.3'
+		dataType: string
+		lineageTag: 6df091ac-9eb7-4719-86a9-47a762ef8420
+		summarizeBy: none
+		sourceColumn: Name - Copier.3
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Name - Copier.4'
+		dataType: string
+		lineageTag: 35b581a1-d0db-4154-9068-2ea16c089c43
+		summarizeBy: none
+		sourceColumn: Name - Copier.4
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Name - Copier.5'
+		dataType: string
+		lineageTag: 00fd98fc-960c-468c-b320-0d031d441a6c
+		summarizeBy: none
+		sourceColumn: Name - Copier.5
+
+		annotation SummarizationSetBy = Automatic
+
+	partition TransferDestinationService-589c6b66-56e3-44e5-9277-3ec92abe3dd4 = m
+		mode: import
+		queryGroup: Dimensions
+		source =
+				let
+				    Source = Services
+				in
+				    Source
+
+	annotation PBI_ResultType = Table
+
