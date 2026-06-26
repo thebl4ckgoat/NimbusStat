@@ -1,14 +1,32 @@
-# Cache Power BI
+# ===== Power BI Project (PBIP) =====
+# Cache et paramètres locaux générés par Power BI Desktop
+.pbi/
 **/.pbi/cache.abf
 **/.pbi/localSettings.json
+**/.pbi/*.cache
 
-# Fichiers temporaires
-*.tmp
-*.bak
+# Fichiers PBIX/PBIT compilés (on versionne le PBIP, pas le binaire)
+*.pbix
+*.pbit
 
-# Windows
-Thumbs.db
-Desktop.ini
+# Sauvegardes Analysis Services / exports de données
+*.abf
+*.bim.bak
 
-# VS Code
+# Données exportées (ne jamais versionner de données réelles - RGPD)
+*.csv
+*.xlsx
+*.parquet
+/data/
+/exports/
+
+# ===== Outils / éditeurs =====
+.vs/
 .vscode/
+*.user
+.idea/
+
+# ===== Système =====
+.DS_Store
+Thumbs.db
+desktop.ini

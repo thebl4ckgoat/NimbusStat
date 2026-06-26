@@ -1,0 +1,71 @@
+name: CI
+
+# Vérifications automatiques à chaque PR vers main et à chaque push sur main.
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  validate:
+    name: Valider le projet PBIP
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Valider tous les fichiers JSON (rapport PBIP)
+        run: |
+          python3 - <<'PY'
+          import json, glob, sys
+          erreurs = []
+          for f in glob.glob("**/*.json", recursive=True):
+              try:
+                  with open(f, encoding="utf-8") as fh:
+                      json.load(fh)
+              except Exception as e:
+                  erreurs.append(f"{f}: {e}")
+          if erreurs:
+              print("JSON invalides :")
+              print("\n".join(erreurs))
+              sys.exit(1)
+          print("Tous les fichiers JSON sont valides.")
+          PY
+
+      - name: Vérifier la structure PBIP
+        run: |
+          shopt -s nullglob
+          pbip=( *.pbip )
+          report=( *.Report )
+          model=( *.SemanticModel )
+          if [ ${#pbip[@]} -eq 0 ] || [ ${#report[@]} -eq 0 ] || [ ${#model[@]} -eq 0 ]; then
+            echo "Structure PBIP incomplète (.pbip / .Report / .SemanticModel attendus)."
+            exit 1
+          fi
+          echo "Structure PBIP présente."
+
+  lint-docs:
+    name: Lint de la documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Markdownlint
+        uses: DavidAnson/markdownlint-cli2-action@v16
+        with:
+          globs: "**/*.md"
+        continue-on-error: true
+
+# --- Option avancée (à activer plus tard) -------------------------------
+# Analyse des bonnes pratiques du modèle (Best Practice Analyzer) avec
+# Tabular Editor 2 (portable) sur un runner Windows :
+#
+#   bpa:
+#     runs-on: windows-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - name: Télécharger Tabular Editor 2
+#         run: curl -L -o TE2.zip https://github.com/TabularEditor/TabularEditor/releases/latest/download/TabularEditor.Portable.zip
+#       - run: Expand-Archive TE2.zip -DestinationPath TE2
+#       - name: Exécuter le BPA sur le modèle TMDL
+#         run: ./TE2/TabularEditor.exe "./Statistiques Téléphonie - Direction.SemanticModel" -A -V
