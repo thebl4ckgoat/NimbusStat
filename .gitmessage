@@ -1,0 +1,12 @@
+# <type>(<portée>): <description impérative ≤72 car.>
+#
+# Types : feat | fix | docs | refactor | perf | chore | ci
+# Portées : model | measure | report | rls | docs
+#
+# Corps (optionnel, après une ligne vide) : le pourquoi, pas le comment.
+#
+# Exemple :
+# feat(report): ajoute la page Collaborateurs synthétique
+#
+# Sépare les visuels individuels de la page de pilotage afin que
+# les collaborateurs n'accèdent à aucune donnée nominative.
